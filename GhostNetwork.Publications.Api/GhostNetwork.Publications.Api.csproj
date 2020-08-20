@@ -8,5 +8,9 @@
       <PackageReference Include="Swashbuckle.AspNetCore" Version="5.5.1" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\GhostNetwork.Publications.Domain\GhostNetwork.Publications.Domain.csproj" />
+    </ItemGroup>
+
 
 </Project>

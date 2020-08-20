@@ -1,8 +1,6 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Threading.Tasks;
+using GhostNetwork.Publications.Domain;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GhostNetwork.Publications.Api.Controllers
@@ -34,42 +32,6 @@ namespace GhostNetwork.Publications.Api.Controllers
             var id = await storage.InsertOneAsync(publication);
 
             return NoContent();
-        }
-    }
-
-    public interface IPublicationStorage
-    {
-        Task<Publication> FindOneByIdAsync(string id);
-        Task<string> InsertOneAsync(Publication publication);
-    }
-
-    public class PublicationStorage : IPublicationStorage
-    {
-        private readonly IList<Publication> publications = new List<Publication>();
-
-        public Task<Publication> FindOneByIdAsync(string id)
-        {
-            return Task.FromResult(publications.FirstOrDefault(p => p.Id == id));
-        }
-
-        public Task<string> InsertOneAsync(Publication publication)
-        {
-            publication = new Publication(Guid.NewGuid().ToString(), publication.Content);
-            publications.Add(publication);
-
-            return Task.FromResult(publication.Id);
-        }
-    }
-
-    public class Publication
-    {
-        public string Id { get; }
-        public string Content { get; }
-
-        public Publication(string id, string content)
-        {
-            Id = id;
-            Content = content;
         }
     }
 
