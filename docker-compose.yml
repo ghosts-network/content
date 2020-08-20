@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  api:
+    build: .
+    ports:
+      - "5300:80"
+  db:
+    image: mvertes/alpine-mongo
+    ports:
+    - "27017:27017"
