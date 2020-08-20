@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GhostNetwork.Publications.Api.Controllers
@@ -10,12 +11,12 @@ namespace GhostNetwork.Publications.Api.Controllers
     [ApiController]
     public class PublicationsController : ControllerBase
     {
-        private static PublicationStorage storage = new PublicationStorage();
+        private static IPublicationStorage storage = new PublicationStorage();
         
         [HttpGet("{id}")]
-        public ActionResult GetAsync([FromRoute] string id)
+        public async Task<ActionResult> GetAsync([FromRoute] string id)
         {
-            var publication = storage.FindOneById(id);
+            var publication = await storage.FindOneByIdAsync(id);
 
             if (publication == null)
             {
@@ -26,31 +27,37 @@ namespace GhostNetwork.Publications.Api.Controllers
         }
 
         [HttpPost]
-        public ActionResult PostAsync([FromBody] CreatePublicationModel model)
+        public async Task<ActionResult> PostAsync([FromBody] CreatePublicationModel model)
         {
             var publication = new Publication(string.Empty, model.Content);
 
-            var id = storage.InsertOne(publication);
+            var id = await storage.InsertOneAsync(publication);
 
             return NoContent();
         }
     }
 
-    public class PublicationStorage
+    public interface IPublicationStorage
+    {
+        Task<Publication> FindOneByIdAsync(string id);
+        Task<string> InsertOneAsync(Publication publication);
+    }
+
+    public class PublicationStorage : IPublicationStorage
     {
         private readonly IList<Publication> publications = new List<Publication>();
 
-        public Publication FindOneById(string id)
+        public Task<Publication> FindOneByIdAsync(string id)
         {
-            return publications.FirstOrDefault(p => p.Id == id);
+            return Task.FromResult(publications.FirstOrDefault(p => p.Id == id));
         }
 
-        public string InsertOne(Publication publication)
+        public Task<string> InsertOneAsync(Publication publication)
         {
             publication = new Publication(Guid.NewGuid().ToString(), publication.Content);
             publications.Add(publication);
 
-            return publication.Id;
+            return Task.FromResult(publication.Id);
         }
     }
 
