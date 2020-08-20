@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GhostNetwork.Publications", "GhostNetwork.Publications\GhostNetwork.Publications.csproj", "{5102882E-4B8F-4EF1-86D1-DAE368638D85}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GhostNetwork.Publications.Api", "GhostNetwork.Publications.Api\GhostNetwork.Publications.Api.csproj", "{5102882E-4B8F-4EF1-86D1-DAE368638D85}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

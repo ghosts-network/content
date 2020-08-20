@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 
-namespace GhostNetwork.Publications
+namespace GhostNetwork.Publications.Api
 {
     public class Startup
     {

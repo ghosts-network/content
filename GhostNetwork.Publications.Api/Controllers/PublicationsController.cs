@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 
-namespace GhostNetwork.Publications.Controllers
+namespace GhostNetwork.Publications.Api.Controllers
 {
     [Route("[controller]")]
     [ApiController]
