@@ -10,6 +10,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\GhostNetwork.Publications.Domain\GhostNetwork.Publications.Domain.csproj" />
+      <ProjectReference Include="..\GhostNetwork.Publications.MongoDb\GhostNetwork.Publications.MongoDb\GhostNetwork.Publications.MongoDb.csproj" />
     </ItemGroup>
 
 

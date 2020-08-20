@@ -9,8 +9,13 @@ namespace GhostNetwork.Publications.Api.Controllers
     [ApiController]
     public class PublicationsController : ControllerBase
     {
-        private static IPublicationStorage storage = new PublicationStorage();
-        
+        private readonly IPublicationStorage storage;
+
+        public PublicationsController(IPublicationStorage storage)
+        {
+            this.storage = storage;
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult> GetAsync([FromRoute] string id)
         {

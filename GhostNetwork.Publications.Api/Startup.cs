@@ -1,8 +1,11 @@
+using GhostNetwork.Publications.Domain;
+using GhostNetwork.Publications.MongoDb;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using MongoDB.Driver;
 
 namespace GhostNetwork.Publications.Api
 {
@@ -18,7 +21,13 @@ namespace GhostNetwork.Publications.Api
                     Version = "1.0.0"
                 });
             });
-            
+
+            services.AddScoped<IPublicationStorage, MongoPublicationStorage>(provider =>
+            {
+                var client = new MongoClient("mongodb://db:27017/gnpublications");
+                var context = new MongoDbContext(client.GetDatabase("gnpublications"));
+                return new MongoPublicationStorage(context);
+            });
             services.AddControllers();
         }
 
