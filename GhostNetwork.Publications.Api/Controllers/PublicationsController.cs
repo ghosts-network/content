@@ -1,5 +1,5 @@
-using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using GhostNetwork.Publications.Api.Models;
 using GhostNetwork.Publications.Domain;
 using Microsoft.AspNetCore.Mvc;
 
@@ -38,11 +38,5 @@ namespace GhostNetwork.Publications.Api.Controllers
 
             return NoContent();
         }
-    }
-
-    public class CreatePublicationModel
-    {
-        [Required]
-        public string Content { get; set; }
     }
 }

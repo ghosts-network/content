@@ -28,7 +28,6 @@ namespace GhostNetwork.Publications.MongoDb
             {
                 Content = publication.Content
             };
-            
             await context.Publications.InsertOneAsync(entity);
 
             return entity.Id.ToString();
