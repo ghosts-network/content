@@ -2,6 +2,7 @@ using GhostNetwork.Publications.Domain;
 using GhostNetwork.Publications.MongoDb;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
@@ -11,6 +12,13 @@ namespace GhostNetwork.Publications.Api
 {
     public class Startup
     {
+        private readonly IConfiguration configuration;
+
+        public Startup(IConfiguration configuration)
+        {
+            this.configuration = configuration;
+        }
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSwaggerGen(options =>
@@ -24,7 +32,7 @@ namespace GhostNetwork.Publications.Api
 
             services.AddScoped<IPublicationStorage, MongoPublicationStorage>(provider =>
             {
-                var client = new MongoClient("mongodb://db:27017/gnpublications");
+                var client = new MongoClient($"mongodb://{configuration["MONGO_URL"]}:{configuration["MONGO_PORT"]}/gnpublications");
                 var context = new MongoDbContext(client.GetDatabase("gnpublications"));
                 return new MongoPublicationStorage(context);
             });
