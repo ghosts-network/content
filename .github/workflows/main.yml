@@ -3,7 +3,7 @@ name: Docker
 on:
   push:
     branches:
-      - mastera
+      - master
 env:
   IMAGE_NAME: ghostnetwork-publications
 
