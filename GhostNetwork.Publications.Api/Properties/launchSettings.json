@@ -7,8 +7,7 @@
       "launchUrl": "http://localhost:5000/swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "MONGO_URL": "localhost",
-        "MONGO_PORT": "27017"
+        "MONGO_ADDRESS": "127.0.0.1:27017"
       }
     }
   }

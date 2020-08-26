@@ -32,7 +32,7 @@ namespace GhostNetwork.Publications.Api
 
             services.AddScoped<IPublicationStorage, MongoPublicationStorage>(provider =>
             {
-                var client = new MongoClient($"mongodb://{configuration["MONGO_URL"]}:{configuration["MONGO_PORT"]}/gnpublications");
+                var client = new MongoClient($"mongodb://{configuration["MONGO_ADDRESS"]}/gnpublications");
                 var context = new MongoDbContext(client.GetDatabase("gnpublications"));
                 return new MongoPublicationStorage(context);
             });
