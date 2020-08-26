@@ -9,5 +9,7 @@ services:
       - MONGO_ADDRESS=db:27017
   db:
     image: mvertes/alpine-mongo
-    ports:
-    - "27017:27017"
+   # uncomment to expose database.
+   # DEVELOPMENT ONLY!
+   # ports:
+   # - "27017:27017"
