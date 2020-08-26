@@ -36,7 +36,7 @@ namespace GhostNetwork.Publications.Api.Controllers
 
             var id = await storage.InsertOneAsync(publication);
 
-            return NoContent();
+            return Created(Url.Action("Get", new { id }), new { Id = id });
         }
     }
 }
