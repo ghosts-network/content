@@ -13,6 +13,7 @@ ProjectSection(SolutionItems) = preProject
 	docker-compose.yml = docker-compose.yml
 	Dockerfile = Dockerfile
 	GhostNetwork.ruleset = GhostNetwork.ruleset
+	Readme.md = Readme.md
 EndProjectSection
 EndProject
 Global
