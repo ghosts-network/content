@@ -32,7 +32,7 @@ namespace GhostNetwork.Publications.Api.Controllers
         [HttpPost]
         public async Task<ActionResult> PostAsync([FromBody] CreatePublicationModel model)
         {
-            var publication = new Publication(string.Empty, model.Content);
+            var publication = Publication.New(model.Content);
 
             var id = await storage.InsertOneAsync(publication);
 

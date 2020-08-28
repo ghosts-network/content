@@ -9,5 +9,8 @@ namespace GhostNetwork.Publications.MongoDb
 
         [BsonElement("content")]
         public string Content { get; set; }
+
+        [BsonElement("createOn")]
+        public long CreateOn { get; set; }
     }
 }
