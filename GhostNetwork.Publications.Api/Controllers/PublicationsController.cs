@@ -1,3 +1,5 @@
+using System;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using GhostNetwork.Publications.Api.Models;
 using GhostNetwork.Publications.Domain;
@@ -27,6 +29,12 @@ namespace GhostNetwork.Publications.Api.Controllers
             }
 
             return Ok(publication);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> GetAsync([FromQuery, Range(0, int.MaxValue)] int skip, [FromQuery, Range(1, 100)] int take)
+        {
+            return Ok(await storage.FindManyAsync(skip, take));
         }
 
         [HttpPost]

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using GhostNetwork.Publications.Domain;
 using MongoDB.Bson;
@@ -36,6 +38,20 @@ namespace GhostNetwork.Publications.MongoDb
             await context.Publications.InsertOneAsync(entity);
 
             return entity.Id.ToString();
+        }
+
+        public async Task<IEnumerable<Publication>> FindManyAsync(int skip, int take)
+        {
+            var filter = Builders<PublicationEntity>.Filter.Empty;
+            var entities = await context.Publications.Find(filter)
+                .Skip(skip)
+                .Limit(take)
+                .ToListAsync();
+
+            return entities.Select(entity => new Publication(
+                entity.Id.ToString(),
+                entity.Content,
+                DateTimeOffset.FromUnixTimeMilliseconds(entity.CreateOn)));
         }
     }
 }
