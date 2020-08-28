@@ -30,6 +30,8 @@ namespace GhostNetwork.Publications.Api
                 });
             });
 
+            services.AddScoped<IHashTagsFetcher, DefaultHashTagsFetcher>();
+            services.AddScoped<PublicationBuilder>();
             services.AddScoped<IPublicationStorage, MongoPublicationStorage>(provider =>
             {
                 var client = new MongoClient($"mongodb://{configuration["MONGO_ADDRESS"]}/gnpublications");

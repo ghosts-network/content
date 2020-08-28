@@ -1,14 +1,16 @@
 using System;
+using System.Collections.Generic;
 
 namespace GhostNetwork.Publications.Domain
 {
     public class Publication
     {
-        public Publication(string id, string content, DateTimeOffset createdOn)
+        public Publication(string id, string content, DateTimeOffset createdOn, IEnumerable<string> tags)
         {
             Id = id;
             Content = content;
             CreatedOn = createdOn;
+            Tags = tags;
         }
 
         public string Id { get; }
@@ -17,9 +19,6 @@ namespace GhostNetwork.Publications.Domain
 
         public DateTimeOffset CreatedOn { get; }
 
-        public static Publication New(string content)
-        {
-            return new Publication(string.Empty, content, DateTimeOffset.Now);
-        }
+        public IEnumerable<string> Tags { get; }
     }
 }

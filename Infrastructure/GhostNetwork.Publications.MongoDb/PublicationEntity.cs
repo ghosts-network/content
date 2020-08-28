@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
@@ -12,5 +13,8 @@ namespace GhostNetwork.Publications.MongoDb
 
         [BsonElement("createOn")]
         public long CreateOn { get; set; }
+
+        [BsonElement("tags")]
+        public IList<string> Tags { get; set; }
     }
 }

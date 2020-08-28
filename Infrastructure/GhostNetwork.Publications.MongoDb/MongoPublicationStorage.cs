@@ -25,7 +25,8 @@ namespace GhostNetwork.Publications.MongoDb
             return entity == null ? null : new Publication(
                 entity.Id.ToString(),
                 entity.Content,
-                DateTimeOffset.FromUnixTimeMilliseconds(entity.CreateOn));
+                DateTimeOffset.FromUnixTimeMilliseconds(entity.CreateOn),
+                entity.Tags);
         }
 
         public async Task<string> InsertOneAsync(Publication publication)
@@ -33,7 +34,8 @@ namespace GhostNetwork.Publications.MongoDb
             var entity = new PublicationEntity
             {
                 Content = publication.Content,
-                CreateOn = publication.CreatedOn.ToUnixTimeMilliseconds()
+                CreateOn = publication.CreatedOn.ToUnixTimeMilliseconds(),
+                Tags = publication.Tags.ToList()
             };
             await context.Publications.InsertOneAsync(entity);
 
@@ -51,7 +53,8 @@ namespace GhostNetwork.Publications.MongoDb
             return entities.Select(entity => new Publication(
                 entity.Id.ToString(),
                 entity.Content,
-                DateTimeOffset.FromUnixTimeMilliseconds(entity.CreateOn)));
+                DateTimeOffset.FromUnixTimeMilliseconds(entity.CreateOn),
+                entity.Tags));
         }
     }
 }

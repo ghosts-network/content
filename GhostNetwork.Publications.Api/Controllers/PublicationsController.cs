@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using GhostNetwork.Publications.Api.Models;
@@ -12,10 +11,12 @@ namespace GhostNetwork.Publications.Api.Controllers
     public class PublicationsController : ControllerBase
     {
         private readonly IPublicationStorage storage;
+        private readonly PublicationBuilder publicationBuilder;
 
-        public PublicationsController(IPublicationStorage storage)
+        public PublicationsController(IPublicationStorage storage, PublicationBuilder publicationBuilder)
         {
             this.storage = storage;
+            this.publicationBuilder = publicationBuilder;
         }
 
         [HttpGet("{id}")]
@@ -40,7 +41,7 @@ namespace GhostNetwork.Publications.Api.Controllers
         [HttpPost]
         public async Task<ActionResult> PostAsync([FromBody] CreatePublicationModel model)
         {
-            var publication = Publication.New(model.Content);
+            var publication = publicationBuilder.Build(model.Content);
 
             var id = await storage.InsertOneAsync(publication);
 
