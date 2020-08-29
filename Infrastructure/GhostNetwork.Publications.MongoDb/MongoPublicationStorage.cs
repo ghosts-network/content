@@ -42,9 +42,15 @@ namespace GhostNetwork.Publications.MongoDb
             return entity.Id.ToString();
         }
 
-        public async Task<IEnumerable<Publication>> FindManyAsync(int skip, int take)
+        public async Task<IEnumerable<Publication>> FindManyAsync(int skip, int take, IEnumerable<string> tags)
         {
             var filter = Builders<PublicationEntity>.Filter.Empty;
+
+            if (tags.Any())
+            {
+                filter &= Builders<PublicationEntity>.Filter.AnyIn(e => e.Tags, tags);
+            }
+
             var entities = await context.Publications.Find(filter)
                 .Skip(skip)
                 .Limit(take)

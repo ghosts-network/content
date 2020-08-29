@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using GhostNetwork.Publications.Api.Models;
@@ -33,9 +34,9 @@ namespace GhostNetwork.Publications.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> GetAsync([FromQuery, Range(0, int.MaxValue)] int skip, [FromQuery, Range(1, 100)] int take)
+        public async Task<ActionResult> GetAsync([FromQuery, Range(0, int.MaxValue)] int skip, [FromQuery, Range(1, 100)] int take, [FromQuery] List<string> tags)
         {
-            return Ok(await storage.FindManyAsync(skip, take));
+            return Ok(await storage.FindManyAsync(skip, take, tags));
         }
 
         [HttpPost]
