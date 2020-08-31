@@ -7,9 +7,10 @@ services:
       - "5300:80"    
     environment:
       - MONGO_ADDRESS=db:27017
+      - ASPNETCORE_ENVIRONMENT=Development
   db:
     image: mvertes/alpine-mongo
    # uncomment to expose database.
    # DEVELOPMENT ONLY!
-   # ports:
-   # - "27017:27017"
+    ports:
+    - "27017:27017"

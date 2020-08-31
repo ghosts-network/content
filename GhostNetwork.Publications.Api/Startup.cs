@@ -21,6 +21,7 @@ namespace GhostNetwork.Publications.Api
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
             services.AddSwaggerGen(options =>
             {
                 options.SwaggerDoc("v1", new OpenApiInfo
@@ -51,6 +52,10 @@ namespace GhostNetwork.Publications.Api
                     {
                         config.SwaggerEndpoint("/swagger/v1/swagger.json", "Relations.API V1");
                     });
+
+                app.UseCors(builder => builder.AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowAnyOrigin());
             }
 
             app.UseRouting();
