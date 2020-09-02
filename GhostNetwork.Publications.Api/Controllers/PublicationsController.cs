@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using GhostNetwork.Publications.Api.Models;
 using GhostNetwork.Publications.Domain;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GhostNetwork.Publications.Api.Controllers
@@ -21,7 +22,9 @@ namespace GhostNetwork.Publications.Api.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult> GetAsync([FromRoute] string id)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<Publication>> GetAsync([FromRoute] string id)
         {
             var publication = await storage.FindOneByIdAsync(id);
 
@@ -34,12 +37,14 @@ namespace GhostNetwork.Publications.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> GetAsync([FromQuery, Range(0, int.MaxValue)] int skip, [FromQuery, Range(1, 100)] int take, [FromQuery] List<string> tags)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<Publication>>> GetAsync([FromQuery, Range(0, int.MaxValue)] int skip, [FromQuery, Range(1, 100)] int take, [FromQuery] List<string> tags)
         {
             return Ok(await storage.FindManyAsync(skip, take, tags));
         }
 
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<ActionResult> PostAsync([FromBody] CreatePublicationModel model)
         {
             var publication = publicationBuilder.Build(model.Content);
