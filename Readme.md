@@ -2,7 +2,7 @@
 
 Publications is a part of GhostNetwork education project for working with users publications such as publications to news feed
 
-## Instalation
+## Installation
 
 copy provided docker-compose.yml and customize for your needs
 
