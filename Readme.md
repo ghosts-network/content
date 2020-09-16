@@ -1,5 +1,5 @@
 # GhostNetwork - Publications
-ci-test
+ci-test x
 Publications is a part of GhostNetwork education project for working with users publications such as publications to news feed
 
 ## Installation
