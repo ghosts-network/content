@@ -16,7 +16,7 @@ namespace GhostNetwork.Publications.Domain
             var hashTagStart = -1;
             for (var i = 0; i < text.Length; i++)
             {
-                if (text[i] == '!')
+                if (text[i] == '#')
                 {
                     if (hashTagStart != -1)
                     {
