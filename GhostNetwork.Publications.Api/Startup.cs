@@ -1,3 +1,4 @@
+using GhostNetwork.Publications.Api.Helpers.OpenApi;
 using GhostNetwork.Publications.Domain;
 using GhostNetwork.Publications.MongoDb;
 using Microsoft.AspNetCore.Builder;
@@ -29,6 +30,8 @@ namespace GhostNetwork.Publications.Api
                     Title = "GhostNetwork/Publications API",
                     Version = "1.0.0"
                 });
+
+                options.OperationFilter<OperationIdFilter>();
             });
 
             services.AddScoped<IHashTagsFetcher, DefaultHashTagsFetcher>();
