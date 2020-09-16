@@ -4,7 +4,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GhostNetwork.Publications.A
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{261609E2-39E1-4534-B90C-F4ACA2477AAE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GhostNetwork.Publications.MongoDb", "infrastructure\GhostNetwork.Publications.MongoDb\GhostNetwork.Publications.MongoDb.csproj", "{7734ADCA-3BFD-4B7F-A939-F50DE763F8F5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GhostNetwork.Publications.MongoDb", "Infrastructure\GhostNetwork.Publications.MongoDb\GhostNetwork.Publications.MongoDb.csproj", "{7734ADCA-3BFD-4B7F-A939-F50DE763F8F5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GhostNetwork.Publications.Domain", "GhostNetwork.Publications.Domain\GhostNetwork.Publications.Domain.csproj", "{C25C64A0-D311-4448-948A-A18085CA53B8}"
 EndProject
