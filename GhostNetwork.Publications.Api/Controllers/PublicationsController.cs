@@ -45,13 +45,13 @@ namespace GhostNetwork.Publications.Api.Controllers
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<ActionResult> CreateAsync([FromBody] CreatePublicationModel model)
+        public async Task<ActionResult<Publication>> CreateAsync([FromBody] CreatePublicationModel model)
         {
             var publication = publicationBuilder.Build(model.Content);
 
             var id = await storage.InsertOneAsync(publication);
 
-            return Created(Url.Action("Get", new { id }), new { Id = id });
+            return Created(Url.Action("Find", new { id }), await storage.FindOneByIdAsync(id));
         }
     }
 }
