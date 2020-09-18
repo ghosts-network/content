@@ -53,5 +53,18 @@ namespace GhostNetwork.Publications.Api.Controllers
 
             return Created(Url.Action("Find", new { id }), await storage.FindOneByIdAsync(id));
         }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UpdateAsync([FromRoute] string id, [FromBody] UpdatePublicationModel model)
+        {
+            var publication = publicationBuilder.Build(model.Content);
+
+            if (publication == null)
+                return NotFound();
+
+            var updated = await storage.UpdateOneAsync(id, publication);
+
+            return Ok(updated);
+        }
     }
 }
