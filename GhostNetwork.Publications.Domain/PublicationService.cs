@@ -46,6 +46,5 @@ namespace GhostNetwork.Publications.Domain
             var publications = await publicationStorage.FindManyAsync(skip, take, tags);
             return publications;
         }
-
     }
 }
