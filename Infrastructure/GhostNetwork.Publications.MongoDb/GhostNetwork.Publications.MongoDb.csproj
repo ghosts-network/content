@@ -6,6 +6,18 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="Context\**" />
+      <Compile Remove="Entitys\**" />
+      <Compile Remove="Storages\**" />
+      <EmbeddedResource Remove="Context\**" />
+      <EmbeddedResource Remove="Entitys\**" />
+      <EmbeddedResource Remove="Storages\**" />
+      <None Remove="Context\**" />
+      <None Remove="Entitys\**" />
+      <None Remove="Storages\**" />
+    </ItemGroup>
+
+    <ItemGroup>
       <ProjectReference Include="..\..\GhostNetwork.Publications.Domain\GhostNetwork.Publications.Domain.csproj" />
     </ItemGroup>
 
