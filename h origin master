@@ -1,0 +1,254 @@
+[33mcommit 783e35558c3c1b320fafecf5c5da2bd10e47f5a5[m[33m ([m[1;36mHEAD -> [m[1;32mlength-validator[m[33m)[m
+Author: Vlad <shcherbak.vlad10@gmail.com>
+Date:   Fri Sep 18 17:10:49 2020 +0300
+
+    Change class name for test a validator
+
+[33mcommit 5b99809661673ff82705237e3fd14db42c1c3508[m[33m ([m[1;31morigin/length-validator[m[33m, [m[1;32mmaster[m[33m)[m
+Author: Vlad <shcherbak.vlad10@gmail.com>
+Date:   Fri Sep 18 16:46:09 2020 +0300
+
+    Add tests for length validator
+
+[33mcommit 3855ba46559c3ad311d2c5bc5069cc7a63093403[m
+Author: Vlad <shcherbak.vlad10@gmail.com>
+Date:   Fri Sep 18 16:44:43 2020 +0300
+
+    Use length validator in api
+
+[33mcommit 34e4bf7a79b2219c9b1c2472b884d6f661358767[m
+Author: Vlad <shcherbak.vlad10@gmail.com>
+Date:   Fri Sep 18 16:42:19 2020 +0300
+
+    Add length validator for publications
+
+[33mcommit d7fb9157ca7fe793395793b6aed2f354752d426d[m
+Author: Vladimir <Boberneprotiv@gmail.com>
+Date:   Fri Sep 18 05:57:06 2020 +0300
+
+    Fix directory name inside solution (#13)
+
+[33mcommit 39b176d12c54eab9922ba2cd0bd37df500c1cffa[m
+Author: vladimirborodin <boberneprotiv@gmail.com>
+Date:   Thu Sep 17 06:23:25 2020 +0300
+
+    Return created model as result
+
+[33mcommit c1d729f541c4d6591773d98abeb696dd57e85dfc[m
+Author: Vladimir <Boberneprotiv@gmail.com>
+Date:   Wed Sep 16 20:20:48 2020 +0300
+
+    Create simple test workflow
+
+[33mcommit cfb10b15bc8574048a09c0d8177ab339c2a1c079[m
+Author: Vladimir <Boberneprotiv@gmail.com>
+Date:   Wed Sep 16 07:10:48 2020 +0300
+
+    Open api autogen (#10)
+    
+    * Add operationId generation
+    
+    * Resolve operationId conflict
+    
+    * Resolve operationId conflict
+
+[33mcommit 516d05a5b4e7f2a757e55a62de8972d8d6bb490b[m
+Author: Vladimir <Boberneprotiv@gmail.com>
+Date:   Wed Sep 16 06:56:11 2020 +0300
+
+    Add operationId generation (#9)
+
+[33mcommit 2c6d3d74a5890885db05c2aa5689ddc7c6137da3[m
+Author: Vladimir <Boberneprotiv@gmail.com>
+Date:   Mon Sep 14 19:15:59 2020 +0300
+
+    Add development compose (#8)
+    
+    * Extract development compose
+    
+    * Add development readme section
+    
+    * Fix typo
+
+[33mcommit 41f38b5824193c0b8f8b0da5d1f66bfa10242605[m
+Author: Vladimir <Boberneprotiv@gmail.com>
+Date:   Thu Sep 10 19:58:52 2020 +0300
+
+    Update Readme.md
+
+[33mcommit d8f5a894a17cd69eef0286d8c04c375cc6c6ec6d[m
+Author: vladimirborodin <boberneprotiv@gmail.com>
+Date:   Wed Sep 2 20:40:52 2020 +0300
+
+    Add produced response type
+
+[33mcommit 9ff9addaa4f8847e8230f3e19133bf16494f08ef[m
+Author: vladimirborodin <boberneprotiv@gmail.com>
+Date:   Mon Aug 31 21:04:38 2020 +0300
+
+    Disable cors for development reason
+
+[33mcommit 7e074e8665cd6dcb7f1eaa897886700672808088[m
+Author: vladimirborodin <boberneprotiv@gmail.com>
+Date:   Sat Aug 29 12:45:05 2020 +0300
+
+    Add search by tags
+
+[33mcommit 6b758750147dd0f44183643afdd42d63eaa720ec[m
+Author: vladimirborodin <boberneprotiv@gmail.com>
+Date:   Fri Aug 28 22:13:24 2020 +0300
+
+    Store publication tags
+
+[33mcommit ddb1c9097757d8206ad4ad00ebe677d4b6cd9c04[m
+Author: vladimirborodin <boberneprotiv@gmail.com>
+Date:   Fri Aug 28 21:50:42 2020 +0300
+
+    Add hashtags fetcher and example of unit tests
+
+[33mcommit b196404ddd1ad7160f8f3de0bcfa12b392a3a210[m
+Author: vladimirborodin <boberneprotiv@gmail.com>
+Date:   Fri Aug 28 16:54:41 2020 +0300
+
+    Add endpoint for search publications
+
+[33mcommit 1967768628c2301de3e65e2cefa2138ae6b12121[m
+Author: vladimirborodin <boberneprotiv@gmail.com>
+Date:   Fri Aug 28 16:44:49 2020 +0300
+
+    Add creation time for publication
+
+[33mcommit e93c3b6de111dd4165e2e805d85984a99c71eb9a[m
+Author: vladimirborodin <boberneprotiv@gmail.com>
+Date:   Fri Aug 28 16:39:40 2020 +0300
+
+    Clear old implementation
+
+[33mcommit 0e9724004df21dadf000f0716065b950b2221c2f[m
+Author: vladimirborodin <boberneprotiv@gmail.com>
+Date:   Wed Aug 26 20:48:22 2020 +0300
+
+    Change status on publication creation
+
+[33mcommit 9c368f6d1a3b4a36ee4706b3097de274a549fd5e[m
+Author: vladimirborodin <boberneprotiv@gmail.com>
+Date:   Wed Aug 26 20:44:35 2020 +0300
+
+    Comment database exposing by default
+
+[33mcommit 088aff07226f6aef0f0c1ca795704c0ae201b404[m
+Author: vladimirborodin <boberneprotiv@gmail.com>
+Date:   Wed Aug 26 09:16:32 2020 +0300
+
+    Add simple readme
+
+[33mcommit eb65a40074444f53c45fcbeaff7d7eb76e203078[m
+Author: vladimirborodin <boberneprotiv@gmail.com>
+Date:   Wed Aug 26 09:08:39 2020 +0300
+
+    Update env variables for mongo
+
+[33mcommit 2bc0ccdcd476a16c297e15f65f3962fa58752571[m
+Author: vladimirborodin <boberneprotiv@gmail.com>
+Date:   Tue Aug 25 12:28:15 2020 +0300
+
+    Fix ci branch name
+
+[33mcommit 75b000bf26dc59dda2a4696a1742495e6fedde8a[m
+Author: vladimirborodin <boberneprotiv@gmail.com>
+Date:   Tue Aug 25 12:25:13 2020 +0300
+
+    Add configuration from environment variables
+
+[33mcommit 5b8665d1477253071fa940f3d6a5801370221a0a[m
+Merge: 76b94af 9a39bc7
+Author: Vladimir <Boberneprotiv@gmail.com>
+Date:   Tue Aug 25 10:48:08 2020 +0300
+
+    Merge pull request #2 from gh-network/add-ci
+    
+    Add building of docker package
+
+[33mcommit 9a39bc7e2639f48ff69b7eebe61a2154657f651f[m
+Author: Vladimir <Boberneprotiv@gmail.com>
+Date:   Tue Aug 25 10:47:50 2020 +0300
+
+    Add building of docker package
+
+[33mcommit 76b94affb0c370bbe62dd32322ef04347cce72d0[m
+Author: vladimirborodin <boberneprotiv@gmail.com>
+Date:   Sat Aug 22 14:31:52 2020 +0300
+
+    Add example of load testing
+
+[33mcommit 3ebaca34f087b9b7f388baf946cf6b785c10ffba[m
+Author: vladimirborodin <boberneprotiv@gmail.com>
+Date:   Sat Aug 22 12:29:15 2020 +0300
+
+    Move db into infrastructure folder
+
+[33mcommit 8ed0a3c2cf05e776dfae4fa9846d47e30989e0d1[m
+Author: vladimirborodin <boberneprotiv@gmail.com>
+Date:   Fri Aug 21 12:15:08 2020 +0300
+
+    Add non project file to solution folder
+
+[33mcommit 97c846df40bbe3022b42cbb2962b7e280550156a[m
+Author: vladimirborodin <boberneprotiv@gmail.com>
+Date:   Fri Aug 21 10:11:46 2020 +0300
+
+    Add simple ruleset
+
+[33mcommit 7eecb7f12badada7def8557f551053dd386cdcdc[m
+Author: vladimirborodin <boberneprotiv@gmail.com>
+Date:   Thu Aug 20 15:33:32 2020 +0300
+
+    Add mongo repo implementation
+
+[33mcommit 9a909e905512d19d871b606b75a65d1594f3075c[m
+Author: vladimirborodin <boberneprotiv@gmail.com>
+Date:   Thu Aug 20 14:51:46 2020 +0300
+
+    Create separate projects for domain and repository
+
+[33mcommit 20b93158185cbced09bc0655754ad6832859c054[m
+Author: vladimirborodin <boberneprotiv@gmail.com>
+Date:   Thu Aug 20 14:41:14 2020 +0300
+
+    Add async repository interface
+
+[33mcommit ec4880c5543dd9ab50b9e3a9f2dd696603068761[m
+Author: vladimirborodin <boberneprotiv@gmail.com>
+Date:   Thu Aug 20 14:13:50 2020 +0300
+
+    Add docker compose
+
+[33mcommit 95242dad2a90eb0a8d0e9ce1380ab8a2439333f8[m
+Author: vladimirborodin <boberneprotiv@gmail.com>
+Date:   Thu Aug 20 13:55:38 2020 +0300
+
+    Fix project naming
+
+[33mcommit a91d4764bae91c29cf7fc262baa72861f397dd34[m
+Author: vladimirborodin <boberneprotiv@gmail.com>
+Date:   Thu Aug 20 13:49:31 2020 +0300
+
+    Fix dockerfile
+
+[33mcommit 2ec98099f3739bc35cc887a6b1cb12b1d3ca5dff[m
+Author: vladimirborodin <boberneprotiv@gmail.com>
+Date:   Thu Aug 20 13:41:37 2020 +0300
+
+    Configure swagger
+
+[33mcommit 12143fc658f93b23e8043e63252c7f7f39cb10b9[m
+Author: vladimirborodin <boberneprotiv@gmail.com>
+Date:   Wed Aug 19 10:15:19 2020 +0300
+
+    Add base implementation
+
+[33mcommit 4ea2c111e377df01102956db80b7d84a8ea4b604[m
+Author: vladimirborodin <boberneprotiv@gmail.com>
+Date:   Wed Aug 19 09:47:52 2020 +0300
+
+    init
