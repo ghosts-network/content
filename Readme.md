@@ -10,9 +10,10 @@ compile images from the sources - `docker-compose build && docker-compose up -d`
 
 ### Parameters
 
-| Environment   | Description                 |
-|---------------|---------------------------- |
-| MONGO_ADDRESS | Address of MongoDb instance |
+| Environment   			| Description                 |
+|---------------------------|---------------------------- |
+| MONGO_ADDRESS 			| Address of MongoDb instance |
+| PUBLICATION_CONTENT_LENGTH| Maximum post length		  |
 
 ## Development
 
