@@ -46,5 +46,17 @@ namespace GhostNetwork.Publications.Domain
             var publications = await publicationStorage.FindManyAsync(skip, take, tags);
             return publications;
         }
+<<<<<<< HEAD
+=======
+
+        public async Task<bool> UpdateOneAsync(string id, string text)
+        {
+            var publications = publicationBuilder.Build(text);
+
+            var update = await publicationStorage.UpdateOneAsync(id, publications);
+
+            return update;
+        }
+>>>>>>> df7f1acc563a0080ff888a2fa75dda4682842d8f
     }
 }
