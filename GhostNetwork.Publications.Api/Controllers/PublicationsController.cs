@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
@@ -53,6 +54,14 @@ namespace GhostNetwork.Publications.Api.Controllers
             }
 
             return Created(Url.Action("Find", new { id }), await publicationService.FindOneByIdAsync(id));
+        }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UpdateAsync([FromRoute] string id, [FromBody] UpdatePublicationModel model)
+        {
+            var updated = await publicationService.UpdateOneAsync(id, model.Content);
+
+            return Ok(updated);
         }
     }
 }

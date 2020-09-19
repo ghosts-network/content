@@ -67,5 +67,16 @@ namespace GhostNetwork.Publications.MongoDb
                 DateTimeOffset.FromUnixTimeMilliseconds(entity.CreateOn),
                 entity.Tags));
         }
+
+        public async Task<bool> UpdateOneAsync(string id, Publication publication)
+        {
+            var filter = Builders<PublicationEntity>.Filter.Eq(p => p.Id, new ObjectId(id));
+
+            var update = Builders<PublicationEntity>.Update.Set(s => s.Content, publication.Content).Set(s => s.Tags, publication.Tags.ToList());
+
+            UpdateResult updateResult = await context.Publications.UpdateOneAsync(filter, update);
+
+            return updateResult.IsAcknowledged && updateResult.ModifiedCount > 0;
+        }
     }
 }
