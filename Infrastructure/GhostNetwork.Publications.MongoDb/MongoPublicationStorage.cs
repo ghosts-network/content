@@ -19,7 +19,12 @@ namespace GhostNetwork.Publications.MongoDb
 
         public async Task<Publication> FindOneByIdAsync(string id)
         {
-            var filter = Builders<PublicationEntity>.Filter.Eq(p => p.Id, new ObjectId(id));
+            if (!ObjectId.TryParse(id, out var oId))
+            {
+                return null;
+            }
+
+            var filter = Builders<PublicationEntity>.Filter.Eq(p => p.Id, oId);
             var entity = await context.Publications.Find(filter).FirstOrDefaultAsync();
 
             return entity == null ? null : new Publication(
