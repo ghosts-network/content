@@ -57,16 +57,9 @@ namespace GhostNetwork.Publications.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAsync([FromRoute] string id, [FromBody] UpdatePublicationModel model)
+        public async Task<ActionResult> UpdateAsync([FromRoute] string id, [FromBody] UpdatePublicationModel model)
         {
-            var publication = publicationBuilder.Build(model.Content);
-
-            if (publication == null)
-            {
-                return NotFound();
-            }
-
-            var updated = await storage.UpdateOneAsync(id, publication);
+            var updated = await publicationService.UpdateOneAsync(id, model.Content);
 
             return Ok(updated);
         }
