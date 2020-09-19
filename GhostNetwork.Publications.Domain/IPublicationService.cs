@@ -12,10 +12,7 @@ namespace GhostNetwork.Publications.Domain
         Task<Publication> FindOneByIdAsync(string id);
 
         Task<IEnumerable<Publication>> FindManyAsync(int skip, int take, IEnumerable<string> tags);
-<<<<<<< HEAD
-=======
 
         Task<bool> UpdateOneAsync(string id, string text);
->>>>>>> df7f1acc563a0080ff888a2fa75dda4682842d8f
     }
 }

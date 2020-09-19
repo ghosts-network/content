@@ -52,10 +52,6 @@ namespace GhostNetwork.Publications.Api.Controllers
             {
                 BadRequest();
             }
-<<<<<<< HEAD
-
-            return Created(Url.Action("Find", new { id }), await publicationService.FindOneByIdAsync(id));
-=======
 
             return Created(Url.Action("Find", new { id }), await publicationService.FindOneByIdAsync(id));
         }
@@ -66,7 +62,6 @@ namespace GhostNetwork.Publications.Api.Controllers
             var updated = await publicationService.UpdateOneAsync(id, model.Content);
 
             return Ok(updated);
->>>>>>> df7f1acc563a0080ff888a2fa75dda4682842d8f
         }
     }
 }

@@ -70,13 +70,20 @@ namespace GhostNetwork.Publications.MongoDb
 
         public async Task<bool> UpdateOneAsync(string id, Publication publication)
         {
-            var filter = Builders<PublicationEntity>.Filter.Eq(p => p.Id, new ObjectId(id));
+            if (publication.UpdatedOn is DateTimeOffset)
+            {
+                var updateTime = (DateTimeOffset)publication.UpdatedOn;
+                var filter = Builders<PublicationEntity>.Filter.Eq(p => p.Id, new ObjectId(id));
+                var update = Builders<PublicationEntity>.Update.Set(s => s.Content, publication.Content)
+                    .Set(s => s.Tags, publication.Tags.ToList().AsReadOnly())
+                    .Set(s => s.UpdateOn, updateTime.ToUnixTimeMilliseconds());
 
-            var update = Builders<PublicationEntity>.Update.Set(s => s.Content, publication.Content).Set(s => s.Tags, publication.Tags.ToList());
+                UpdateResult updateResult = await context.Publications.UpdateOneAsync(filter, update);
 
-            UpdateResult updateResult = await context.Publications.UpdateOneAsync(filter, update);
+                return updateResult.IsAcknowledged && updateResult.ModifiedCount > 0;
+            }
 
-            return updateResult.IsAcknowledged && updateResult.ModifiedCount > 0;
+            return false;
         }
     }
 }
