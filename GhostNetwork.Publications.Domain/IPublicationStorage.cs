@@ -1,3 +1,4 @@
+using MongoDB.Driver;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -11,6 +12,6 @@ namespace GhostNetwork.Publications.Domain
 
         Task<IEnumerable<Publication>> FindManyAsync(int skip, int take, IEnumerable<string> tags);
 
-        Task<bool> UpdateOneAsync(string id, Publication publication);
+        Task<UpdateResult> UpdateOneAsync(string id, Publication publication);
     }
 }
