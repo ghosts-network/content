@@ -5,12 +5,13 @@ namespace GhostNetwork.Publications.Domain
 {
     public class Publication
     {
-        public Publication(string id, string content, DateTimeOffset createdOn, IEnumerable<string> tags)
+        public Publication(string id, string content, DateTimeOffset createdOn, IEnumerable<string> tags, DateTimeOffset updatedOn)
         {
             Id = id;
             Content = content;
             CreatedOn = createdOn;
             Tags = tags;
+            UpdatedOn = updatedOn;
         }
 
         public string Id { get; }
@@ -20,5 +21,7 @@ namespace GhostNetwork.Publications.Domain
         public DateTimeOffset CreatedOn { get; }
 
         public IEnumerable<string> Tags { get; }
+
+        public DateTimeOffset UpdatedOn { get; }
     }
 }
