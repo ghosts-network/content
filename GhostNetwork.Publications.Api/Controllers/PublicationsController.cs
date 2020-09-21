@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
@@ -12,13 +13,11 @@ namespace GhostNetwork.Publications.Api.Controllers
     [ApiController]
     public class PublicationsController : ControllerBase
     {
-        private readonly IPublicationStorage storage;
-        private readonly PublicationBuilder publicationBuilder;
+        private readonly IPublicationService publicationService;
 
-        public PublicationsController(IPublicationStorage storage, PublicationBuilder publicationBuilder)
+        public PublicationsController(IPublicationService publicationService)
         {
-            this.storage = storage;
-            this.publicationBuilder = publicationBuilder;
+            this.publicationService = publicationService;
         }
 
         [HttpGet("{id}")]
@@ -26,7 +25,7 @@ namespace GhostNetwork.Publications.Api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<Publication>> FindAsync([FromRoute] string id)
         {
-            var publication = await storage.FindOneByIdAsync(id);
+            var publication = await publicationService.FindOneByIdAsync(id);
 
             if (publication == null)
             {
@@ -40,18 +39,29 @@ namespace GhostNetwork.Publications.Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<Publication>>> FindManyAsync([FromQuery, Range(0, int.MaxValue)] int skip, [FromQuery, Range(1, 100)] int take, [FromQuery] List<string> tags)
         {
-            return Ok(await storage.FindManyAsync(skip, take, tags));
+            return Ok(await publicationService.FindManyAsync(skip, take, tags));
         }
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Publication>> CreateAsync([FromBody] CreatePublicationModel model)
         {
-            var publication = publicationBuilder.Build(model.Content);
+            var id = await publicationService.CreateAsync(model.Content);
+            if (id == null)
+            {
+                BadRequest();
+            }
 
-            var id = await storage.InsertOneAsync(publication);
+            return Created(Url.Action("Find", new { id }), await publicationService.FindOneByIdAsync(id));
+        }
 
-            return Created(Url.Action("Find", new { id }), await storage.FindOneByIdAsync(id));
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UpdateAsync([FromRoute] string id, [FromBody] UpdatePublicationModel model)
+        {
+            var updated = await publicationService.UpdateOneAsync(id, model.Content);
+
+            return Ok(updated);
         }
     }
 }

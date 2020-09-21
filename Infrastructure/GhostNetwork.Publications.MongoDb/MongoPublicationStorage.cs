@@ -19,7 +19,12 @@ namespace GhostNetwork.Publications.MongoDb
 
         public async Task<Publication> FindOneByIdAsync(string id)
         {
-            var filter = Builders<PublicationEntity>.Filter.Eq(p => p.Id, new ObjectId(id));
+            if (!ObjectId.TryParse(id, out var oId))
+            {
+                return null;
+            }
+
+            var filter = Builders<PublicationEntity>.Filter.Eq(p => p.Id, oId);
             var entity = await context.Publications.Find(filter).FirstOrDefaultAsync();
 
             return entity == null ? null : new Publication(
@@ -61,6 +66,17 @@ namespace GhostNetwork.Publications.MongoDb
                 entity.Content,
                 DateTimeOffset.FromUnixTimeMilliseconds(entity.CreateOn),
                 entity.Tags));
+        }
+
+        public async Task<bool> UpdateOneAsync(string id, Publication publication)
+        {
+            var filter = Builders<PublicationEntity>.Filter.Eq(p => p.Id, new ObjectId(id));
+
+            var update = Builders<PublicationEntity>.Update.Set(s => s.Content, publication.Content).Set(s => s.Tags, publication.Tags.ToList());
+
+            UpdateResult updateResult = await context.Publications.UpdateOneAsync(filter, update);
+
+            return updateResult.IsAcknowledged && updateResult.ModifiedCount > 0;
         }
     }
 }
