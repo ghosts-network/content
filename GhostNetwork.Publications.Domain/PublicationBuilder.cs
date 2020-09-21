@@ -11,9 +11,9 @@ namespace GhostNetwork.Publications.Domain
             this.tagsFetcher = tagsFetcher;
         }
 
-        public Publication Build(string content)
+        public Publication Build(string content, bool isUpdated = false)
         {
-            return new Publication(string.Empty, content, DateTimeOffset.Now, tagsFetcher.Fetch(content), DateTimeOffset.Now);
+            return new Publication(string.Empty, content, DateTimeOffset.Now, tagsFetcher.Fetch(content), DateTimeOffset.Now, isUpdated);
         }
     }
 }

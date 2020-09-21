@@ -19,5 +19,8 @@ namespace GhostNetwork.Publications.MongoDb
 
         [BsonElement("updateOn")]
         public long UpdateOn { get; set; }
+
+        [BsonElement("isUpdated")]
+        public bool IsUpdated { get; set; }
     }
 }
