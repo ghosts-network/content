@@ -3,6 +3,8 @@ name: Test and linting
 on:
   pull_request:
     branches: [ master ]
+  pull:
+    branches: [ master ]
 
 jobs:
   unit-test:
