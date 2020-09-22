@@ -31,9 +31,8 @@ namespace GhostNetwork.Publications.Domain.UnitTest
             Assert.IsTrue(result);
         }
 
-
         [Test]
-        public async Task Test_Update_Publication()
+        public void Test_Update_Publication()
         {
             // Setup
             var publication = new Publication("1", "text1", DateTimeOffset.MinValue, new List<string>(), DateTimeOffset.Now);
@@ -43,7 +42,7 @@ namespace GhostNetwork.Publications.Domain.UnitTest
         }
 
         [Test]
-        public async Task Test_Update_Publication2()
+        public void Test_Update_Publication2()
         {
             // Setup
             var publication = new Publication("1", "text1", DateTimeOffset.Now, new List<string>(), DateTimeOffset.Now);
