@@ -49,7 +49,7 @@ namespace GhostNetwork.Publications.Domain
 
         public async Task<bool> UpdateOneAsync(string id, string text)
         {
-            var publications = publicationBuilder.Build(text, true);
+            var publications = publicationBuilder.Build(text);
 
             var update = await publicationStorage.UpdateOneAsync(id, publications);
 
