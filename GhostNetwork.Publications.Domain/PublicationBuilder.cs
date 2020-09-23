@@ -13,7 +13,7 @@ namespace GhostNetwork.Publications.Domain
 
         public Publication Build(string content)
         {
-            return new Publication(string.Empty, content, DateTimeOffset.Now, tagsFetcher.Fetch(content));
+            return new Publication(string.Empty, content, DateTimeOffset.Now, tagsFetcher.Fetch(content), DateTimeOffset.Now);
         }
     }
 }
