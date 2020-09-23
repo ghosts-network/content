@@ -57,11 +57,17 @@ namespace GhostNetwork.Publications.Api.Controllers
         }
 
         [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult> UpdateAsync([FromRoute] string id, [FromBody] UpdatePublicationModel model)
         {
             var updated = await publicationService.UpdateOneAsync(id, model.Content);
+            if (updated)
+            {
+                return Ok(updated);
+            }
 
-            return Ok(updated);
+            return BadRequest();
         }
     }
 }

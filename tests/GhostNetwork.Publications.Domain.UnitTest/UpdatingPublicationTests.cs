@@ -11,7 +11,7 @@ namespace GhostNetwork.Publications.Domain.UnitTest
     public class UpdatingPublicationTests
     {
         [Test]
-        public async Task Test_Storage()
+        public async Task Test_Update_With_Validator_Without_Param()
         {
             // Setup
             var mock = new Mock<IPublicationStorage>();
@@ -29,6 +29,30 @@ namespace GhostNetwork.Publications.Domain.UnitTest
 
             // Assert
             Assert.IsTrue(result);
+        }
+
+        [Test]
+        public async Task Test_Update_With_Validator_5_chars()
+        {
+
+            // Setup
+            var time = DateTimeOffset.Now;
+            var list = new List<Publication> { new Publication("1", "text", time, new List<string>(), time) };
+            var mock = new Mock<IPublicationStorage>();
+            mock.Setup(repo => repo.UpdateOneAsync(It.IsAny<string>(), It.IsAny<Publication>())).ReturnsAsync(
+                (string id, Publication publication) => true);
+
+            IPublicationStorage publicationStorage = mock.Object;
+            IPublicationService service = new PublicationService(
+                new DefaultLengthValidator(5),
+                new PublicationBuilder(new DefaultHashTagsFetcher()),
+                publicationStorage);
+
+            // Act
+            var result = await service.UpdateOneAsync("1", "another text");
+
+            // Assert
+            Assert.IsFalse(result);
         }
 
         [Test]
