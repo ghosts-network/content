@@ -92,19 +92,12 @@ namespace GhostNetwork.Publications.MongoDb
 
         public bool FindeForbiddenWords(string content)
         {
-            var list = new List<string>();
-
             foreach (var s in forbidden.Select(x => x.ForbiddenWord))
             {
                 if (content.Contains(s))
                 {
-                    list.Add(s);
+                    return false;
                 }
-            }
-
-            if (list.Count > 0)
-            {
-                return false;
             }
 
             return true;
