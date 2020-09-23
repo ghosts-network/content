@@ -11,7 +11,11 @@ namespace GhostNetwork.Publications.Domain.UnitTest
     public class UpdatingPublicationTests
     {
         [Test]
+<<<<<<< HEAD
         public async Task Test_Update_With_Validator_Without_Param()
+=======
+        public async Task Test_Storage()
+>>>>>>> f175740eea376e059d2d59d6d51bf8030f6fddc7
         {
             // Setup
             var mock = new Mock<IPublicationStorage>();
@@ -32,6 +36,7 @@ namespace GhostNetwork.Publications.Domain.UnitTest
         }
 
         [Test]
+<<<<<<< HEAD
         public async Task Test_Update_With_Validator_5_chars()
         {
 
@@ -56,6 +61,8 @@ namespace GhostNetwork.Publications.Domain.UnitTest
         }
 
         [Test]
+=======
+>>>>>>> f175740eea376e059d2d59d6d51bf8030f6fddc7
         public void Test_Update_Publication()
         {
             // Setup
@@ -69,8 +76,12 @@ namespace GhostNetwork.Publications.Domain.UnitTest
         public void Test_Update_Publication2()
         {
             // Setup
+<<<<<<< HEAD
             var dateNow = DateTimeOffset.Now;
             var publication = new Publication("1", "text1", dateNow, new List<string>(), dateNow);
+=======
+            var publication = new Publication("1", "text1", DateTimeOffset.Now, new List<string>(), DateTimeOffset.Now);
+>>>>>>> f175740eea376e059d2d59d6d51bf8030f6fddc7
 
             // Assert
             Assert.IsFalse(publication.IsUpdated);

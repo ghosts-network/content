@@ -24,6 +24,10 @@ namespace GhostNetwork.Publications.Domain
 
         public DateTimeOffset UpdatedOn { get; }
 
+<<<<<<< HEAD
         public bool IsUpdated => CreatedOn != UpdatedOn;
+=======
+        public bool IsUpdated => CreatedOn.ToUnixTimeMilliseconds() != UpdatedOn.ToUnixTimeMilliseconds();
+>>>>>>> f175740eea376e059d2d59d6d51bf8030f6fddc7
     }
 }

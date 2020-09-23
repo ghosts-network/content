@@ -14,7 +14,11 @@ namespace GhostNetwork.Publications.Domain
 
         public Publication Build(string content)
         {
+<<<<<<< HEAD
             return new Publication(string.Empty, content, dateNow, tagsFetcher.Fetch(content), dateNow);
+=======
+            return new Publication(string.Empty, content, DateTimeOffset.Now, tagsFetcher.Fetch(content), DateTimeOffset.Now);
+>>>>>>> f175740eea376e059d2d59d6d51bf8030f6fddc7
         }
     }
 }
