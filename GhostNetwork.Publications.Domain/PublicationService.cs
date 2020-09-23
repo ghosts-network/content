@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,21 +12,27 @@ namespace GhostNetwork.Publications.Domain
         private readonly ILengthValidator lengthValidator;
         private readonly PublicationBuilder publicationBuilder;
         private readonly IPublicationStorage publicationStorage;
+        private readonly IContentValidator contentValidator;
 
-        public PublicationService(ILengthValidator lengthValidator, PublicationBuilder publicationBuilder, IPublicationStorage publicationStorage)
+        public PublicationService(ILengthValidator lengthValidator, PublicationBuilder publicationBuilder,
+            IPublicationStorage publicationStorage, IContentValidator contentValidator)
         {
             this.lengthValidator = lengthValidator;
             this.publicationBuilder = publicationBuilder;
             this.publicationStorage = publicationStorage;
+            this.contentValidator = contentValidator;
         }
 
         public async Task<string> CreateAsync(string text)
         {
             if (lengthValidator.Validate(text))
             {
-                var publication = publicationBuilder.Build(text);
-                var id = await publicationStorage.InsertOneAsync(publication);
-                return id;
+                if (contentValidator.FindenWords(text))
+                {
+                    var publication = publicationBuilder.Build(text);
+                    var id = await publicationStorage.InsertOneAsync(publication);
+                    return id;
+                }
             }
 
             return null;
