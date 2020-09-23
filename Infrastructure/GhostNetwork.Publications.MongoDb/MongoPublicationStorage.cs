@@ -11,10 +11,15 @@ namespace GhostNetwork.Publications.MongoDb
     public class MongoPublicationStorage : IPublicationStorage
     {
         private readonly MongoDbContext context;
+        private readonly List<ForbiddenWordEntity> forbidden;
 
         public MongoPublicationStorage(MongoDbContext context)
         {
             this.context = context;
+            forbidden = new List<ForbiddenWordEntity>();
+            forbidden.Add(new ForbiddenWordEntity { ForbiddenWord = "duck" });
+            forbidden.Add(new ForbiddenWordEntity { ForbiddenWord = "dog" });
+            forbidden.Add(new ForbiddenWordEntity { ForbiddenWord = "cat" });
         }
 
         public async Task<Publication> FindOneByIdAsync(string id)
@@ -77,6 +82,26 @@ namespace GhostNetwork.Publications.MongoDb
             UpdateResult updateResult = await context.Publications.UpdateOneAsync(filter, update);
 
             return updateResult.IsAcknowledged && updateResult.ModifiedCount > 0;
+        }
+
+        public bool FindeForbiddenWords(string content)
+        {
+            var list = new List<string>();
+
+            foreach (var s in forbidden.Select(x => x.ForbiddenWord))
+            {
+                if (content.Contains(s))
+                {
+                    list.Add(s);
+                }
+            }
+
+            if (list.Count > 0)
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

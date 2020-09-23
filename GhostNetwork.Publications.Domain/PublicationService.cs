@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace GhostNetwork.Publications.Domain
@@ -12,22 +8,20 @@ namespace GhostNetwork.Publications.Domain
         private readonly ILengthValidator lengthValidator;
         private readonly PublicationBuilder publicationBuilder;
         private readonly IPublicationStorage publicationStorage;
-        private readonly IContentValidator contentValidator;
 
         public PublicationService(ILengthValidator lengthValidator, PublicationBuilder publicationBuilder,
-            IPublicationStorage publicationStorage, IContentValidator contentValidator)
+            IPublicationStorage publicationStorage)
         {
             this.lengthValidator = lengthValidator;
             this.publicationBuilder = publicationBuilder;
             this.publicationStorage = publicationStorage;
-            this.contentValidator = contentValidator;
         }
 
         public async Task<string> CreateAsync(string text)
         {
             if (lengthValidator.Validate(text))
             {
-                if (contentValidator.FindenWords(text))
+                if (publicationStorage.FindeForbiddenWords(text))
                 {
                     var publication = publicationBuilder.Build(text);
                     var id = await publicationStorage.InsertOneAsync(publication);
@@ -57,11 +51,13 @@ namespace GhostNetwork.Publications.Domain
 
         public async Task<bool> UpdateOneAsync(string id, string text)
         {
-            var publications = publicationBuilder.Build(text);
+            if (publicationStorage.FindeForbiddenWords(text))
+            {
+                var publications = publicationBuilder.Build(text);
+                return await publicationStorage.UpdateOneAsync(id, publications);
+            }
 
-            var update = await publicationStorage.UpdateOneAsync(id, publications);
-
-            return update;
+            return false;
         }
     }
 }
