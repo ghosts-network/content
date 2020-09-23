@@ -45,7 +45,8 @@ namespace GhostNetwork.Publications.Domain.UnitTest
         public void Test_Update_Publication2()
         {
             // Setup
-            var publication = new Publication("1", "text1", DateTimeOffset.Now, new List<string>(), DateTimeOffset.Now);
+            var dateNow = DateTimeOffset.Now;
+            var publication = new Publication("1", "text1", dateNow, new List<string>(), dateNow);
 
             // Assert
             Assert.IsFalse(publication.IsUpdated);
