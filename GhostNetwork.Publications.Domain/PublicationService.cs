@@ -11,8 +11,11 @@ namespace GhostNetwork.Publications.Domain
         private readonly IPublicationStorage publicationStorage;
         private readonly IContentValidator contentValidator;
 
-        public PublicationService(ILengthValidator lengthValidator, PublicationBuilder publicationBuilder,
-            IPublicationStorage publicationStorage, IContentValidator contentValidator)
+        public PublicationService(
+            ILengthValidator lengthValidator,
+            PublicationBuilder publicationBuilder,
+            IPublicationStorage publicationStorage,
+            IContentValidator contentValidator)
         {
             this.lengthValidator = lengthValidator;
             this.publicationBuilder = publicationBuilder;
