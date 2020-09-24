@@ -6,10 +6,10 @@ namespace GhostNetwork.Publications.Domain
 {
     public class DomainResult
     {
-
         private DomainResult()
             : this(Enumerable.Empty<DomainError>())
-        { }
+        {
+        }
 
         private DomainResult(IEnumerable<DomainError> errors)
         {
@@ -28,12 +28,12 @@ namespace GhostNetwork.Publications.Domain
         /// <summary>
         /// Build unsucceeded result from string message
         /// </summary>
-        public static DomainResult Error(string error) => Error(new [] { error }.Select(e => new DomainError(e)));
+        public static DomainResult Error(string error) => Error(new[] { error }.Select(e => new DomainError(e)));
 
         /// <summary>
         /// Build unsucceeded result from DomainError
         /// </summary>
-        public static DomainResult Error(DomainError error) => Error(new [] { error });
+        public static DomainResult Error(DomainError error) => Error(new[] { error });
 
         /// <summary>
         /// Build unsucceeded result from array of errors
