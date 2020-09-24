@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using GhostNetwork.Publications.Domain.ContentValidation;
 using Moq;
 using NUnit.Framework;
 
@@ -22,7 +22,8 @@ namespace GhostNetwork.Publications.Domain.UnitTest
             IPublicationService service = new PublicationService(
                 new DefaultLengthValidator(),
                 new PublicationBuilder(new DefaultHashTagsFetcher()),
-                publicationStorage, new ContentValidator());
+                publicationStorage,
+                new ContentValidator());
 
             // Act
             var result = await service.UpdateOneAsync("1", "another text");

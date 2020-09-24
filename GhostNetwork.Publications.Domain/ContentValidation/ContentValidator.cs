@@ -1,20 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
-namespace GhostNetwork.Publications.Domain
+namespace GhostNetwork.Publications.Domain.ContentValidation
 {
-    public interface IContentValidator
-    {
-        bool FindeForbiddenWords(string content);
-    }
-
-    public class ForbiddenWordModel
-    {
-        public string ForbiddenWord { get; set; }
-    }
-
     public class ContentValidator : IContentValidator
     {
         private readonly List<ForbiddenWordModel> forbidden;

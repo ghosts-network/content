@@ -1,9 +1,10 @@
-﻿using NUnit.Framework;
+﻿using GhostNetwork.Publications.Domain.ContentValidation;
+using NUnit.Framework;
 
 namespace GhostNetwork.Publications.Domain.UnitTest
 {
     [TestFixture]
-    class ContentValidatorTests
+    public class ContentValidatorTests
     {
         [Test]
         public void ContentValidator_ShouldReturnFalse_If_ForbiddenWordsFound()
