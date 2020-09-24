@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using GhostNetwork.Publications.Domain.ContentValidation;
 
 namespace GhostNetwork.Publications.Domain
 {
@@ -10,21 +9,30 @@ namespace GhostNetwork.Publications.Domain
         private readonly ILengthValidator lengthValidator;
         private readonly PublicationBuilder publicationBuilder;
         private readonly IPublicationStorage publicationStorage;
+        private readonly IContentValidator contentValidator;
 
-        public PublicationService(ILengthValidator lengthValidator, PublicationBuilder publicationBuilder, IPublicationStorage publicationStorage)
+        public PublicationService(
+            ILengthValidator lengthValidator,
+            PublicationBuilder publicationBuilder,
+            IPublicationStorage publicationStorage,
+            IContentValidator contentValidator)
         {
             this.lengthValidator = lengthValidator;
             this.publicationBuilder = publicationBuilder;
             this.publicationStorage = publicationStorage;
+            this.contentValidator = contentValidator;
         }
 
         public async Task<string> CreateAsync(string text)
         {
             if (lengthValidator.Validate(text))
             {
-                var publication = publicationBuilder.Build(text);
-                var id = await publicationStorage.InsertOneAsync(publication);
-                return id;
+                if (contentValidator.FindeForbiddenWords(text))
+                {
+                    var publication = publicationBuilder.Build(text);
+                    var id = await publicationStorage.InsertOneAsync(publication);
+                    return id;
+                }
             }
 
             return null;
@@ -49,11 +57,13 @@ namespace GhostNetwork.Publications.Domain
 
         public async Task<bool> UpdateOneAsync(string id, string text)
         {
-            var publications = publicationBuilder.Build(text);
+            if (contentValidator.FindeForbiddenWords(text))
+            {
+                var publications = publicationBuilder.Build(text);
+                return await publicationStorage.UpdateOneAsync(id, publications);
+            }
 
-            var update = await publicationStorage.UpdateOneAsync(id, publications);
-
-            return update;
+            return false;
         }
     }
 }
