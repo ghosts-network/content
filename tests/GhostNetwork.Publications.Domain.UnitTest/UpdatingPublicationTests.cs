@@ -15,21 +15,23 @@ namespace GhostNetwork.Publications.Domain.UnitTest
         {
             // Setup
             var mock = new Mock<IPublicationStorage>();
-            mock.Setup(repo => repo.UpdateOneAsync(It.IsAny<string>(), It.IsAny<Publication>())).ReturnsAsync(
-                (string id, Publication publication) => true);
+            mock
+                .Setup(repo => repo.UpdateOneAsync(It.IsAny<string>(), It.IsAny<Publication>()))
+                .ReturnsAsync(true);
+            var validators = new PublicationValidatorsContainer(
+                new LengthValidator(),
+                new ForbiddenWordsValidator());
 
-            IPublicationStorage publicationStorage = mock.Object;
-            IPublicationService service = new PublicationService(
-                new DefaultLengthValidator(),
+            var service = new PublicationService(
+                validators,
                 new PublicationBuilder(new DefaultHashTagsFetcher()),
-                publicationStorage,
-                new ContentValidator());
+                mock.Object);
 
             // Act
             var result = await service.UpdateOneAsync("1", "another text");
 
             // Assert
-            Assert.IsTrue(result);
+            Assert.IsTrue(result.Success);
         }
 
         [Test]

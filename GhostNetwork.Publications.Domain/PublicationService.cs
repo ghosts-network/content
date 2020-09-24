@@ -6,36 +6,33 @@ namespace GhostNetwork.Publications.Domain
 {
     public class PublicationService : IPublicationService
     {
-        private readonly ILengthValidator lengthValidator;
+        private readonly IPublicationValidator validator;
         private readonly PublicationBuilder publicationBuilder;
         private readonly IPublicationStorage publicationStorage;
-        private readonly IContentValidator contentValidator;
 
-        public PublicationService(
-            ILengthValidator lengthValidator,
+        public PublicationService(IPublicationValidator validator,
             PublicationBuilder publicationBuilder,
-            IPublicationStorage publicationStorage,
-            IContentValidator contentValidator)
+            IPublicationStorage publicationStorage)
         {
-            this.lengthValidator = lengthValidator;
+            this.validator = validator;
             this.publicationBuilder = publicationBuilder;
             this.publicationStorage = publicationStorage;
-            this.contentValidator = contentValidator;
         }
 
-        public async Task<string> CreateAsync(string text)
+        public async Task<(DomainResult, string)> CreateAsync(string text)
         {
-            if (lengthValidator.Validate(text))
+            var content = new PublicationContext(text);
+            var result = await validator.ValidateAsync(content);
+
+            if (!result.Success)
             {
-                if (contentValidator.FindeForbiddenWords(text))
-                {
-                    var publication = publicationBuilder.Build(text);
-                    var id = await publicationStorage.InsertOneAsync(publication);
-                    return id;
-                }
+                return (result, null);
             }
 
-            return null;
+            var publication = publicationBuilder.Build(text);
+            var id = await publicationStorage.InsertOneAsync(publication);
+
+            return (result, id);
         }
 
         public async Task<Publication> FindOneByIdAsync(string id)
@@ -55,15 +52,20 @@ namespace GhostNetwork.Publications.Domain
             return publications;
         }
 
-        public async Task<bool> UpdateOneAsync(string id, string text)
+        public async Task<DomainResult> UpdateOneAsync(string id, string text)
         {
-            if (contentValidator.FindeForbiddenWords(text))
+            var content = new PublicationContext(text);
+            var result = await validator.ValidateAsync(content);
+
+            if (!result.Success)
             {
-                var publications = publicationBuilder.Build(text);
-                return await publicationStorage.UpdateOneAsync(id, publications);
+                return result;
             }
 
-            return false;
+            var publications = publicationBuilder.Build(text);
+            await publicationStorage.UpdateOneAsync(id, publications);
+
+            return DomainResult.Successed();
         }
     }
 }
