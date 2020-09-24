@@ -22,7 +22,7 @@ namespace GhostNetwork.Publications.Domain.UnitTest
             IPublicationService service = new PublicationService(
                 new DefaultLengthValidator(),
                 new PublicationBuilder(new DefaultHashTagsFetcher()),
-                publicationStorage);
+                publicationStorage, new ContentValidator());
 
             // Act
             var result = await service.UpdateOneAsync("1", "another text");

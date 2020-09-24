@@ -8,20 +8,22 @@ namespace GhostNetwork.Publications.Domain
         private readonly ILengthValidator lengthValidator;
         private readonly PublicationBuilder publicationBuilder;
         private readonly IPublicationStorage publicationStorage;
+        private readonly IContentValidator contentValidator;
 
         public PublicationService(ILengthValidator lengthValidator, PublicationBuilder publicationBuilder,
-            IPublicationStorage publicationStorage)
+            IPublicationStorage publicationStorage, IContentValidator contentValidator)
         {
             this.lengthValidator = lengthValidator;
             this.publicationBuilder = publicationBuilder;
             this.publicationStorage = publicationStorage;
+            this.contentValidator = contentValidator;
         }
 
         public async Task<string> CreateAsync(string text)
         {
             if (lengthValidator.Validate(text))
             {
-                if (publicationStorage.FindeForbiddenWords(text))
+                if (contentValidator.FindeForbiddenWords(text))
                 {
                     var publication = publicationBuilder.Build(text);
                     var id = await publicationStorage.InsertOneAsync(publication);
@@ -51,7 +53,7 @@ namespace GhostNetwork.Publications.Domain
 
         public async Task<bool> UpdateOneAsync(string id, string text)
         {
-            if (publicationStorage.FindeForbiddenWords(text))
+            if (contentValidator.FindeForbiddenWords(text))
             {
                 var publications = publicationBuilder.Build(text);
                 return await publicationStorage.UpdateOneAsync(id, publications);

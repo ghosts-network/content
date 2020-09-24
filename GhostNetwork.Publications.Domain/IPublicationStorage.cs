@@ -12,7 +12,5 @@ namespace GhostNetwork.Publications.Domain
         Task<IEnumerable<Publication>> FindManyAsync(int skip, int take, IEnumerable<string> tags);
 
         Task<bool> UpdateOneAsync(string id, Publication publication);
-
-        bool FindeForbiddenWords(string content);
     }
 }
