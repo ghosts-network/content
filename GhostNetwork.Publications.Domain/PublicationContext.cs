@@ -4,14 +4,11 @@ namespace GhostNetwork.Publications.Domain
 {
     public class PublicationContext
     {
-        public PublicationContext(string content, DateTimeOffset createdOn)
+        public PublicationContext(string content)
         {
             Content = content;
-            CreatedOn = createdOn;
         }
 
         public string Content { get; }
-
-        public DateTimeOffset CreatedOn { get; }
     }
 }

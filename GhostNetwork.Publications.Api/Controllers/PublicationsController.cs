@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
@@ -47,8 +46,9 @@ namespace GhostNetwork.Publications.Api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Publication>> CreateAsync([FromBody] CreatePublicationModel model)
         {
-            var id = await publicationService.CreateAsync(model.Content);
-            if (id == null)
+            var (result, id) = await publicationService.CreateAsync(model.Content);
+
+            if (!result.Success)
             {
                 BadRequest();
             }
@@ -57,11 +57,18 @@ namespace GhostNetwork.Publications.Api.Controllers
         }
 
         [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult> UpdateAsync([FromRoute] string id, [FromBody] UpdatePublicationModel model)
         {
-            var updated = await publicationService.UpdateOneAsync(id, model.Content);
+            var result = await publicationService.UpdateOneAsync(id, model.Content);
 
-            return Ok(updated);
+            if (!result.Success)
+            {
+                BadRequest();
+            }
+
+            return NoContent();
         }
     }
 }

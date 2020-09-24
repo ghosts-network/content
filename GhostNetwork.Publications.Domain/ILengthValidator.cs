@@ -1,35 +1,29 @@
-﻿using System.Collections.Generic;
-using System.Text;
+﻿using System.Threading.Tasks;
 
 namespace GhostNetwork.Publications.Domain
 {
-    public interface ILengthValidator
-    {
-        bool Validate(string text);
-    }
-
-    public class DefaultLengthValidator : ILengthValidator
+    public class LengthValidator : IPublicationValidator
     {
         private readonly int? length;
 
-        public DefaultLengthValidator(int? length = null)
+        public LengthValidator(int? length = null)
         {
             this.length = length;
         }
 
-        public bool Validate(string text)
+        public Task<DomainResult> ValidateAsync(PublicationContext context)
         {
             if (length == null)
             {
-                return true;
+                return Task.FromResult(DomainResult.Successed());
             }
 
-            if (text.Length > length)
+            if (context.Content.Length > length)
             {
-                return false;
+                return Task.FromResult(DomainResult.Error($"Content is more than {length.Value} characters"));
             }
 
-            return true;
+            return Task.FromResult(DomainResult.Successed());
         }
     }
 }

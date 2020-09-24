@@ -20,7 +20,7 @@ namespace GhostNetwork.Publications.Domain.UnitTest
 
             IPublicationStorage publicationStorage = mock.Object;
             IPublicationService service = new PublicationService(
-                new DefaultLengthValidator(),
+                new LengthValidator(),
                 new PublicationBuilder(new DefaultHashTagsFetcher()),
                 publicationStorage,
                 new ContentValidator());
