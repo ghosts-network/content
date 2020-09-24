@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using NUnit.Framework;
 
 namespace GhostNetwork.Publications.Domain.UnitTest
@@ -9,73 +10,78 @@ namespace GhostNetwork.Publications.Domain.UnitTest
     public class DefaultLengthValidatorTests
     {
         [Test]
-        public void Length_Without_Params()
+        public async Task Length_Without_Params()
         {
             // Setup
             var validator = new LengthValidator();
-            string text = "Hello, world";
+            var content = "Hello, world";
+            var context = new PublicationContext(content);
 
             // Act
-            var result = validator.Validate(text);
+            var result = await validator.ValidateAsync(context);
 
             // Assert
-            Assert.IsTrue(result);
+            Assert.IsTrue(result.Success);
         }
 
         [Test]
-        public void Length_Without_Params_Empty_String()
+        public async Task Length_Without_Params_Empty_String()
         {
             // Setup
             var validator = new LengthValidator();
-            string text = string.Empty;
+            var content = string.Empty;
+            var context = new PublicationContext(content);
 
             // Act
-            var result = validator.Validate(text);
+            var result = await validator.ValidateAsync(context);
 
             // Assert
-            Assert.IsTrue(result);
+            Assert.IsTrue(result.Success);
         }
 
         [Test]
-        public void Length_Must_Be_Less_Or_Equal_Than_3_Chars()
+        public async Task Length_Must_Be_Less_Or_Equal_Than_3_Chars()
         {
             // Setup
             var validator = new LengthValidator(3);
-            string text = "Hello";
+            var content = "Hello";
+            var context = new PublicationContext(content);
 
             // Act
-            var result = validator.Validate(text);
+            var result = await validator.ValidateAsync(context);
 
             // Assert
-            Assert.IsFalse(result);
+            Assert.IsFalse(result.Success);
         }
 
         [Test]
-        public void Length_Must_Be_Less_Or_Equal_Than_5_Chars()
+        public async Task Length_Must_Be_Less_Or_Equal_Than_5_Chars()
         {
             // Setup
             var validator = new LengthValidator(5);
-            string text = "Test";
+            var content = "Test";
+            var context = new PublicationContext(content);
 
             // Act
-            var result = validator.Validate(text);
+            var result = await validator.ValidateAsync(context);
 
             // Assert
-            Assert.IsTrue(result);
+            Assert.IsTrue(result.Success);
         }
 
         [Test]
-        public void Length_Equally_String_Length()
+        public async Task Length_Equally_String_Length()
         {
             // Setup
             var validator = new LengthValidator(5);
-            string text = "12345";
+            var content = "12345";
+            var context = new PublicationContext(content);
 
             // Act
-            var result = validator.Validate(text);
+            var result = await validator.ValidateAsync(context);
 
             // Assert
-            Assert.IsTrue(result);
+            Assert.IsTrue(result.Success);
         }
     }
 }

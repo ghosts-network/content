@@ -1,4 +1,5 @@
-﻿using GhostNetwork.Publications.Domain.ContentValidation;
+﻿using System.Threading.Tasks;
+using GhostNetwork.Publications.Domain.ContentValidation;
 using NUnit.Framework;
 
 namespace GhostNetwork.Publications.Domain.UnitTest
@@ -7,31 +8,33 @@ namespace GhostNetwork.Publications.Domain.UnitTest
     public class ContentValidatorTests
     {
         [Test]
-        public void ContentValidator_ShouldReturnFalse_If_ForbiddenWordsFound()
+        public async Task ContentValidator_ShouldReturnFalse_If_ForbiddenWordsFound()
         {
             // Setup
-            var validation = new ContentValidator();
+            var validation = new ForbiddenWordsValidator();
             var content = "#test text with forbidden word duck";
+            var context = new PublicationContext(content);
 
             // Act
-            var result = validation.FindeForbiddenWords(content);
+            var result = await validation.ValidateAsync(context);
 
             // Assert
-            Assert.IsFalse(result);
+            Assert.IsFalse(result.Success);
         }
 
         [Test]
-        public void ContentValidator_ShouldReturnTrue_If_ForbiddenWordsNotFound()
+        public async Task ContentValidator_ShouldReturnTrue_If_ForbiddenWordsNotFound()
         {
             // Setup
-            var validation = new ContentValidator();
+            var validation = new ForbiddenWordsValidator();
             var content = "#test text without forbidden word";
+            var context = new PublicationContext(content);
 
             // Act
-            var result = validation.FindeForbiddenWords(content);
+            var result = await validation.ValidateAsync(context);
 
             // Assert
-            Assert.IsTrue(result);
+            Assert.IsTrue(result.Success);
         }
     }
 }
