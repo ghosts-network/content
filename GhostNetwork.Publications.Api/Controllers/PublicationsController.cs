@@ -50,7 +50,7 @@ namespace GhostNetwork.Publications.Api.Controllers
 
             if (!result.Success)
             {
-                BadRequest();
+                return BadRequest();
             }
 
             return Created(Url.Action("Find", new { id }), await publicationService.FindOneByIdAsync(id));
@@ -65,7 +65,7 @@ namespace GhostNetwork.Publications.Api.Controllers
 
             if (!result.Success)
             {
-                BadRequest();
+                return BadRequest();
             }
 
             return NoContent();
