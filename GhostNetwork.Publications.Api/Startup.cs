@@ -39,7 +39,7 @@ namespace GhostNetwork.Publications.Api
             services.AddScoped<PublicationBuilder>();
 
             services.AddScoped<ForbiddenWordsValidator>();
-            services.AddScoped(provider => new LengthValidator(configuration.GetValue<int>("PUBLICATION_CONTENT_LENGTH")));
+            services.AddScoped(provider => new LengthValidator(configuration.GetValue<int?>("PUBLICATION_CONTENT_LENGTH")));
             services.AddScoped<IPublicationValidator>(provider => new PublicationValidatorsContainer(
                 provider.GetService<LengthValidator>(),
                 provider.GetService<ForbiddenWordsValidator>()));
