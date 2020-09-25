@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using GhostNetwork.Publications.Domain.ContentValidation;
 
 namespace GhostNetwork.Publications.Domain
 {
@@ -10,7 +9,8 @@ namespace GhostNetwork.Publications.Domain
         private readonly PublicationBuilder publicationBuilder;
         private readonly IPublicationStorage publicationStorage;
 
-        public PublicationService(IPublicationValidator validator,
+        public PublicationService(
+            IPublicationValidator validator,
             PublicationBuilder publicationBuilder,
             IPublicationStorage publicationStorage)
         {

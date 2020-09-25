@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using GhostNetwork.Publications.Domain.ContentValidation;
 using NUnit.Framework;
 
 namespace GhostNetwork.Publications.Domain.UnitTest

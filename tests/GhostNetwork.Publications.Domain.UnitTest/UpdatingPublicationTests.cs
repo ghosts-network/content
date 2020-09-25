@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using GhostNetwork.Publications.Domain.ContentValidation;
 using Moq;
 using NUnit.Framework;
 
