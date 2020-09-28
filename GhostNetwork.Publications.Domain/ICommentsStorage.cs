@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace GhostNetwork.Publications.Domain
 {
-    public interface ICommentStorage
+    public interface ICommentsStorage
     {
         Task<Comment> FindOneByIdAsync(string id);
 
@@ -11,6 +11,6 @@ namespace GhostNetwork.Publications.Domain
 
         Task<IEnumerable<Comment>> FindManyAsync(string publicationId, int skip, int take);
 
-        Task<bool> FindCommentInPublicationById(string commentId, string publicationId);
+        Task<bool> IsCommentInPublicationAsync(string commentId, string publicationId);
     }
 }

@@ -37,7 +37,7 @@ namespace GhostNetwork.Publications.Api
 
             services.AddScoped<IHashTagsFetcher, DefaultHashTagsFetcher>();
             services.AddScoped<PublicationBuilder>();
-            services.AddScoped<ICommentService, CommentService>();
+            services.AddScoped<ICommentsService, CommentsService>();
             services.AddScoped<ICommentLengthValidator>(provider => new CommentLengthValidator(configuration.GetValue<int?>("COMMENT_CONTENT_LENGTH")));
             services.AddScoped<ForbiddenWordsValidator>();
             services.AddScoped(provider => new LengthValidator(configuration.GetValue<int?>("PUBLICATION_CONTENT_LENGTH")));
@@ -46,19 +46,14 @@ namespace GhostNetwork.Publications.Api
                 provider.GetService<ForbiddenWordsValidator>()));
 
             services.AddScoped<IPublicationService, PublicationService>();
-            services.AddScoped<IPublicationStorage, MongoPublicationStorage>(provider =>
+            services.AddScoped<MongoDbContext>(provider =>
             {
-                var client = new MongoClient($"mongodb://{configuration["MONGO_ADDRESS"]}/gnpublications");
-                var context = new MongoDbContext(client.GetDatabase("gnpublications"));
-                return new MongoPublicationStorage(context);
+                var client = new MongoClient($"mongodb://{configuration["MONGO_ADDRESS"]}/gpublications");
+                var context = new MongoDbContext(client.GetDatabase("gpublications"));
+                return context;
             });
-
-            services.AddScoped<ICommentStorage, MongoCommentStorage>(provider =>
-            {
-                var client = new MongoClient($"mongodb://{configuration["MONGO_ADDRESS"]}/gcomments");
-                var context = new MongoDbContext(client.GetDatabase("gcomments"));
-                return new MongoCommentStorage(context);
-            });
+            services.AddScoped<IPublicationStorage, MongoPublicationStorage>();
+            services.AddScoped<ICommentsStorage, MongoCommentsStorage>();
             services.AddControllers();
         }
 

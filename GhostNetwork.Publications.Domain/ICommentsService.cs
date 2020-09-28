@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace GhostNetwork.Publications.Domain
 {
-    public interface ICommentService
+    public interface ICommentsService
     {
         Task<(DomainResult,string)> CreateAsync(string publicationId, string text, string replyCommentId);
 

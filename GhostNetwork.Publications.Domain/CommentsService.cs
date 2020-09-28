@@ -4,13 +4,13 @@ using System.Threading.Tasks;
 
 namespace GhostNetwork.Publications.Domain
 {
-    public class CommentService : ICommentService
+    public class CommentsService : ICommentsService
     {
-        private readonly ICommentStorage commentStorage;
+        private readonly ICommentsStorage commentStorage;
         private readonly IPublicationStorage publicationStorage;
         private readonly ICommentLengthValidator lengthValidator;
 
-        public CommentService(ICommentStorage commentStorage, IPublicationStorage publicationStorage, ICommentLengthValidator lengthValidator)
+        public CommentsService(ICommentsStorage commentStorage, IPublicationStorage publicationStorage, ICommentLengthValidator lengthValidator)
         {
             this.commentStorage = commentStorage;
             this.publicationStorage = publicationStorage;
@@ -26,7 +26,7 @@ namespace GhostNetwork.Publications.Domain
                 return (error, null);
             }
 
-            if (replyCommentId == null || await commentStorage.FindCommentInPublicationById(replyCommentId, publicationId))
+            if (replyCommentId == null || await commentStorage.IsCommentInPublicationAsync(replyCommentId, publicationId))
             {
                 var result = await lengthValidator.ValidateAsync(new CommentContext(text));
                 if (!result.Success)
@@ -50,9 +50,9 @@ namespace GhostNetwork.Publications.Domain
 
         public async Task<IEnumerable<Comment>> FindManyAsync(string publicationId, int skip, int take)
         {
-            var publications = await publicationStorage.FindOneByIdAsync(publicationId);
+            var publication = await publicationStorage.FindOneByIdAsync(publicationId);
 
-            if (publications == null)
+            if (publication == null)
             {
                 return null;
             }

@@ -8,11 +8,11 @@ using MongoDB.Driver;
 
 namespace GhostNetwork.Publications.MongoDb
 {
-    public class MongoCommentStorage : ICommentStorage
+    public class MongoCommentsStorage : ICommentsStorage
     {
         private readonly MongoDbContext context;
 
-        public MongoCommentStorage(MongoDbContext context)
+        public MongoCommentsStorage(MongoDbContext context)
         {
             this.context = context;
         }
@@ -63,7 +63,7 @@ namespace GhostNetwork.Publications.MongoDb
                 x.ReplyCommentId));
         }
 
-        public async Task<bool> FindCommentInPublicationById(string commentId, string publicationId)
+        public async Task<bool> IsCommentInPublicationAsync(string commentId, string publicationId)
         {
             if (!ObjectId.TryParse(commentId, out var id))
             {

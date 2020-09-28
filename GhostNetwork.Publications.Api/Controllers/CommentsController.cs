@@ -10,11 +10,11 @@ namespace GhostNetwork.Publications.Api.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class CommentController : ControllerBase
+    public class CommentsController : ControllerBase
     {
-        private readonly ICommentService commentService;
+        private readonly ICommentsService commentService;
 
-        public CommentController(ICommentService commentService)
+        public CommentsController(ICommentsService commentService)
         {
             this.commentService = commentService;
         }
@@ -24,11 +24,11 @@ namespace GhostNetwork.Publications.Api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Comment>> CreateAsync([FromBody] CreateCommentModel model)
         {
-            var id = await commentService.CreateAsync(model.PublicatioId, model.Content, model.ReplyCommentId);
+            var (domainResult, id) = await commentService.CreateAsync(model.PublicationId, model.Content, model.ReplyCommentId);
 
-            if (id.Item1.Success)
+            if (domainResult.Success)
             {
-                return Created(Url.Action("Find", new {id}), await commentService.FindOneByIdAsync(id.Item2));
+                return Created(Url.Action("Find", new {id}), await commentService.FindOneByIdAsync(id));
             }
 
             return BadRequest();
@@ -36,7 +36,7 @@ namespace GhostNetwork.Publications.Api.Controllers
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Comment>> FindAsync([FromRoute] string id)
         {
             var comment = await commentService.FindOneByIdAsync(id);
@@ -45,7 +45,7 @@ namespace GhostNetwork.Publications.Api.Controllers
                 return Ok(comment);
             }
 
-            return NotFound();
+            return BadRequest();
         }
 
         [HttpGet("publicationId")]
