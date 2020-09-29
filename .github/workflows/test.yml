@@ -40,10 +40,10 @@ jobs:
           pip install pytest
           pip install -r requirements.txt
       - name: Run service instance
-        run: docker-compose up
+        run: docker-compose -d up
       - name: Test with pytest
         working-directory: ./tests/api
         run: pytest
       - name: Run service instance
         if: ${{ always() }}
-        run: docker-compose up
+        run: docker-compose stop
