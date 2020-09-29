@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace GhostNetwork.Publications.Domain.ContentValidation
+namespace GhostNetwork.Publications.Domain
 {
     public class ForbiddenWordsValidator : IPublicationValidator
     {
@@ -12,9 +12,9 @@ namespace GhostNetwork.Publications.Domain.ContentValidation
         {
             forbidden = new List<ForbiddenWordModel>
             {
-                new ForbiddenWordModel {ForbiddenWord = "duck"},
-                new ForbiddenWordModel {ForbiddenWord = "dog"},
-                new ForbiddenWordModel {ForbiddenWord = "cat"}
+                new ForbiddenWordModel { ForbiddenWord = "duck" },
+                new ForbiddenWordModel { ForbiddenWord = "dog" },
+                new ForbiddenWordModel { ForbiddenWord = "cat" }
             };
         }
 

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace GhostNetwork.Publications.Domain.ContentValidation
+namespace GhostNetwork.Publications.Domain
 {
     public class ForbiddenWordModel
     {

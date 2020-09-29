@@ -1,6 +1,5 @@
 using GhostNetwork.Publications.Api.Helpers.OpenApi;
 using GhostNetwork.Publications.Domain;
-using GhostNetwork.Publications.Domain.ContentValidation;
 using GhostNetwork.Publications.MongoDb;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
