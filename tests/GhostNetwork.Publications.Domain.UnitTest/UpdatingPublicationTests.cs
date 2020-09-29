@@ -19,7 +19,13 @@ namespace GhostNetwork.Publications.Domain.UnitTest
                 .ReturnsAsync(true);
             var validators = new PublicationValidatorsContainer(
                 new LengthValidator(),
-                new ForbiddenWordsValidator());
+                new ForbiddenWordsValidator(new[]
+                {
+                    new ForbiddenWordModel
+                    {
+                        ForbiddenWord = "duck"
+                    }
+                }));
 
             var service = new PublicationService(
                 validators,
