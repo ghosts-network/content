@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using GhostNetwork.Publications.Api.Helpers;
 using GhostNetwork.Publications.Api.Models;
 using GhostNetwork.Publications.Domain;
 using Microsoft.AspNetCore.Http;
@@ -50,7 +51,7 @@ namespace GhostNetwork.Publications.Api.Controllers
 
             if (!result.Success)
             {
-                return BadRequest();
+                return BadRequest(result.ToProblemDetails());
             }
 
             return Created(Url.Action("Find", new { id }), await publicationService.FindOneByIdAsync(id));
@@ -65,7 +66,7 @@ namespace GhostNetwork.Publications.Api.Controllers
 
             if (!result.Success)
             {
-                return BadRequest();
+                return BadRequest(result.ToProblemDetails());
             }
 
             return NoContent();
