@@ -36,7 +36,13 @@ namespace GhostNetwork.Publications.Api
 
             services.AddScoped<IHashTagsFetcher, DefaultHashTagsFetcher>();
             services.AddScoped<PublicationBuilder>();
-            services.AddSingleton<ILengthValidator>(new DefaultLengthValidator(configuration.GetValue<int>("PUBLICATION_CONTENT_LENGTH")));
+
+            services.AddScoped<ForbiddenWordsValidator>();
+            services.AddScoped(provider => new LengthValidator(configuration.GetValue<int?>("PUBLICATION_CONTENT_LENGTH")));
+            services.AddScoped<IPublicationValidator>(provider => new PublicationValidatorsContainer(
+                provider.GetService<LengthValidator>(),
+                provider.GetService<ForbiddenWordsValidator>()));
+
             services.AddScoped<IPublicationService, PublicationService>();
             services.AddScoped<IPublicationStorage, MongoPublicationStorage>(provider =>
             {

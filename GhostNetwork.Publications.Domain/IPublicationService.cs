@@ -7,12 +7,12 @@ namespace GhostNetwork.Publications.Domain
 {
     public interface IPublicationService
     {
-        Task<string> CreateAsync(string text);
+        Task<(DomainResult, string)> CreateAsync(string text);
 
         Task<Publication> FindOneByIdAsync(string id);
 
         Task<IEnumerable<Publication>> FindManyAsync(int skip, int take, IEnumerable<string> tags);
 
-        Task<bool> UpdateOneAsync(string id, string text);
+        Task<DomainResult> UpdateOneAsync(string id, string text);
     }
 }

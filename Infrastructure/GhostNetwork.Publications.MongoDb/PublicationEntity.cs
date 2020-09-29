@@ -16,5 +16,8 @@ namespace GhostNetwork.Publications.MongoDb
 
         [BsonElement("tags")]
         public IList<string> Tags { get; set; }
+
+        [BsonElement("updateOn")]
+        public long UpdateOn { get; set; }
     }
 }

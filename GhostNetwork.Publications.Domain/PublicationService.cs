@@ -1,33 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace GhostNetwork.Publications.Domain
 {
     public class PublicationService : IPublicationService
     {
-        private readonly ILengthValidator lengthValidator;
+        private readonly IPublicationValidator validator;
         private readonly PublicationBuilder publicationBuilder;
         private readonly IPublicationStorage publicationStorage;
 
-        public PublicationService(ILengthValidator lengthValidator, PublicationBuilder publicationBuilder, IPublicationStorage publicationStorage)
+        public PublicationService(
+            IPublicationValidator validator,
+            PublicationBuilder publicationBuilder,
+            IPublicationStorage publicationStorage)
         {
-            this.lengthValidator = lengthValidator;
+            this.validator = validator;
             this.publicationBuilder = publicationBuilder;
             this.publicationStorage = publicationStorage;
         }
 
-        public async Task<string> CreateAsync(string text)
+        public async Task<(DomainResult, string)> CreateAsync(string text)
         {
-            if (lengthValidator.Validate(text))
+            var content = new PublicationContext(text);
+            var result = await validator.ValidateAsync(content);
+
+            if (!result.Success)
             {
-                var publication = publicationBuilder.Build(text);
-                var id = await publicationStorage.InsertOneAsync(publication);
-                return id;
+                return (result, null);
             }
 
-            return null;
+            var publication = publicationBuilder.Build(text);
+            var id = await publicationStorage.InsertOneAsync(publication);
+
+            return (result, id);
         }
 
         public async Task<Publication> FindOneByIdAsync(string id)
@@ -47,13 +52,20 @@ namespace GhostNetwork.Publications.Domain
             return publications;
         }
 
-        public async Task<bool> UpdateOneAsync(string id, string text)
+        public async Task<DomainResult> UpdateOneAsync(string id, string text)
         {
+            var content = new PublicationContext(text);
+            var result = await validator.ValidateAsync(content);
+
+            if (!result.Success)
+            {
+                return result;
+            }
+
             var publications = publicationBuilder.Build(text);
+            await publicationStorage.UpdateOneAsync(id, publications);
 
-            var update = await publicationStorage.UpdateOneAsync(id, publications);
-
-            return update;
+            return DomainResult.Successed();
         }
     }
 }
