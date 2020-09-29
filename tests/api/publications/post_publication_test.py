@@ -12,6 +12,7 @@ def test_post_publication():
   assert resp.status_code == 201
 
   resp_body = resp.json()
+  print(resp_body)
   assert 'id' in resp_body
   assert 'tags' in resp_body
   assert resp_body['tags'][0] == 'awesome'
