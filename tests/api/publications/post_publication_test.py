@@ -9,10 +9,10 @@ def test_post_publication():
   payload = {'content': 'My first publication #awesome'}
 
   resp = requests.post(url, headers=headers, data=json.dumps(payload,indent=4))
+  print(resp.json()
   assert resp.status_code == 201
 
   resp_body = resp.json()
-  print(resp_body)
   assert 'id' in resp_body
   assert 'tags' in resp_body
   assert resp_body['tags'][0] == 'awesome'
