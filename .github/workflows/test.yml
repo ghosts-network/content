@@ -10,7 +10,7 @@ jobs:
   compose-test:
     runs-on: ubuntu-latest
     steps:
-      - uses: action/checkout@v2
+      - uses: actions/checkout@v2
       - name: Test compose version
         run: docker-compose -v
 #  unit-test:
