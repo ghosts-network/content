@@ -10,7 +10,7 @@ namespace GhostNetwork.Publications.MongoDb
         [BsonElement("content")]
         public string Content { get; set; }
 
-        [BsonElement("publicationId")] 
+        [BsonElement("publicationId")]
         public string PublicationId { get; set; }
 
         [BsonElement("createOn")]
