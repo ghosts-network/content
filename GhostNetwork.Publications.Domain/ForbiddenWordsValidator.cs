@@ -10,12 +10,7 @@ namespace GhostNetwork.Publications.Domain
 
         public ForbiddenWordsValidator()
         {
-            forbidden = new List<ForbiddenWordModel>
-            {
-                new ForbiddenWordModel { ForbiddenWord = "duck" },
-                new ForbiddenWordModel { ForbiddenWord = "dog" },
-                new ForbiddenWordModel { ForbiddenWord = "cat" }
-            };
+            forbidden = new List<ForbiddenWordModel>();
         }
 
         public Task<DomainResult> ValidateAsync(PublicationContext context)
