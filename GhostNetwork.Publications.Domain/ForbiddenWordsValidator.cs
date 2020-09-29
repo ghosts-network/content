@@ -6,11 +6,11 @@ namespace GhostNetwork.Publications.Domain
 {
     public class ForbiddenWordsValidator : IPublicationValidator
     {
-        private readonly List<ForbiddenWordModel> forbidden;
+        private readonly IEnumerable<ForbiddenWordModel> forbidden;
 
-        public ForbiddenWordsValidator()
+        public ForbiddenWordsValidator(IEnumerable<ForbiddenWordModel> forbiddenWords)
         {
-            forbidden = new List<ForbiddenWordModel>();
+            forbidden = forbiddenWords;
         }
 
         public Task<DomainResult> ValidateAsync(PublicationContext context)

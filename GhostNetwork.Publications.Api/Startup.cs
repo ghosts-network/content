@@ -1,3 +1,4 @@
+using System.Linq;
 using GhostNetwork.Publications.Api.Helpers.OpenApi;
 using GhostNetwork.Publications.Domain;
 using GhostNetwork.Publications.MongoDb;
@@ -37,7 +38,7 @@ namespace GhostNetwork.Publications.Api
             services.AddScoped<IHashTagsFetcher, DefaultHashTagsFetcher>();
             services.AddScoped<PublicationBuilder>();
 
-            services.AddScoped<ForbiddenWordsValidator>();
+            services.AddScoped(provider => new ForbiddenWordsValidator(Enumerable.Empty<ForbiddenWordModel>()));
             services.AddScoped(provider => new LengthValidator(configuration.GetValue<int?>("PUBLICATION_CONTENT_LENGTH")));
             services.AddScoped<IPublicationValidator>(provider => new PublicationValidatorsContainer(
                 provider.GetService<LengthValidator>(),
