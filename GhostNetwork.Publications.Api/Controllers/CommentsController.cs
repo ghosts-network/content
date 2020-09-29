@@ -28,7 +28,7 @@ namespace GhostNetwork.Publications.Api.Controllers
 
             if (domainResult.Success)
             {
-                return Created(Url.Action("Find", new {id}), await commentService.FindOneByIdAsync(id));
+                return Created(Url.Action("Find", new { id }), await commentService.FindOneByIdAsync(id));
             }
 
             return BadRequest();

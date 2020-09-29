@@ -31,7 +31,7 @@ namespace GhostNetwork.Publications.MongoDb
             return entity == null ? null : new Comment(
                 entity.Id.ToString(),
                 entity.Content,
-                DateTimeOffset.FromUnixTimeMilliseconds(entity.CreateOn), 
+                DateTimeOffset.FromUnixTimeMilliseconds(entity.CreateOn),
                 entity.PublicationId,
                 entity.ReplyCommentId);
         }
