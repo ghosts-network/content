@@ -22,8 +22,7 @@ namespace GhostNetwork.Publications.Domain
             var publication = await publicationStorage.FindOneByIdAsync(publicationId);
             if (publication == null)
             {
-                var error = await Task.FromResult(DomainResult.Error("Publication not found"));
-                return (error, null);
+                return (DomainResult.Error("Publication not found"), null);
             }
 
             if (replyCommentId == null || await commentStorage.IsCommentInPublicationAsync(replyCommentId, publicationId))
@@ -35,30 +34,26 @@ namespace GhostNetwork.Publications.Domain
                 }
 
                 var comment = new Comment(string.Empty, text, DateTimeOffset.Now, publicationId, replyCommentId);
-                var id = await commentStorage.InsertOneAsync(comment);
-                return (result, id);
+
+                return (result, await commentStorage.InsertOneAsync(comment));
             }
 
-            return (await Task.FromResult(DomainResult.Error("Comment id not found")), null);
+            return (DomainResult.Error("Comment id not found"), null);
         }
 
-        public async Task<Comment> FindOneByIdAsync(string id)
+        public Task<Comment> FindOneByIdAsync(string id)
         {
-            var comment = await commentStorage.FindOneByIdAsync(id);
-            return comment;
+            return commentStorage.FindOneByIdAsync(id);
         }
 
         public async Task<IEnumerable<Comment>> FindManyAsync(string publicationId, int skip, int take)
         {
-            var publication = await publicationStorage.FindOneByIdAsync(publicationId);
-
-            if (publication == null)
+            if (await publicationStorage.FindOneByIdAsync(publicationId) == null)
             {
                 return null;
             }
 
-            var comments = await commentStorage.FindManyAsync(publicationId, skip, take);
-            return comments;
+            return await commentStorage.FindManyAsync(publicationId, skip, take);
         }
     }
 }

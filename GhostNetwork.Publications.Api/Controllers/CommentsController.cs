@@ -36,30 +36,32 @@ namespace GhostNetwork.Publications.Api.Controllers
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<Comment>> FindAsync([FromRoute] string id)
         {
             var comment = await commentService.FindOneByIdAsync(id);
-            if (comment != null)
+            if (comment == null)
             {
-                return Ok(comment);
+                return NotFound();
             }
 
-            return BadRequest();
+            return Ok(comment);
         }
 
-        [HttpGet("publicationId")]
+        [HttpGet("bypublication/{publicationId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<IEnumerable<Comment>>> FindManyAsync([FromQuery] string publicationId, [FromQuery, Range(0, int.MaxValue)] int skip, [FromQuery, Range(0, 100)] int take = 10)
+        public async Task<ActionResult<IEnumerable<Comment>>> FindManyAsync(
+            [FromRoute] string publicationId,
+            [FromQuery, Range(0, int.MaxValue)] int skip,
+            [FromQuery, Range(0, 100)] int take = 10)
         {
             var comments = await commentService.FindManyAsync(publicationId, skip, take);
-            if (comments != null)
+            if (comments == null)
             {
-                return Ok(comments);
+                return NotFound();
             }
 
-            return NotFound();
+            return Ok(comments);
         }
     }
 }

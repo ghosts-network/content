@@ -26,7 +26,9 @@ namespace GhostNetwork.Publications.MongoDb
 
             var filter = Builders<CommentEntity>.Filter.Eq(p => p.Id, oId);
 
-            var entity = await context.Comments.Find(filter).FirstOrDefaultAsync();
+            var entity = await context.Comments
+                .Find(filter)
+                .FirstOrDefaultAsync();
 
             return entity == null ? null : new Comment(
                 entity.Id.ToString(),
@@ -54,13 +56,19 @@ namespace GhostNetwork.Publications.MongoDb
         public async Task<IEnumerable<Comment>> FindManyAsync(string publicationId, int skip, int take)
         {
             var filter = Builders<CommentEntity>.Filter.Eq(x => x.PublicationId, publicationId);
-            var entities = await context.Comments.Find(filter).Skip(skip).Limit(take).ToListAsync();
-            return entities.Select(x => new Comment(
-                x.Id.ToString(),
-                x.Content,
-                DateTimeOffset.FromUnixTimeMilliseconds(x.CreateOn),
-                x.PublicationId,
-                x.ReplyCommentId));
+            var entities = await context.Comments
+                .Find(filter)
+                .Skip(skip)
+                .Limit(take)
+                .ToListAsync();
+
+            return entities
+                .Select(x => new Comment(
+                    x.Id.ToString(),
+                    x.Content,
+                    DateTimeOffset.FromUnixTimeMilliseconds(x.CreateOn),
+                    x.PublicationId,
+                    x.ReplyCommentId));
         }
 
         public async Task<bool> IsCommentInPublicationAsync(string commentId, string publicationId)
@@ -72,9 +80,8 @@ namespace GhostNetwork.Publications.MongoDb
 
             var filter = Builders<CommentEntity>.Filter.Eq(x => x.PublicationId, publicationId) &
                          Builders<CommentEntity>.Filter.Eq(x => x.Id, id);
-            var entity = await context.Comments.Find(filter).FirstOrDefaultAsync();
 
-            return entity != null;
+            return await context.Comments.Find(filter).AnyAsync();
         }
     }
 }
