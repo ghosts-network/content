@@ -40,12 +40,12 @@ namespace GhostNetwork.Publications.Api.Controllers
         public async Task<ActionResult<Comment>> FindAsync([FromRoute] string id)
         {
             var comment = await commentService.FindOneByIdAsync(id);
-            if (comment != null)
+            if (comment == null)
             {
-                return Ok(comment);
+                return NotFound();
             }
 
-            return NotFound();
+            return Ok(comment);
         }
 
         [HttpGet("bypublication/{publicationId}")]
@@ -56,7 +56,6 @@ namespace GhostNetwork.Publications.Api.Controllers
             [FromQuery, Range(0, 100)] int take = 10)
         {
             var comments = await commentService.FindManyAsync(publicationId, skip, take);
-
             if (comments == null)
             {
                 return NotFound();
