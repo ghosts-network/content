@@ -71,5 +71,20 @@ namespace GhostNetwork.Publications.Api.Controllers
 
             return NoContent();
         }
+
+        [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult> DeleteAsync([FromRoute] string id)
+        {
+            var result = await publicationService.DeleteOneAsync(id);
+
+            if (result.Success)
+            {
+                return Ok();
+            }
+
+            return BadRequest(result.ToProblemDetails());
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using GhostNetwork.Publications.Api.Helpers;
 using GhostNetwork.Publications.Api.Models;
 using GhostNetwork.Publications.Domain;
 using Microsoft.AspNetCore.Http;
@@ -62,6 +63,21 @@ namespace GhostNetwork.Publications.Api.Controllers
             }
 
             return Ok(comments);
+        }
+
+        [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<IEnumerable<Comment>>> DeleteAsync([FromRoute] string id)
+        {
+            var result = await commentService.DeleteOneAsync(id);
+
+            if (result.Success)
+            {
+                return Ok();
+            }
+
+            return BadRequest(result.ToProblemDetails());
         }
     }
 }

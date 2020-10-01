@@ -55,5 +55,12 @@ namespace GhostNetwork.Publications.Domain
 
             return await commentStorage.FindManyAsync(publicationId, skip, take);
         }
+
+        public async Task<DomainResult> DeleteOneAsync(string id)
+        {
+            var result = await commentStorage.DeleteOneAsync(id);
+
+            return result ? DomainResult.Successed() : DomainResult.Error("Comment not found");
+        }
     }
 }

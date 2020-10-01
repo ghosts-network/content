@@ -8,15 +8,18 @@ namespace GhostNetwork.Publications.Domain
         private readonly IPublicationValidator validator;
         private readonly PublicationBuilder publicationBuilder;
         private readonly IPublicationStorage publicationStorage;
+        private readonly ICommentsStorage commentStorage;
 
         public PublicationService(
             IPublicationValidator validator,
             PublicationBuilder publicationBuilder,
-            IPublicationStorage publicationStorage)
+            IPublicationStorage publicationStorage,
+            ICommentsStorage commentStorage)
         {
             this.validator = validator;
             this.publicationBuilder = publicationBuilder;
             this.publicationStorage = publicationStorage;
+            this.commentStorage = commentStorage;
         }
 
         public async Task<(DomainResult, string)> CreateAsync(string text)
@@ -66,6 +69,15 @@ namespace GhostNetwork.Publications.Domain
             await publicationStorage.UpdateOneAsync(id, publications);
 
             return DomainResult.Successed();
+        }
+
+        public async Task<DomainResult> DeleteOneAsync(string id)
+        {
+            var result = await publicationStorage.DeleteOneAsync(id);
+
+            await commentStorage.DeleteAllCommentsInPublicationAsync(id);
+
+            return result ? DomainResult.Successed() : DomainResult.Error("Publication not found");
         }
     }
 }
