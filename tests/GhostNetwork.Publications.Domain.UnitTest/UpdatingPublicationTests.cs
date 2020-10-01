@@ -31,7 +31,8 @@ namespace GhostNetwork.Publications.Domain.UnitTest
             var service = new PublicationService(
                 validators,
                 new PublicationBuilder(new DefaultHashTagsFetcher()),
-                mock.Object, mock2.Object);
+                mock.Object,
+                mock2.Object);
 
             // Act
             var result = await service.UpdateOneAsync("1", "another text");
