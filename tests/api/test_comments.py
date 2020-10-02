@@ -55,3 +55,18 @@ class TestComments(Api):
 
     assert resp.status_code == 400
     assert 'Content' in resp_body['errors']
+    
+  def test_delete_publication(self):
+    # create publication with comment
+    publication_resp = self.post_publication({'content': 'My first publication #awesome'})
+    publication_id = publication_resp.json()['id']
+
+    comment_resp = self.post_comment({'publicationId': publication_id, 'content': 'comment 2 for the first publication'})
+    comment_id = comment_resp.json()['id']
+
+    # delete comment
+    delete_resp = self.delete_comment(comment_id)
+    assert delete_resp.status_code == 200
+    
+    # ensure comment deleted
+    assert self.get_comment_by_id(comment_id).status_code == 404

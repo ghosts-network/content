@@ -37,3 +37,10 @@ class Api:
     headers = {'Content-Type': 'application/json' }
 
     return requests.get(url, headers=headers)
+
+  def delete_comment(id):
+    url = 'http://localhost:5300/comments/' + id
+    headers = {'Content-Type': 'application/json' }
+    
+    return requests.delete(url, headers=headers)
+    
