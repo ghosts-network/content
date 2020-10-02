@@ -49,6 +49,13 @@ class TestComments(Api):
     assert resp.status_code == 201
     assert 'id' in resp_body
 
+  def test_post_comment_with_nonexistent_publication(self):
+    resp = self.post_comment({'publicationId': 'nonexistent-id', 'content': 'comment for the first publication'})
+    resp_body = resp.json()
+
+    assert resp.status_code == 400
+    assert 'Content' in resp_body['errors']
+
   def test_empty_body_comment(self):
     resp = self.post_comment({})
     resp_body = resp.json()
