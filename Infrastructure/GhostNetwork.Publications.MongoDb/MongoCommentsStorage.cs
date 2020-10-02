@@ -83,5 +83,33 @@ namespace GhostNetwork.Publications.MongoDb
 
             return await context.Comments.Find(filter).AnyAsync();
         }
+
+        public async Task<bool> DeleteAllCommentsInPublicationAsync(string publicationId)
+        {
+            if (!ObjectId.TryParse(publicationId, out _))
+            {
+                return false;
+            }
+
+            var filter = Builders<CommentEntity>.Filter.Eq(x => x.PublicationId, publicationId);
+
+            var result = await context.Comments.DeleteManyAsync(filter);
+
+            return result.IsAcknowledged;
+        }
+
+        public async Task<bool> DeleteOneAsync(string commentId)
+        {
+            if (!ObjectId.TryParse(commentId, out var oId))
+            {
+                return false;
+            }
+
+            var filter = Builders<CommentEntity>.Filter.Eq(x => x.Id, oId);
+
+            var result = await context.Comments.DeleteOneAsync(filter);
+
+            return result.IsAcknowledged && result.DeletedCount > 0;
+        }
     }
 }

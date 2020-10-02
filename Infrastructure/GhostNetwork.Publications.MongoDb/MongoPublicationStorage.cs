@@ -84,5 +84,19 @@ namespace GhostNetwork.Publications.MongoDb
 
             return updateResult.IsAcknowledged && updateResult.ModifiedCount > 0;
         }
+
+        public async Task<bool> DeleteOneAsync(string id)
+        {
+            if (!ObjectId.TryParse(id, out var oId))
+            {
+                return false;
+            }
+
+            var filter = Builders<PublicationEntity>.Filter.Eq(p => p.Id, oId);
+
+            var deleteResult = await context.Publications.DeleteOneAsync(filter);
+
+            return deleteResult.IsAcknowledged && deleteResult.DeletedCount > 0;
+        }
     }
 }

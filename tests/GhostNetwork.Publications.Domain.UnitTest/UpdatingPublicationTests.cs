@@ -14,6 +14,7 @@ namespace GhostNetwork.Publications.Domain.UnitTest
         {
             // Setup
             var mock = new Mock<IPublicationStorage>();
+            var mock2 = new Mock<ICommentsStorage>();
             mock
                 .Setup(repo => repo.UpdateOneAsync(It.IsAny<string>(), It.IsAny<Publication>()))
                 .ReturnsAsync(true);
@@ -30,7 +31,8 @@ namespace GhostNetwork.Publications.Domain.UnitTest
             var service = new PublicationService(
                 validators,
                 new PublicationBuilder(new DefaultHashTagsFetcher()),
-                mock.Object);
+                mock.Object,
+                mock2.Object);
 
             // Act
             var result = await service.UpdateOneAsync("1", "another text");
