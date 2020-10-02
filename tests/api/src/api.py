@@ -13,6 +13,12 @@ class Api:
     headers = {'Content-Type': 'application/json' }
 
     return requests.get(url, headers=headers)
+    
+  def delete_publication(self, id):
+    url = 'http://localhost:5300/publications/' + id
+    headers = {'Content-Type': 'application/json' }
+    
+    return requests.delete(url, headers=headers)
 
   def post_comment(self, body):
     url = 'http://localhost:5300/comments'
