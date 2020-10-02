@@ -54,7 +54,6 @@ class TestComments(Api):
     resp_body = resp.json()
 
     assert resp.status_code == 400
-    assert 'Content' in resp_body['errors']
 
   def test_empty_body_comment(self):
     resp = self.post_comment({})
