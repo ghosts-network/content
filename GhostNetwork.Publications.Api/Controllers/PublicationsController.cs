@@ -60,8 +60,14 @@ namespace GhostNetwork.Publications.Api.Controllers
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> UpdateAsync([FromRoute] string id, [FromBody] UpdatePublicationModel model)
         {
+            if (await publicationService.FindOneByIdAsync(id) == null)
+            {
+                return NotFound();
+            }
+
             var result = await publicationService.UpdateOneAsync(id, model.Content);
 
             if (!result.Success)
