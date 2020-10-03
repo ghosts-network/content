@@ -32,7 +32,7 @@ namespace GhostNetwork.Publications.Api.Controllers
                 return Created(Url.Action("Find", new { id }), await commentService.FindOneByIdAsync(id));
             }
 
-            return BadRequest();
+            return BadRequest(domainResult.ToProblemDetails());
         }
 
         [HttpGet("{id}")]
