@@ -1,29 +1,35 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GhostNetwork.Publications.Comments;
 
-namespace GhostNetwork.Publications.Domain
+namespace GhostNetwork.Publications
 {
-    public class ForbiddenWordsValidator : IPublicationValidator
+    public class ForbiddenWordsValidator : IValidator<PublicationContext>,
+        IValidator<CommentContext>
     {
-        private readonly IEnumerable<ForbiddenWordModel> forbidden;
+        private readonly IEnumerable<string> forbiddenWords;
 
-        public ForbiddenWordsValidator(IEnumerable<ForbiddenWordModel> forbiddenWords)
+        public ForbiddenWordsValidator(IEnumerable<string> forbiddenWords)
         {
-            forbidden = forbiddenWords;
+            this.forbiddenWords = forbiddenWords;
         }
 
         public Task<DomainResult> ValidateAsync(PublicationContext context)
         {
-            foreach (var s in forbidden.Select(x => x.ForbiddenWord))
-            {
-                if (context.Content.Contains(s))
-                {
-                    return Task.FromResult(DomainResult.Error("Content contains forbidden words"));
-                }
-            }
+            return Task.FromResult(Validate(context.Content));
+        }
 
-            return Task.FromResult(DomainResult.Successed());
+        public Task<DomainResult> ValidateAsync(CommentContext context)
+        {
+            return Task.FromResult(Validate(context.Content));
+        }
+
+        private DomainResult Validate(string content)
+        {
+            return forbiddenWords.Any(content.Contains)
+                ? DomainResult.Error("Content contains forbidden words")
+                : DomainResult.Successed();
         }
     }
 }

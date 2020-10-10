@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace GhostNetwork.Publications.Domain
+namespace GhostNetwork.Publications
 {
     public interface IHashTagsFetcher
     {

@@ -3,7 +3,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using GhostNetwork.Publications.Api.Helpers;
 using GhostNetwork.Publications.Api.Models;
-using GhostNetwork.Publications.Domain;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 

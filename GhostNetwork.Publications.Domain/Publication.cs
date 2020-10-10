@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace GhostNetwork.Publications.Domain
+namespace GhostNetwork.Publications
 {
     public class Publication
     {

@@ -1,6 +1,8 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using GhostNetwork.Publications.Api.Helpers.OpenApi;
-using GhostNetwork.Publications.Domain;
+using GhostNetwork.Publications.Comments;
 using GhostNetwork.Publications.MongoDb;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -35,27 +37,24 @@ namespace GhostNetwork.Publications.Api
                 options.OperationFilter<OperationIdFilter>();
             });
 
-            services.AddScoped<IHashTagsFetcher, DefaultHashTagsFetcher>();
-            services.AddScoped<PublicationBuilder>();
-
-            services.AddScoped(provider => new ForbiddenWordsValidator(Enumerable.Empty<ForbiddenWordModel>()));
-            services.AddScoped<ICommentsService, CommentsService>();
-            services.AddScoped<ICommentLengthValidator>(provider => new CommentLengthValidator(configuration.GetValue<int?>("COMMENT_CONTENT_LENGTH")));
-
-            services.AddScoped(provider => new LengthValidator(configuration.GetValue<int?>("PUBLICATION_CONTENT_LENGTH")));
-            services.AddScoped<IPublicationValidator>(provider => new PublicationValidatorsContainer(
-                provider.GetService<LengthValidator>(),
-                provider.GetService<ForbiddenWordsValidator>()));
-
-            services.AddScoped<IPublicationService, PublicationService>();
-            services.AddScoped<MongoDbContext>(provider =>
+            services.AddScoped(provider =>
             {
                 var client = new MongoClient($"mongodb://{configuration["MONGO_ADDRESS"]}/gpublications");
-                var context = new MongoDbContext(client.GetDatabase("gpublications"));
-                return context;
+                return new MongoDbContext(client.GetDatabase("gpublications"));
             });
-            services.AddScoped<IPublicationStorage, MongoPublicationStorage>();
+
+            services.AddScoped<IHashTagsFetcher, DefaultHashTagsFetcher>();
+            services.AddScoped(provider => new ForbiddenWordsValidator(Enumerable.Empty<string>()));
+            services.AddScoped<PublicationBuilder>();
+
+            services.AddScoped<IPublicationsStorage, MongoPublicationStorage>();
+            services.AddScoped<IPublicationService, PublicationService>();
+            services.AddScoped(BuildPublicationValidator);
+
             services.AddScoped<ICommentsStorage, MongoCommentsStorage>();
+            services.AddScoped<ICommentsService, CommentsService>();
+            services.AddScoped(BuildCommentValidator);
+
             services.AddControllers();
         }
 
@@ -78,6 +77,40 @@ namespace GhostNetwork.Publications.Api
             app.UseRouting();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+        }
+
+        private IValidator<PublicationContext> BuildPublicationValidator(IServiceProvider provider)
+        {
+            var validators = new List<IValidator<PublicationContext>>
+            {
+                provider.GetService<ForbiddenWordsValidator>(),
+                new MaxLengthValidator(configuration.GetValue<int?>("PUBLICATION_CONTENT_MAX_LENGTH") ?? 5000)
+            };
+
+            var minLength = configuration.GetValue<int?>("PUBLICATION_CONTENT_MIN_LENGTH");
+            if (minLength.HasValue)
+            {
+                validators.Add(new MinLengthValidator(minLength.Value));
+            }
+
+            return new ValidatorsContainer<PublicationContext>(validators.ToArray());
+        }
+
+        private IValidator<CommentContext> BuildCommentValidator(IServiceProvider provider)
+        {
+            var validators = new List<IValidator<CommentContext>>
+            {
+                provider.GetService<ForbiddenWordsValidator>(),
+                new MaxLengthValidator(configuration.GetValue<int?>("COMMENT_CONTENT_MAX_LENGTH") ?? 5000)
+            };
+
+            var minLength = configuration.GetValue<int?>("COMMENT_CONTENT_MIN_LENGTH");
+            if (minLength.HasValue)
+            {
+                validators.Add(new MinLengthValidator(minLength.Value));
+            }
+
+            return new ValidatorsContainer<CommentContext>(validators.ToArray());
         }
     }
 }

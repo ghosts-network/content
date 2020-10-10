@@ -1,6 +1,4 @@
-using System;
-
-namespace GhostNetwork.Publications.Domain
+namespace GhostNetwork.Publications
 {
     public class PublicationContext
     {

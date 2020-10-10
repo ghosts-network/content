@@ -3,6 +3,7 @@
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <CodeAnalysisRuleSet>../GhostNetwork.ruleset</CodeAnalysisRuleSet>
+        <RootNamespace>GhostNetwork.Publications</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
