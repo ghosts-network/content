@@ -8,24 +8,25 @@ namespace GhostNetwork.Publications.Domain.UnitTest
     public class UpdatingPublicationTests
     {
         [Test]
-        public void Test_Update_Publication()
+        public void Publication_Not_Updated_Just_After_Creation()
         {
             // Setup
-            var publication = new Publication("1", "text1", DateTimeOffset.MinValue, new List<string>(), DateTimeOffset.Now);
-
-            // Assert
-            Assert.IsTrue(publication.IsUpdated);
-        }
-
-        [Test]
-        public void Test_Update_Publication2()
-        {
-            // Setup
-            var time = DateTimeOffset.Now;
-            var publication = new Publication("1", "text1", time, new List<string>(), time);
+            var publication = Publication.New("text1", "author", content => new string[] { });
 
             // Assert
             Assert.IsFalse(publication.IsUpdated);
+        }
+
+        [Test]
+        public void Publication_Updated_After_Update()
+        {
+            // Setup
+            var publication = Publication
+                .New("text1", "author", content => new string[] { })
+                .Update("text2", content => new string[] { });
+
+            // Assert
+            Assert.IsTrue(publication.IsUpdated);
         }
     }
 }

@@ -34,8 +34,9 @@ namespace GhostNetwork.Publications.MongoDb
             var entity = new PublicationEntity
             {
                 Content = publication.Content,
-                CreateOn = publication.CreatedOn.ToUnixTimeMilliseconds(),
                 Tags = publication.Tags.ToList(),
+                AuthorId = publication.AuthorId,
+                CreateOn = publication.CreatedOn.ToUnixTimeMilliseconds(),
                 UpdateOn = publication.UpdatedOn.ToUnixTimeMilliseconds()
             };
 
@@ -44,7 +45,7 @@ namespace GhostNetwork.Publications.MongoDb
             return entity.Id.ToString();
         }
 
-        public async Task<IEnumerable<Publication>> FindManyAsync(int skip, int take, IEnumerable<string> tags)
+        public async Task<(IEnumerable<Publication>, long)> FindManyAsync(int skip, int take, IEnumerable<string> tags)
         {
             var filter = Builders<PublicationEntity>.Filter.Empty;
 
@@ -53,17 +54,20 @@ namespace GhostNetwork.Publications.MongoDb
                 filter &= Builders<PublicationEntity>.Filter.AnyIn(e => e.Tags, tags);
             }
 
+            var totalCount = await context.Publications.Find(filter)
+                .CountDocumentsAsync();
+
             var entities = await context.Publications.Find(filter)
                 .Skip(skip)
                 .Limit(take)
                 .ToListAsync();
 
-            return entities.Select(ToDomain);
+            return (entities.Select(ToDomain), totalCount);
         }
 
-        public async Task UpdateOneAsync(string id, Publication publication)
+        public async Task UpdateOneAsync(Publication publication)
         {
-            if (!ObjectId.TryParse(id, out var oId))
+            if (!ObjectId.TryParse(publication.Id, out var oId))
             {
                 return;
             }
@@ -94,8 +98,9 @@ namespace GhostNetwork.Publications.MongoDb
             return new Publication(
                 entity.Id.ToString(),
                 entity.Content,
-                DateTimeOffset.FromUnixTimeMilliseconds(entity.CreateOn),
                 entity.Tags,
+                entity.AuthorId,
+                DateTimeOffset.FromUnixTimeMilliseconds(entity.CreateOn),
                 DateTimeOffset.FromUnixTimeMilliseconds(entity.UpdateOn));
         }
     }

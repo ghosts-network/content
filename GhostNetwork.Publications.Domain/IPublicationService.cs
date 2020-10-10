@@ -6,37 +6,47 @@ namespace GhostNetwork.Publications
 {
     public interface IPublicationService
     {
-        Task<(DomainResult, string)> CreateAsync(string text);
+        Task<Publication> GetByIdAsync(string id);
 
-        Task<Publication> FindOneByIdAsync(string id);
+        Task<(IEnumerable<Publication>, long)> SearchAsync(int skip, int take, IEnumerable<string> tags);
+        
+        Task<(DomainResult, string)> CreateAsync(string text, string authorId);
 
-        Task<IEnumerable<Publication>> FindManyAsync(int skip, int take, IEnumerable<string> tags);
+        Task<DomainResult> UpdateAsync(string id, string text);
 
-        Task<DomainResult> UpdateOneAsync(string id, string text);
-
-        Task<DomainResult> DeleteOneAsync(string id);
+        Task DeleteAsync(string id);
     }
 
     public class PublicationService : IPublicationService
     {
         private readonly IValidator<PublicationContext> validator;
-        private readonly PublicationBuilder publicationBuilder;
         private readonly IPublicationsStorage publicationStorage;
         private readonly ICommentsStorage commentStorage;
+        private readonly IHashTagsFetcher hashTagsFetcher;
 
         public PublicationService(
             IValidator<PublicationContext> validator,
-            PublicationBuilder publicationBuilder,
             IPublicationsStorage publicationStorage,
-            ICommentsStorage commentStorage)
+            ICommentsStorage commentStorage,
+            IHashTagsFetcher hashTagsFetcher)
         {
             this.validator = validator;
-            this.publicationBuilder = publicationBuilder;
             this.publicationStorage = publicationStorage;
             this.commentStorage = commentStorage;
+            this.hashTagsFetcher = hashTagsFetcher;
         }
 
-        public async Task<(DomainResult, string)> CreateAsync(string text)
+        public async Task<Publication> GetByIdAsync(string id)
+        {
+            return await publicationStorage.FindOneByIdAsync(id);
+        }
+
+        public async Task<(IEnumerable<Publication>, long)> SearchAsync(int skip, int take, IEnumerable<string> tags)
+        {
+            return await publicationStorage.FindManyAsync(skip, take, tags);
+        }
+
+        public async Task<(DomainResult, string)> CreateAsync(string text, string authorId)
         {
             var content = new PublicationContext(text);
             var result = await validator.ValidateAsync(content);
@@ -46,30 +56,13 @@ namespace GhostNetwork.Publications
                 return (result, null);
             }
 
-            var publication = publicationBuilder.Build(text);
+            var publication = Publication.New(text, authorId, hashTagsFetcher.Fetch);
             var id = await publicationStorage.InsertOneAsync(publication);
 
             return (result, id);
         }
 
-        public async Task<Publication> FindOneByIdAsync(string id)
-        {
-            if (id != null)
-            {
-                var publication = await publicationStorage.FindOneByIdAsync(id);
-                return publication;
-            }
-
-            return null;
-        }
-
-        public async Task<IEnumerable<Publication>> FindManyAsync(int skip, int take, IEnumerable<string> tags)
-        {
-            var publications = await publicationStorage.FindManyAsync(skip, take, tags);
-            return publications;
-        }
-
-        public async Task<DomainResult> UpdateOneAsync(string id, string text)
+        public async Task<DomainResult> UpdateAsync(string id, string text)
         {
             var content = new PublicationContext(text);
             var result = await validator.ValidateAsync(content);
@@ -79,18 +72,19 @@ namespace GhostNetwork.Publications
                 return result;
             }
 
-            var publications = publicationBuilder.Build(text);
-            await publicationStorage.UpdateOneAsync(id, publications);
+            var publication = await publicationStorage.FindOneByIdAsync(id);
+
+            publication.Update(text, hashTagsFetcher.Fetch);
+
+            await publicationStorage.UpdateOneAsync(publication);
 
             return DomainResult.Successed();
         }
 
-        public async Task<DomainResult> DeleteOneAsync(string id)
+        public async Task DeleteAsync(string id)
         {
             await commentStorage.DeleteByPublicationAsync(id);
             await publicationStorage.DeleteOneAsync(id);
-
-            return DomainResult.Successed();
         }
     }
 }

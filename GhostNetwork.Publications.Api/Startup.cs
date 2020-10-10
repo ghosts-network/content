@@ -45,7 +45,6 @@ namespace GhostNetwork.Publications.Api
 
             services.AddScoped<IHashTagsFetcher, DefaultHashTagsFetcher>();
             services.AddScoped(provider => new ForbiddenWordsValidator(Enumerable.Empty<string>()));
-            services.AddScoped<PublicationBuilder>();
 
             services.AddScoped<IPublicationsStorage, MongoPublicationStorage>();
             services.AddScoped<IPublicationService, PublicationService>();
