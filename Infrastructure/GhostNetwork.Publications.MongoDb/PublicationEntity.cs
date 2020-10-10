@@ -13,7 +13,7 @@ namespace GhostNetwork.Publications.MongoDb
 
         [BsonElement("tags")]
         public IList<string> Tags { get; set; }
-        
+
         [BsonElement("authorId")]
         public string AuthorId { get; set; }
 
