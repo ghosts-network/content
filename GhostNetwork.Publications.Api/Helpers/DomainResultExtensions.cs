@@ -1,5 +1,4 @@
 using System;
-using GhostNetwork.Publications.Domain;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GhostNetwork.Publications.Api.Helpers

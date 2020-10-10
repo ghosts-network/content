@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace GhostNetwork.Publications.Domain
+namespace GhostNetwork.Publications
 {
     public class DomainResult
     {

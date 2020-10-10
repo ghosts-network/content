@@ -2,18 +2,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace GhostNetwork.Publications.Domain
+namespace GhostNetwork.Publications
 {
-    public sealed class PublicationValidatorsContainer : IPublicationValidator
+    public sealed class ValidatorsContainer<TContext> : IValidator<TContext>
     {
-        private readonly IEnumerable<IPublicationValidator> validators;
+        private readonly IEnumerable<IValidator<TContext>> validators;
 
-        public PublicationValidatorsContainer(params IPublicationValidator[] validators)
+        public ValidatorsContainer(params IValidator<TContext>[] validators)
         {
             this.validators = validators;
         }
 
-        public async Task<DomainResult> ValidateAsync(PublicationContext context)
+        public async Task<DomainResult> ValidateAsync(TContext context)
         {
             var errors = new List<DomainError>();
             foreach (var validator in validators)

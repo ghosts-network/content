@@ -11,5 +11,7 @@ namespace GhostNetwork.Publications.Api.Models
         public string Content { get; set; }
 
         public string ReplyCommentId { get; set; }
+
+        public string AuthorId { get; set; }
     }
 }

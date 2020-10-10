@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using GhostNetwork.Publications.Domain;
+using GhostNetwork.Publications.Comments;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
@@ -30,12 +30,7 @@ namespace GhostNetwork.Publications.MongoDb
                 .Find(filter)
                 .FirstOrDefaultAsync();
 
-            return entity == null ? null : new Comment(
-                entity.Id.ToString(),
-                entity.Content,
-                DateTimeOffset.FromUnixTimeMilliseconds(entity.CreateOn),
-                entity.PublicationId,
-                entity.ReplyCommentId);
+            return entity == null ? null : ToDomain(entity);
         }
 
         public async Task<string> InsertOneAsync(Comment comment)
@@ -45,7 +40,8 @@ namespace GhostNetwork.Publications.MongoDb
                 Content = comment.Content,
                 CreateOn = comment.CreatedOn.ToUnixTimeMilliseconds(),
                 PublicationId = comment.PublicationId,
-                ReplyCommentId = comment.ReplyCommentId
+                ReplyCommentId = comment.ReplyCommentId,
+                AuthorId = comment.AuthorId
             };
 
             await context.Comments.InsertOneAsync(entity);
@@ -53,22 +49,23 @@ namespace GhostNetwork.Publications.MongoDb
             return entity.Id.ToString();
         }
 
-        public async Task<IEnumerable<Comment>> FindManyAsync(string publicationId, int skip, int take)
+        public async Task<(IEnumerable<Comment>, long)> FindManyAsync(string publicationId, int skip, int take)
         {
             var filter = Builders<CommentEntity>.Filter.Eq(x => x.PublicationId, publicationId);
+
+            var totalCount = await context.Comments
+                .Find(filter)
+                .CountDocumentsAsync();
+
             var entities = await context.Comments
                 .Find(filter)
                 .Skip(skip)
                 .Limit(take)
                 .ToListAsync();
 
-            return entities
-                .Select(x => new Comment(
-                    x.Id.ToString(),
-                    x.Content,
-                    DateTimeOffset.FromUnixTimeMilliseconds(x.CreateOn),
-                    x.PublicationId,
-                    x.ReplyCommentId));
+            return (entities
+                .Select(ToDomain)
+                .ToList(), totalCount);
         }
 
         public async Task<bool> IsCommentInPublicationAsync(string commentId, string publicationId)
@@ -84,32 +81,34 @@ namespace GhostNetwork.Publications.MongoDb
             return await context.Comments.Find(filter).AnyAsync();
         }
 
-        public async Task<bool> DeleteAllCommentsInPublicationAsync(string publicationId)
+        public async Task DeleteByPublicationAsync(string publicationId)
         {
-            if (!ObjectId.TryParse(publicationId, out _))
-            {
-                return false;
-            }
-
             var filter = Builders<CommentEntity>.Filter.Eq(x => x.PublicationId, publicationId);
 
-            var result = await context.Comments.DeleteManyAsync(filter);
-
-            return result.IsAcknowledged;
+            await context.Comments.DeleteManyAsync(filter);
         }
 
-        public async Task<bool> DeleteOneAsync(string commentId)
+        public async Task DeleteOneAsync(string commentId)
         {
             if (!ObjectId.TryParse(commentId, out var oId))
             {
-                return false;
+                return;
             }
 
             var filter = Builders<CommentEntity>.Filter.Eq(x => x.Id, oId);
 
-            var result = await context.Comments.DeleteOneAsync(filter);
+            await context.Comments.DeleteOneAsync(filter);
+        }
 
-            return result.IsAcknowledged && result.DeletedCount > 0;
+        private static Comment ToDomain(CommentEntity entity)
+        {
+            return new Comment(
+                entity.Id.ToString(),
+                entity.Content,
+                DateTimeOffset.FromUnixTimeMilliseconds(entity.CreateOn),
+                entity.PublicationId,
+                entity.ReplyCommentId,
+                entity.AuthorId);
         }
     }
 }

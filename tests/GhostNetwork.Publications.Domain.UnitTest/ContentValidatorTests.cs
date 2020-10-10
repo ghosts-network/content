@@ -12,10 +12,7 @@ namespace GhostNetwork.Publications.Domain.UnitTest
             // Setup
             var validation = new ForbiddenWordsValidator(new[]
             {
-                new ForbiddenWordModel
-                {
-                    ForbiddenWord = "duck"
-                }
+                "duck"
             });
             var content = "#test text with forbidden word duck";
             var context = new PublicationContext(content);
@@ -33,10 +30,7 @@ namespace GhostNetwork.Publications.Domain.UnitTest
             // Setup
             var validation = new ForbiddenWordsValidator(new[]
             {
-                new ForbiddenWordModel
-                {
-                    ForbiddenWord = "duck"
-                }
+                "duck"
             });
             var content = "#test text without forbidden word";
             var context = new PublicationContext(content);

@@ -1,18 +1,22 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+using System;
 using System.Threading.Tasks;
 using GhostNetwork.Publications.Comments;
 
 namespace GhostNetwork.Publications
 {
-    public class ForbiddenWordsValidator : IValidator<PublicationContext>,
+    public class MinLengthValidator : IValidator<PublicationContext>,
         IValidator<CommentContext>
     {
-        private readonly IEnumerable<string> forbiddenWords;
+        private readonly int minLength;
 
-        public ForbiddenWordsValidator(IEnumerable<string> forbiddenWords)
+        public MinLengthValidator(int minLength)
         {
-            this.forbiddenWords = forbiddenWords;
+            if (minLength < 0)
+            {
+                throw new ArgumentException(nameof(minLength));
+            }
+
+            this.minLength = minLength;
         }
 
         public Task<DomainResult> ValidateAsync(PublicationContext context)
@@ -27,8 +31,8 @@ namespace GhostNetwork.Publications
 
         private DomainResult Validate(string content)
         {
-            return forbiddenWords.Any(content.Contains)
-                ? DomainResult.Error("Content contains forbidden words")
+            return content.Length < minLength
+                ? DomainResult.Error($"Content length is less than {minLength} characters")
                 : DomainResult.Successed();
         }
     }

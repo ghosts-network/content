@@ -3,7 +3,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using GhostNetwork.Publications.Api.Helpers;
 using GhostNetwork.Publications.Api.Models;
-using GhostNetwork.Publications.Domain;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,9 +22,9 @@ namespace GhostNetwork.Publications.Api.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<Publication>> FindAsync([FromRoute] string id)
+        public async Task<ActionResult<Publication>> GetByIdAsync([FromRoute] string id)
         {
-            var publication = await publicationService.FindOneByIdAsync(id);
+            var publication = await publicationService.GetByIdAsync(id);
 
             if (publication == null)
             {
@@ -37,9 +36,12 @@ namespace GhostNetwork.Publications.Api.Controllers
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<Publication>>> FindManyAsync([FromQuery, Range(0, int.MaxValue)] int skip, [FromQuery, Range(1, 100)] int take, [FromQuery] List<string> tags)
+        public async Task<ActionResult<IEnumerable<Publication>>> SearchAsync([FromQuery, Range(0, int.MaxValue)] int skip, [FromQuery, Range(1, 100)] int take, [FromQuery] List<string> tags)
         {
-            return Ok(await publicationService.FindManyAsync(skip, take, tags));
+            var (list, totalCount) = await publicationService.SearchAsync(skip, take, tags);
+            Response.Headers.Add("X-TotalCount", totalCount.ToString());
+
+            return Ok(list);
         }
 
         [HttpPost]
@@ -47,14 +49,15 @@ namespace GhostNetwork.Publications.Api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Publication>> CreateAsync([FromBody] CreatePublicationModel model)
         {
-            var (result, id) = await publicationService.CreateAsync(model.Content);
+            var authorId = model.AuthorId ?? "Unauthorized";
+            var (result, id) = await publicationService.CreateAsync(model.Content, authorId);
 
             if (!result.Success)
             {
                 return BadRequest(result.ToProblemDetails());
             }
 
-            return Created(Url.Action("Find", new { id }), await publicationService.FindOneByIdAsync(id));
+            return Created(Url.Action("GetById", new { id }), await publicationService.GetByIdAsync(id));
         }
 
         [HttpPut("{id}")]
@@ -63,12 +66,12 @@ namespace GhostNetwork.Publications.Api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> UpdateAsync([FromRoute] string id, [FromBody] UpdatePublicationModel model)
         {
-            if (await publicationService.FindOneByIdAsync(id) == null)
+            if (await publicationService.GetByIdAsync(id) == null)
             {
                 return NotFound();
             }
 
-            var result = await publicationService.UpdateOneAsync(id, model.Content);
+            var result = await publicationService.UpdateAsync(id, model.Content);
 
             if (!result.Success)
             {
@@ -80,17 +83,17 @@ namespace GhostNetwork.Publications.Api.Controllers
 
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> DeleteAsync([FromRoute] string id)
         {
-            var result = await publicationService.DeleteOneAsync(id);
-
-            if (result.Success)
+            if (await publicationService.GetByIdAsync(id) == null)
             {
-                return Ok();
+                return NotFound();
             }
 
-            return BadRequest(result.ToProblemDetails());
+            await publicationService.DeleteAsync(id);
+
+            return Ok();
         }
     }
 }

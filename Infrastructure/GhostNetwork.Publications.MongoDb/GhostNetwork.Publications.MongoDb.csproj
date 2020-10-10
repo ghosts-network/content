@@ -6,12 +6,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\GhostNetwork.Publications.Domain\GhostNetwork.Publications.Domain.csproj" />
+      <PackageReference Include="MongoDB.Driver" Version="2.11.0" />
+      <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" />
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="MongoDB.Driver" Version="2.11.0" />
-      <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" />
+      <ProjectReference Include="..\..\GhostNetwork.Publications.Domain\GhostNetwork.Publications.Domain.csproj" />
     </ItemGroup>
 
 </Project>

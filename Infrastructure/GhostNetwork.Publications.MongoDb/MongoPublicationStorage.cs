@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using GhostNetwork.Publications.Domain;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace GhostNetwork.Publications.MongoDb
 {
-    public class MongoPublicationStorage : IPublicationStorage
+    public class MongoPublicationStorage : IPublicationsStorage
     {
         private readonly MongoDbContext context;
 
@@ -27,12 +26,7 @@ namespace GhostNetwork.Publications.MongoDb
             var filter = Builders<PublicationEntity>.Filter.Eq(p => p.Id, oId);
             var entity = await context.Publications.Find(filter).FirstOrDefaultAsync();
 
-            return entity == null ? null : new Publication(
-                entity.Id.ToString(),
-                entity.Content,
-                DateTimeOffset.FromUnixTimeMilliseconds(entity.CreateOn),
-                entity.Tags,
-                DateTimeOffset.FromUnixTimeMilliseconds(entity.UpdateOn));
+            return entity == null ? null : ToDomain(entity);
         }
 
         public async Task<string> InsertOneAsync(Publication publication)
@@ -40,8 +34,9 @@ namespace GhostNetwork.Publications.MongoDb
             var entity = new PublicationEntity
             {
                 Content = publication.Content,
-                CreateOn = publication.CreatedOn.ToUnixTimeMilliseconds(),
                 Tags = publication.Tags.ToList(),
+                AuthorId = publication.AuthorId,
+                CreateOn = publication.CreatedOn.ToUnixTimeMilliseconds(),
                 UpdateOn = publication.UpdatedOn.ToUnixTimeMilliseconds()
             };
 
@@ -50,7 +45,7 @@ namespace GhostNetwork.Publications.MongoDb
             return entity.Id.ToString();
         }
 
-        public async Task<IEnumerable<Publication>> FindManyAsync(int skip, int take, IEnumerable<string> tags)
+        public async Task<(IEnumerable<Publication>, long)> FindManyAsync(int skip, int take, IEnumerable<string> tags)
         {
             var filter = Builders<PublicationEntity>.Filter.Empty;
 
@@ -59,24 +54,22 @@ namespace GhostNetwork.Publications.MongoDb
                 filter &= Builders<PublicationEntity>.Filter.AnyIn(e => e.Tags, tags);
             }
 
+            var totalCount = await context.Publications.Find(filter)
+                .CountDocumentsAsync();
+
             var entities = await context.Publications.Find(filter)
                 .Skip(skip)
                 .Limit(take)
                 .ToListAsync();
 
-            return entities.Select(entity => new Publication(
-                entity.Id.ToString(),
-                entity.Content,
-                DateTimeOffset.FromUnixTimeMilliseconds(entity.CreateOn),
-                entity.Tags,
-                DateTimeOffset.FromUnixTimeMilliseconds(entity.UpdateOn)));
+            return (entities.Select(ToDomain), totalCount);
         }
 
-        public async Task<bool> UpdateOneAsync(string id, Publication publication)
+        public async Task UpdateOneAsync(Publication publication)
         {
-            if (!ObjectId.TryParse(id, out var oId))
+            if (!ObjectId.TryParse(publication.Id, out var oId))
             {
-                return false;
+                return;
             }
 
             var filter = Builders<PublicationEntity>.Filter.Eq(p => p.Id, oId);
@@ -85,23 +78,30 @@ namespace GhostNetwork.Publications.MongoDb
                 .Set(s => s.Tags, publication.Tags.ToList())
                 .Set(s => s.UpdateOn, publication.UpdatedOn.ToUnixTimeMilliseconds());
 
-            UpdateResult updateResult = await context.Publications.UpdateOneAsync(filter, update);
-
-            return updateResult.IsAcknowledged && updateResult.ModifiedCount > 0;
+            await context.Publications.UpdateOneAsync(filter, update);
         }
 
-        public async Task<bool> DeleteOneAsync(string id)
+        public async Task DeleteOneAsync(string id)
         {
             if (!ObjectId.TryParse(id, out var oId))
             {
-                return false;
+                return;
             }
 
             var filter = Builders<PublicationEntity>.Filter.Eq(p => p.Id, oId);
 
-            var deleteResult = await context.Publications.DeleteOneAsync(filter);
+            await context.Publications.DeleteOneAsync(filter);
+        }
 
-            return deleteResult.IsAcknowledged && deleteResult.DeletedCount > 0;
+        private static Publication ToDomain(PublicationEntity entity)
+        {
+            return new Publication(
+                entity.Id.ToString(),
+                entity.Content,
+                entity.Tags,
+                entity.AuthorId,
+                DateTimeOffset.FromUnixTimeMilliseconds(entity.CreateOn),
+                DateTimeOffset.FromUnixTimeMilliseconds(entity.UpdateOn));
         }
     }
 }
