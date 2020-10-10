@@ -15,11 +15,25 @@ namespace GhostNetwork.Publications
             UpdatedOn = updatedOn;
         }
 
+        public string Id { get; }
+
+        public string Content { get; private set; }
+
+        public IEnumerable<string> Tags { get; private set; }
+
+        public string AuthorId { get; }
+
+        public DateTimeOffset CreatedOn { get; }
+
+        public DateTimeOffset UpdatedOn { get; private set; }
+
+        public bool IsUpdated => CreatedOn != UpdatedOn;
+
         public static Publication New(string content, string authorId, Func<string, IEnumerable<string>> tagsFetcher)
         {
             var now = DateTimeOffset.UtcNow;
 
-            return new Publication(default, content,tagsFetcher(content), authorId, now, now);
+            return new Publication(default, content, tagsFetcher(content), authorId, now, now);
         }
 
         public Publication Update(string content, Func<string, IEnumerable<string>> tagsFetcher)
@@ -30,19 +44,5 @@ namespace GhostNetwork.Publications
 
             return this;
         }
-
-        public string Id { get; }
-
-        public string Content { get; private set; }
-
-        public IEnumerable<string> Tags { get; private set; }
-        
-        public string AuthorId { get; }
-
-        public DateTimeOffset CreatedOn { get; }
-
-        public DateTimeOffset UpdatedOn { get; private set; }
-
-        public bool IsUpdated => CreatedOn != UpdatedOn;
     }
 }

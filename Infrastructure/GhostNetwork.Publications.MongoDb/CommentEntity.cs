@@ -18,5 +18,8 @@ namespace GhostNetwork.Publications.MongoDb
 
         [BsonElement("replyId")]
         public string ReplyCommentId { get; set; }
+
+        [BsonElement("authorId")]
+        public string AuthorId { get; set; }
     }
 }

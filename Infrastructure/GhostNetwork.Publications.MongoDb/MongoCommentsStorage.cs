@@ -40,7 +40,8 @@ namespace GhostNetwork.Publications.MongoDb
                 Content = comment.Content,
                 CreateOn = comment.CreatedOn.ToUnixTimeMilliseconds(),
                 PublicationId = comment.PublicationId,
-                ReplyCommentId = comment.ReplyCommentId
+                ReplyCommentId = comment.ReplyCommentId,
+                AuthorId = comment.AuthorId
             };
 
             await context.Comments.InsertOneAsync(entity);
@@ -102,7 +103,8 @@ namespace GhostNetwork.Publications.MongoDb
                 entity.Content,
                 DateTimeOffset.FromUnixTimeMilliseconds(entity.CreateOn),
                 entity.PublicationId,
-                entity.ReplyCommentId);
+                entity.ReplyCommentId,
+                entity.AuthorId);
         }
     }
 }

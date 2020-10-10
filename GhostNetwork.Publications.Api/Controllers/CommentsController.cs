@@ -25,11 +25,12 @@ namespace GhostNetwork.Publications.Api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Comment>> CreateAsync([FromBody] CreateCommentModel model)
         {
-            var (domainResult, id) = await commentService.CreateAsync(model.PublicationId, model.Content, model.ReplyCommentId);
+            var authorId = model.AuthorId ?? "Unauthorized";
+            var (domainResult, id) = await commentService.CreateAsync(model.PublicationId, model.Content, model.ReplyCommentId, authorId);
 
             if (domainResult.Success)
             {
-                return Created(Url.Action("Find", new { id }), await commentService.FindOneByIdAsync(id));
+                return Created(Url.Action("GetById", new { id }), await commentService.GetByIdAsync(id));
             }
 
             return BadRequest(domainResult.ToProblemDetails());
@@ -38,9 +39,9 @@ namespace GhostNetwork.Publications.Api.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<Comment>> FindAsync([FromRoute] string id)
+        public async Task<ActionResult<Comment>> GetByIdAsync([FromRoute] string id)
         {
-            var comment = await commentService.FindOneByIdAsync(id);
+            var comment = await commentService.GetByIdAsync(id);
             if (comment == null)
             {
                 return NotFound();
@@ -51,12 +52,12 @@ namespace GhostNetwork.Publications.Api.Controllers
 
         [HttpGet("bypublication/{publicationId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<Comment>>> FindManyAsync(
+        public async Task<ActionResult<IEnumerable<Comment>>> SearchAsync(
             [FromRoute] string publicationId,
             [FromQuery, Range(0, int.MaxValue)] int skip,
             [FromQuery, Range(0, 100)] int take = 10)
         {
-            var comments = await commentService.FindManyAsync(publicationId, skip, take);
+            var comments = await commentService.SearchAsync(publicationId, skip, take);
             if (comments == null)
             {
                 return NotFound();

@@ -57,7 +57,7 @@ namespace GhostNetwork.Publications.Api.Controllers
                 return BadRequest(result.ToProblemDetails());
             }
 
-            return Created(Url.Action("Find", new { id }), await publicationService.GetByIdAsync(id));
+            return Created(Url.Action("GetById", new { id }), await publicationService.GetByIdAsync(id));
         }
 
         [HttpPut("{id}")]
@@ -90,6 +90,8 @@ namespace GhostNetwork.Publications.Api.Controllers
             {
                 return NotFound();
             }
+
+            await publicationService.DeleteAsync(id);
 
             return Ok();
         }

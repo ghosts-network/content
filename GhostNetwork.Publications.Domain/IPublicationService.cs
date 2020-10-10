@@ -9,7 +9,7 @@ namespace GhostNetwork.Publications
         Task<Publication> GetByIdAsync(string id);
 
         Task<(IEnumerable<Publication>, long)> SearchAsync(int skip, int take, IEnumerable<string> tags);
-        
+
         Task<(DomainResult, string)> CreateAsync(string text, string authorId);
 
         Task<DomainResult> UpdateAsync(string id, string text);
