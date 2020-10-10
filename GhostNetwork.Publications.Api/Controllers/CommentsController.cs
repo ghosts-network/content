@@ -57,28 +57,25 @@ namespace GhostNetwork.Publications.Api.Controllers
             [FromQuery, Range(0, int.MaxValue)] int skip,
             [FromQuery, Range(0, 100)] int take = 10)
         {
-            var comments = await commentService.SearchAsync(publicationId, skip, take);
-            if (comments == null)
-            {
-                return NotFound();
-            }
+            var (comments, totalCount) = await commentService.SearchAsync(publicationId, skip, take);
+            Response.Headers.Add("X-TotalCount", totalCount.ToString());
 
             return Ok(comments);
         }
 
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<IEnumerable<Comment>>> DeleteAsync([FromRoute] string id)
         {
-            var result = await commentService.DeleteOneAsync(id);
-
-            if (result.Success)
+            if (await commentService.GetByIdAsync(id) == null)
             {
-                return Ok();
+                return NotFound();
             }
 
-            return BadRequest(result.ToProblemDetails());
+            await commentService.DeleteAsync(id);
+
+            return Ok();
         }
     }
 }

@@ -29,6 +29,8 @@ class TestComments(Api):
     resp_body = resp.json()
 
     assert resp.status_code == 200
+    assert resp.headers['X-TotalCount'] == '1'
+
     assert len(resp_body) == 1
     assert resp_body[0]['id'] == comment_id
     assert resp_body[0]['publicationId'] == publication_id
@@ -36,8 +38,12 @@ class TestComments(Api):
 
   def test_get_comment_by_nonexistent_publication(self):
     resp = self.get_comments_by_publication_id('nonexistent-id')
+    resp_body = resp.json()
 
-    assert resp.status_code == 404
+    assert resp.status_code == 200
+    assert resp.headers['X-TotalCount'] == '0'
+
+    assert len(resp_body) == 0
 
   def test_post_comment(self):
     publication_resp = self.post_publication({'content': 'My first publication #awesome'})

@@ -49,9 +49,13 @@ namespace GhostNetwork.Publications.MongoDb
             return entity.Id.ToString();
         }
 
-        public async Task<IEnumerable<Comment>> FindManyAsync(string publicationId, int skip, int take)
+        public async Task<(IEnumerable<Comment>, long)> FindManyAsync(string publicationId, int skip, int take)
         {
             var filter = Builders<CommentEntity>.Filter.Eq(x => x.PublicationId, publicationId);
+
+            var totalCount = await context.Comments
+                .Find(filter)
+                .CountDocumentsAsync();
 
             var entities = await context.Comments
                 .Find(filter)
@@ -59,9 +63,9 @@ namespace GhostNetwork.Publications.MongoDb
                 .Limit(take)
                 .ToListAsync();
 
-            return entities
+            return (entities
                 .Select(ToDomain)
-                .ToList();
+                .ToList(), totalCount);
         }
 
         public async Task<bool> IsCommentInPublicationAsync(string commentId, string publicationId)

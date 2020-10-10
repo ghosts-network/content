@@ -7,7 +7,7 @@ namespace GhostNetwork.Publications.Comments
     {
         Task<Comment> FindOneByIdAsync(string id);
 
-        Task<IEnumerable<Comment>> FindManyAsync(string publicationId, int skip, int take);
+        Task<(IEnumerable<Comment>, long)> FindManyAsync(string publicationId, int skip, int take);
 
         Task<bool> IsCommentInPublicationAsync(string commentId, string publicationId);
 

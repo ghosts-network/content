@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace GhostNetwork.Publications.Comments
@@ -8,11 +9,11 @@ namespace GhostNetwork.Publications.Comments
     {
         Task<Comment> GetByIdAsync(string id);
 
-        Task<IEnumerable<Comment>> SearchAsync(string publicationId, int skip, int take);
+        Task<(IEnumerable<Comment>, long)> SearchAsync(string publicationId, int skip, int take);
 
         Task<(DomainResult, string)> CreateAsync(string publicationId, string text, string replyCommentId, string authorId);
 
-        Task<DomainResult> DeleteOneAsync(string id);
+        Task DeleteAsync(string id);
     }
 
     public class CommentsService : ICommentsService
@@ -60,21 +61,14 @@ namespace GhostNetwork.Publications.Comments
             return commentStorage.FindOneByIdAsync(id);
         }
 
-        public async Task<IEnumerable<Comment>> SearchAsync(string publicationId, int skip, int take)
+        public async Task<(IEnumerable<Comment>, long)> SearchAsync(string publicationId, int skip, int take)
         {
-            if (await publicationsStorage.FindOneByIdAsync(publicationId) == null)
-            {
-                return null;
-            }
-
             return await commentStorage.FindManyAsync(publicationId, skip, take);
         }
 
-        public async Task<DomainResult> DeleteOneAsync(string id)
+        public async Task DeleteAsync(string id)
         {
             await commentStorage.DeleteOneAsync(id);
-
-            return DomainResult.Successed();
         }
     }
 }
