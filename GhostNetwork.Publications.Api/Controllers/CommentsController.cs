@@ -28,7 +28,7 @@ namespace GhostNetwork.Publications.Api.Controllers
             var authorId = model.AuthorId ?? "Unauthorized";
             var (domainResult, id) = await commentService.CreateAsync(model.PublicationId, model.Content, model.ReplyCommentId, authorId);
 
-            if (domainResult.Success)
+            if (domainResult.Successed)
             {
                 return Created(Url.Action("GetById", new { id }), await commentService.GetByIdAsync(id));
             }

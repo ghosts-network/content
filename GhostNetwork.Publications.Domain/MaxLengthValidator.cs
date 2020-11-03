@@ -1,4 +1,6 @@
 ﻿using System.Threading.Tasks;
+using Domain;
+using Domain.Validation;
 using GhostNetwork.Publications.Comments;
 
 namespace GhostNetwork.Publications
@@ -27,7 +29,7 @@ namespace GhostNetwork.Publications
         {
             return content.Length > maxLength
                 ? DomainResult.Error($"Content length is more than {maxLength} characters")
-                : DomainResult.Successed();
+                : DomainResult.Success();
         }
     }
 }

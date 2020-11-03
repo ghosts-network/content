@@ -1,4 +1,5 @@
 using System;
+using Domain;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GhostNetwork.Publications.Api.Helpers
@@ -7,7 +8,7 @@ namespace GhostNetwork.Publications.Api.Helpers
     {
         public static ProblemDetails ToProblemDetails(this DomainResult domainResult)
         {
-            if (domainResult.Success)
+            if (domainResult.Successed)
             {
                 throw new InvalidOperationException();
             }

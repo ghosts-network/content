@@ -52,7 +52,7 @@ namespace GhostNetwork.Publications.Api.Controllers
             var authorId = model.AuthorId ?? "Unauthorized";
             var (result, id) = await publicationService.CreateAsync(model.Content, authorId);
 
-            if (!result.Success)
+            if (!result.Successed)
             {
                 return BadRequest(result.ToProblemDetails());
             }
@@ -73,7 +73,7 @@ namespace GhostNetwork.Publications.Api.Controllers
 
             var result = await publicationService.UpdateAsync(id, model.Content);
 
-            if (!result.Success)
+            if (!result.Successed)
             {
                 return BadRequest(result.ToProblemDetails());
             }

@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Domain;
+using Domain.Validation;
 using GhostNetwork.Publications.Comments;
 
 namespace GhostNetwork.Publications
@@ -51,7 +53,7 @@ namespace GhostNetwork.Publications
             var content = new PublicationContext(text);
             var result = await validator.ValidateAsync(content);
 
-            if (!result.Success)
+            if (!result.Successed)
             {
                 return (result, null);
             }
@@ -67,7 +69,7 @@ namespace GhostNetwork.Publications
             var content = new PublicationContext(text);
             var result = await validator.ValidateAsync(content);
 
-            if (!result.Success)
+            if (!result.Successed)
             {
                 return result;
             }
@@ -78,7 +80,7 @@ namespace GhostNetwork.Publications
 
             await publicationStorage.UpdateOneAsync(publication);
 
-            return DomainResult.Successed();
+            return DomainResult.Success();
         }
 
         public async Task DeleteAsync(string id)

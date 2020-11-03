@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Domain.Validation;
 using GhostNetwork.Publications.Api.Helpers.OpenApi;
 using GhostNetwork.Publications.Comments;
 using GhostNetwork.Publications.MongoDb;
