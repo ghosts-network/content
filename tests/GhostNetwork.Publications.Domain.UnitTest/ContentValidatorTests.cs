@@ -21,7 +21,7 @@ namespace GhostNetwork.Publications.Domain.UnitTest
             var result = await validation.ValidateAsync(context);
 
             // Assert
-            Assert.IsFalse(result.Success);
+            Assert.IsFalse(result.Successed);
         }
 
         [Test]
@@ -39,7 +39,7 @@ namespace GhostNetwork.Publications.Domain.UnitTest
             var result = await validation.ValidateAsync(context);
 
             // Assert
-            Assert.IsTrue(result.Success);
+            Assert.IsTrue(result.Successed);
         }
     }
 }

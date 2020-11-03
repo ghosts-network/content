@@ -1,5 +1,7 @@
 using System;
 using System.Threading.Tasks;
+using Domain;
+using Domain.Validation;
 using GhostNetwork.Publications.Comments;
 
 namespace GhostNetwork.Publications
@@ -33,7 +35,7 @@ namespace GhostNetwork.Publications
         {
             return content.Length < minLength
                 ? DomainResult.Error($"Content length is less than {minLength} characters")
-                : DomainResult.Successed();
+                : DomainResult.Success();
         }
     }
 }

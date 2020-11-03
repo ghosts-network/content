@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Domain;
+using Domain.Validation;
 using GhostNetwork.Publications.Comments;
 
 namespace GhostNetwork.Publications
@@ -29,7 +31,7 @@ namespace GhostNetwork.Publications
         {
             return forbiddenWords.Any(content.Contains)
                 ? DomainResult.Error("Content contains forbidden words")
-                : DomainResult.Successed();
+                : DomainResult.Success();
         }
     }
 }

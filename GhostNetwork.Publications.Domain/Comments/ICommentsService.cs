@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using Domain;
+using Domain.Validation;
 
 namespace GhostNetwork.Publications.Comments
 {
@@ -43,7 +44,7 @@ namespace GhostNetwork.Publications.Comments
             if (replyCommentId == null || await commentStorage.IsCommentInPublicationAsync(replyCommentId, publicationId))
             {
                 var result = await validator.ValidateAsync(new CommentContext(text));
-                if (!result.Success)
+                if (!result.Successed)
                 {
                     return (result, null);
                 }
