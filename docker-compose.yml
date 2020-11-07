@@ -2,7 +2,7 @@ version: '3'
 
 services:
   api:
-    image: ghcr.io/gh-network/ghostnetwork-publications:latest
+    build: .
     ports:
       - "5300:80"    
     environment:
