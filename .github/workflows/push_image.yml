@@ -19,11 +19,10 @@ jobs:
       - name: Build image
         run: docker build . --file Dockerfile --tag $IMAGE_NAME
 
-      - name: Log into github registry
-        run: echo "${{ secrets.CR_PAT }}" | docker login https://ghcr.io -u ${{ github.actor }} --password-stdin
-
       - name: Push image to github
         run: |
+          echo "${{ secrets.CR_PAT }}" | docker login https://ghcr.io -u ${{ github.actor }} --password-stdin
+
           IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME
 
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
@@ -40,11 +39,10 @@ jobs:
           docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
           docker push $IMAGE_ID:$VERSION
 
-      - name: Log into docker hub registry
-        run: echo "${{ secrets.DOCKER_HUB_ACCESS }}" | docker login -u ${{ secrets.DOCKER_HUB_USER }} --password-stdin
-
       - name: Push image to docker hub
         run: |
+          echo "${{ secrets.DOCKER_HUB_ACCESS }}" | docker login -u ${{ secrets.DOCKER_HUB_USER }} --password-stdin
+
           IMAGE_ID=$DOCKER_HUB_OWNER/$IMAGE_NAME
 
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
