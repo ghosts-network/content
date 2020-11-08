@@ -5,7 +5,7 @@ on:
     branches:
       - master
 env:
-  IMAGE_NAME: ghostnetwork-publications
+  IMAGE_NAME: publications
   DOCKER_HUB_OWNER: ghostsnetwork
 
 jobs:
