@@ -7,6 +7,7 @@ on:
 env:
   IMAGE_NAME: publications
   DOCKER_HUB_OWNER: ghostsnetwork
+  SERVICE_NAME: publications
 
 jobs:
   push:
@@ -58,3 +59,19 @@ jobs:
 
           docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
           docker push $IMAGE_ID:$VERSION
+
+      - name: Create SSH key
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_PRIVATE_KEY" > ../private.key
+          sudo chmod 600 ../private.key
+          echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+        shell: bash
+        env:
+          SSH_PRIVATE_KEY: ${{secrets.SSH_PRIVATE_KEY}}
+          SSH_KNOWN_HOSTS: ${{secrets.SSH_KNOWN_HOSTS}}
+
+      - name: Run command
+        run: ssh -i "$SSH_KEY_PATH" "${{secrets.SSH_REMOTE_USER}}"@"${{secrets.SSH_REMOTE_HOST}}" "docker-compose -f gh/docker-compose.yml up -d --force-recreate $SERVICE_NAME"
+        env:
+          SSH_KEY_PATH: ${{ github.workspace }}/../private.key
