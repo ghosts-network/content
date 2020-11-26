@@ -6,7 +6,6 @@ on:
       - master
 env:
   IMAGE_NAME: publications
-  DOCKER_HUB_OWNER: ghostsnetwork
   SERVICE_NAME: publications
 
 jobs:
@@ -40,26 +39,6 @@ jobs:
           docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
           docker push $IMAGE_ID:$VERSION
 
-      - name: Push image to docker hub
-        run: |
-          echo "${{ secrets.DOCKER_HUB_ACCESS }}" | docker login -u ${{ secrets.DOCKER_HUB_USER }} --password-stdin
-
-          IMAGE_ID=$DOCKER_HUB_OWNER/$IMAGE_NAME
-
-          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
-
-          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-
-          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
-
-          [ "$VERSION" == "master" ] && VERSION=latest
-
-          echo IMAGE_ID=$IMAGE_ID
-          echo VERSION=$VERSION
-
-          docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
-          docker push $IMAGE_ID:$VERSION
-
       - name: Create SSH key
         run: |
           mkdir -p ~/.ssh/
@@ -72,6 +51,6 @@ jobs:
           SSH_KNOWN_HOSTS: ${{secrets.SSH_KNOWN_HOSTS}}
 
       - name: Run command
-        run: ssh -i "$SSH_KEY_PATH" "${{secrets.SSH_REMOTE_USER}}"@"${{secrets.SSH_REMOTE_HOST}}" "docker-compose -f gh/docker-compose.yml up -d --force-recreate $SERVICE_NAME"
+        run: ssh -i "$SSH_KEY_PATH" "${{secrets.SSH_REMOTE_USER}}"@"${{secrets.SSH_REMOTE_HOST}}" "cd gh && docker-compose pull && docker-compose up -d --force-recreate $SERVICE_NAME"
         env:
           SSH_KEY_PATH: ${{ github.workspace }}/../private.key
