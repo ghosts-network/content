@@ -45,7 +45,7 @@ namespace GhostNetwork.Publications.MongoDb
             return entity.Id.ToString();
         }
 
-        public async Task<(IEnumerable<Publication>, long)> FindManyAsync(int skip, int take, IEnumerable<string> tags)
+        public async Task<(IEnumerable<Publication>, long)> FindManyAsync(int skip, int take, IEnumerable<string> tags, Ordering order)
         {
             var filter = Builders<PublicationEntity>.Filter.Empty;
 
@@ -57,7 +57,14 @@ namespace GhostNetwork.Publications.MongoDb
             var totalCount = await context.Publications.Find(filter)
                 .CountDocumentsAsync();
 
+            var sorting = order switch
+            {
+                Ordering.Desc => Builders<PublicationEntity>.Sort.Descending(x => x.CreateOn),
+                _ => Builders<PublicationEntity>.Sort.Ascending(x => x.CreateOn)
+            };
+
             var entities = await context.Publications.Find(filter)
+                .Sort(sorting)
                 .Skip(skip)
                 .Limit(take)
                 .ToListAsync();

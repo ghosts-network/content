@@ -36,9 +36,13 @@ namespace GhostNetwork.Publications.Api.Controllers
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<Publication>>> SearchAsync([FromQuery, Range(0, int.MaxValue)] int skip, [FromQuery, Range(1, 100)] int take, [FromQuery] List<string> tags)
+        public async Task<ActionResult<IEnumerable<Publication>>> SearchAsync(
+            [FromQuery, Range(0, int.MaxValue)] int skip,
+            [FromQuery, Range(1, 100)] int take,
+            [FromQuery] List<string> tags,
+            [FromQuery] Ordering order = Ordering.Asc)
         {
-            var (list, totalCount) = await publicationService.SearchAsync(skip, take, tags);
+            var (list, totalCount) = await publicationService.SearchAsync(skip, take, tags, order);
             Response.Headers.Add("X-TotalCount", totalCount.ToString());
 
             return Ok(list);
