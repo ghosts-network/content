@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 using Domain.Validation;
 using GhostNetwork.Publications.Api.Helpers.OpenApi;
 using GhostNetwork.Publications.Comments;
@@ -55,7 +56,11 @@ namespace GhostNetwork.Publications.Api
             services.AddScoped<ICommentsService, CommentsService>();
             services.AddScoped(BuildCommentValidator);
 
-            services.AddControllers();
+            services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
