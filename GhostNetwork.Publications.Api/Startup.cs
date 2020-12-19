@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
+using Swashbuckle.AspNetCore.Filters;
 
 namespace GhostNetwork.Publications.Api
 {
@@ -37,6 +38,7 @@ namespace GhostNetwork.Publications.Api
                 });
 
                 options.OperationFilter<OperationIdFilter>();
+                options.OperationFilter<AddResponseHeadersFilter>();
             });
 
             services.AddScoped(provider =>

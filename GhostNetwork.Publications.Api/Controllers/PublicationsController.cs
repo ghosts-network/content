@@ -5,6 +5,7 @@ using GhostNetwork.Publications.Api.Helpers;
 using GhostNetwork.Publications.Api.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Filters;
 
 namespace GhostNetwork.Publications.Api.Controllers
 {
@@ -36,6 +37,7 @@ namespace GhostNetwork.Publications.Api.Controllers
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [SwaggerResponseHeader(StatusCodes.Status200OK, "X-TotalCount", "Number", "")]
         public async Task<ActionResult<IEnumerable<Publication>>> SearchAsync(
             [FromQuery, Range(0, int.MaxValue)] int skip,
             [FromQuery, Range(1, 100)] int take,
