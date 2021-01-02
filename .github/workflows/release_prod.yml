@@ -1,0 +1,105 @@
+name: Deploy production
+
+on:
+  push:
+    branches:
+      - master
+env:
+  SERVICE_NAME: publications
+
+jobs:
+  unit-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.1.301
+      - name: Install dependencies
+        run: dotnet restore
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+      - name: Test
+        run: dotnet test --no-restore --verbosity normal
+
+  api-test:
+    needs: unit-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+      - name: Install dependencies
+        working-directory: ./tests/api
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest
+          pip install -r requirements.txt
+      - name: Run service instance
+        run: docker-compose up -d
+      - name: Test with pytest
+        working-directory: ./tests/api
+        run: pytest
+      - name: Show api logs
+        if: ${{ failure() }}
+        run: docker-compose logs api
+      - name: Stop service instance
+        if: ${{ always() }}
+        run: docker-compose stop
+
+  push-image:
+    needs: api-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build image
+        run: docker build . --file Dockerfile --tag $SERVICE_NAME
+
+      - name: Push image to github
+        run: |
+          echo "${{ secrets.CR_PAT }}" | docker login https://ghcr.io -u ${{ github.actor }} --password-stdin
+
+          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$SERVICE_NAME
+
+          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+
+          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+
+          [ "$VERSION" == "master" ] && VERSION=latest
+
+          echo IMAGE_ID=$IMAGE_ID
+          echo VERSION=$VERSION
+
+          docker tag $SERVICE_NAME $IMAGE_ID:$VERSION
+          docker push $IMAGE_ID:$VERSION
+
+
+  deploy:
+    needs: push-image
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Create SSH key
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_PRIVATE_KEY" > ../private.key
+          sudo chmod 600 ../private.key
+          echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+        shell: bash
+        env:
+          SSH_PRIVATE_KEY: ${{secrets.SSH_PRIVATE_KEY}}
+          SSH_KNOWN_HOSTS: ${{secrets.SSH_KNOWN_HOSTS}}
+
+      - name: Run command
+        run: ssh -i "$SSH_KEY_PATH" "${{secrets.SSH_REMOTE_USER}}"@"${{secrets.SSH_REMOTE_HOST}}" "cd gh && docker-compose pull && docker-compose up -d --force-recreate $SERVICE_NAME"
+        env:
+          SSH_KEY_PATH: ${{ github.workspace }}/../private.key
