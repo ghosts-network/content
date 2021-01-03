@@ -45,9 +45,6 @@ jobs:
       - name: Show api logs
         if: ${{ failure() }}
         run: docker-compose logs api
-      - name: Stop service instance
-        if: ${{ always() }}
-        run: docker-compose stop
 
   push-image:
     needs: api-test
