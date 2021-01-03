@@ -1,10 +1,10 @@
 from src.api import Api
 
 class TestComments(Api):
-  def test_get_nonexistent_comment(self):
-    resp = self.get_comment_by_id('nonexistent-id')
-
-    assert resp.status_code == 404
+#   def test_get_nonexistent_comment(self):
+#     resp = self.get_comment_by_id('nonexistent-id')
+# 
+#     assert resp.status_code == 404
   
   def test_get_comment_by_id(self):
     publication_resp = self.post_publication({'content': 'My first publication #awesome'})
