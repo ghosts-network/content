@@ -2,7 +2,8 @@ name: Validate merge request
 
 on:
   pull_request:
-    branches: [ master ]
+    branches: 
+      - master
 
 jobs:
   unit-test:
