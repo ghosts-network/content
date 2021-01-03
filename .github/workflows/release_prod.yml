@@ -59,29 +59,15 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Build image
-        run: docker build . --file Dockerfile --tag $SERVICE_NAME
+      - run: docker build . --file Dockerfile --tag $SERVICE_NAME
+      - run: echo "${{ secrets.CR_PAT }}" | docker login https://ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Push image to github
         run: |
-          echo "${{ secrets.CR_PAT }}" | docker login https://ghcr.io -u ${{ github.actor }} --password-stdin
-
           IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$SERVICE_NAME
-
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
 
-          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-
-          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
-
-          [ "$VERSION" == "master" ] && VERSION=latest
-
-          echo IMAGE_ID=$IMAGE_ID
-          echo VERSION=$VERSION
-
-          docker tag $SERVICE_NAME $IMAGE_ID:$VERSION
-          docker push $IMAGE_ID:$VERSION
-
+          docker push $IMAGE_ID
 
   deploy:
     needs: push-image
