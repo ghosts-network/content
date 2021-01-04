@@ -6,6 +6,9 @@ on:
       version:
         description: 'Version of nuget package'
         required: true
+env:
+  PACKAGE_NAME: GhostNetwork.Publications
+  PACKAGE_REGISTRY: https://api.nuget.org/v3/index.json
 
 jobs:
   generate-client:
@@ -22,9 +25,12 @@ jobs:
           npx @openapitools/openapi-generator-cli generate -i http://localhost:5300/swagger/v1/swagger.json \
             -g csharp-netcore \
             -o ./http-client \
-            --additional-properties=packageName=GhostNetwork.Publications \
+            --additional-properties=packageName=$PACKAGE_NAME \
             --additional-properties=netCoreProjectFile=true
-      - uses: actions/download-artifact@v2
+      - uses: actions/setup-dotnet@v1
         with:
-          name: project
-          path: http-client
+          dotnet-version: 3.1.301
+      - name: Create package
+        run: dotnet pack -p:PackageVersion=${{ github.event.inputs.version }} -o .
+      - name: Publish package
+        run: dotnet nuget push $PACKAGE_NAME --source $REGISTRY --api-key ${{ secrets.NUGET_KEY }}
