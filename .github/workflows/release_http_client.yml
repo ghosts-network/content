@@ -1,0 +1,30 @@
+name: Release nuget http client
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version of nuget package'
+        required: true
+
+jobs:
+  generate-client:
+    runs-on: ubuntu-20.04
+    
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install generator
+        run: npm install @openapitools/openapi-generator-cli -g
+      - name: Run service instance
+        run: docker-compose up -d
+      - name: generate-package
+        run: |
+          npx @openapitools/openapi-generator-cli generate -i http://localhost:5300/swagger/v1/swagger.json \
+            -g csharp-netcore \
+            -o ./http-client \
+            --additional-properties=packageName=GhostNetwork.Publications \
+            --additional-properties=netCoreProjectFile=true
+      - uses: actions/download-artifact@v2
+        with:
+          name: project
+          path: http-client
