@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install generator
-        run: npm install @openapitools/openapi-generator-cli -g
+        run: npm install @openapitools/openapi-generator-cli
       - name: Run service instance
         run: docker-compose up -d
       - name: generate-package
