@@ -32,5 +32,7 @@ jobs:
           dotnet-version: 3.1.301
       - name: Create package
         run: dotnet pack -p:PackageVersion=${{ github.event.inputs.version }} -o .
+        working-directory: ./http-client
       - name: Publish package
         run: dotnet nuget push $PACKAGE_NAME --source $REGISTRY --api-key ${{ secrets.NUGET_KEY }}
+        working-directory: ./http-client
