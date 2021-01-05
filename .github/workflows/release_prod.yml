@@ -8,7 +8,7 @@ env:
 
 jobs:
   unit-test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
       - uses: actions/checkout@v2
@@ -24,7 +24,7 @@ jobs:
 
   api-test:
     needs: unit-test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
       - uses: actions/checkout@v2
@@ -44,7 +44,7 @@ jobs:
 
   push-image:
     needs: api-test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
       - uses: actions/checkout@v2
@@ -65,7 +65,7 @@ jobs:
 
   deploy:
     needs: push-image
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     
     steps:
       - name: Create SSH key
