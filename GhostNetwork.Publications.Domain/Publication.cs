@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
+using GhostNetwork.Publications.Comments;
 
 namespace GhostNetwork.Publications
 {
     public class Publication
     {
-        public Publication(string id, string content, IEnumerable<string> tags, string authorId, DateTimeOffset createdOn, DateTimeOffset updatedOn)
+        public Publication(string id, string content, IEnumerable<string> tags, string authorId, DateTimeOffset createdOn, DateTimeOffset updatedOn, IEnumerable<Comment> comments = null)
         {
             Id = id;
             Content = content;
@@ -13,6 +14,7 @@ namespace GhostNetwork.Publications
             AuthorId = authorId;
             CreatedOn = createdOn;
             UpdatedOn = updatedOn;
+            Comments = comments;
         }
 
         public string Id { get; }
@@ -26,6 +28,8 @@ namespace GhostNetwork.Publications
         public DateTimeOffset CreatedOn { get; }
 
         public DateTimeOffset UpdatedOn { get; private set; }
+
+        public IEnumerable<Comment> Comments { get; set; }
 
         public bool IsUpdated => CreatedOn != UpdatedOn;
 

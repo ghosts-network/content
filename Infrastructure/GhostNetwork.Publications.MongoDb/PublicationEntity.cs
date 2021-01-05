@@ -22,5 +22,8 @@ namespace GhostNetwork.Publications.MongoDb
 
         [BsonElement("updateOn")]
         public long UpdateOn { get; set; }
+
+        [BsonIgnore]
+        public IList<CommentEntity> CommentEntities { get; set; }
     }
 }

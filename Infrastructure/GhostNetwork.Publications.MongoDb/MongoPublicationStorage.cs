@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GhostNetwork.Publications.Comments;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
@@ -25,6 +26,11 @@ namespace GhostNetwork.Publications.MongoDb
 
             var filter = Builders<PublicationEntity>.Filter.Eq(p => p.Id, oId);
             var entity = await context.Publications.Find(filter).FirstOrDefaultAsync();
+            if (entity != null)
+            {
+                var comments = await context.Comments.Find(x => x.PublicationId == entity.Id.ToString()).ToListAsync();
+                entity.CommentEntities = comments;
+            }
 
             return entity == null ? null : ToDomain(entity);
         }
@@ -69,6 +75,21 @@ namespace GhostNetwork.Publications.MongoDb
                 .Limit(take)
                 .ToListAsync();
 
+            var comments = await context.Comments.AsQueryable().ToListAsync();
+
+            foreach (var publication in entities)
+            {
+                var publicationComments = comments.Where(x => x.PublicationId == publication.Id.ToString()).ToList();
+                if (publicationComments.Any())
+                {
+                    publication.CommentEntities = publicationComments;
+                }
+                else
+                {
+                    publication.CommentEntities = new List<CommentEntity>();
+                }
+            }
+
             return (entities.Select(ToDomain), totalCount);
         }
 
@@ -108,7 +129,26 @@ namespace GhostNetwork.Publications.MongoDb
                 entity.Tags,
                 entity.AuthorId,
                 DateTimeOffset.FromUnixTimeMilliseconds(entity.CreateOn),
-                DateTimeOffset.FromUnixTimeMilliseconds(entity.UpdateOn));
+                DateTimeOffset.FromUnixTimeMilliseconds(entity.UpdateOn),
+                ToListComments(entity.CommentEntities.ToList()));
+        }
+
+        private static List<Comment> ToListComments(List<CommentEntity> entities)
+        {
+            List<Comment> comments = new List<Comment>();
+            foreach (var comment in entities)
+            {
+                var com = new Comment(
+                    comment.Id.ToString(),
+                    comment.Content,
+                    DateTimeOffset.FromUnixTimeMilliseconds(comment.CreateOn),
+                    comment.PublicationId,
+                    comment.ReplyCommentId,
+                    comment.AuthorId);
+                comments.Add(com);
+            }
+
+            return comments;
         }
     }
 }
