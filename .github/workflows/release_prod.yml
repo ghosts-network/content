@@ -70,7 +70,7 @@ jobs:
     runs-on: ubuntu-20.04
     
     steps:
-      - uses: actions/setup-ssh-key@v1
+      - uses: boberneprotiv/setup-ssh-key@v1
         with:
           private-key: ${{ secrets.SSH_PRIVATE_KEY }}
           known-hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
