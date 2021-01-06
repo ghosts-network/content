@@ -71,6 +71,7 @@ jobs:
     
     steps:
       - uses: boberneprotiv/setup-ssh-key@v1
+        id: setup-ssh
         with:
           private-key: ${{ secrets.SSH_PRIVATE_KEY }}
           known-hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
@@ -78,4 +79,4 @@ jobs:
       - name: Run command
         run: ssh -i "$SSH_KEY_PATH" "${{secrets.SSH_REMOTE_USER}}"@"${{secrets.SSH_REMOTE_HOST}}" "cd gh && docker-compose pull && docker-compose up -d --force-recreate $SERVICE_NAME"
         env:
-          SSH_KEY_PATH: ${{ github.workspace }}/../private.key
+          SSH_KEY_PATH: ${{ steps.setup-ssh.outputs.private-key-path }}
