@@ -70,16 +70,10 @@ jobs:
     runs-on: ubuntu-20.04
     
     steps:
-      - name: Create SSH key
-        run: |
-          mkdir -p ~/.ssh/
-          echo "$SSH_PRIVATE_KEY" > ../private.key
-          sudo chmod 600 ../private.key
-          echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
-        shell: bash
-        env:
-          SSH_PRIVATE_KEY: ${{secrets.SSH_PRIVATE_KEY}}
-          SSH_KNOWN_HOSTS: ${{secrets.SSH_KNOWN_HOSTS}}
+      - uses: actions/setup-ssh-key
+        with:
+          private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known-hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
 
       - name: Run command
         run: ssh -i "$SSH_KEY_PATH" "${{secrets.SSH_REMOTE_USER}}"@"${{secrets.SSH_REMOTE_HOST}}" "cd gh && docker-compose pull && docker-compose up -d --force-recreate $SERVICE_NAME"
