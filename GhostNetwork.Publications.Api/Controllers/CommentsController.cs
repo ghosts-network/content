@@ -20,6 +20,11 @@ namespace GhostNetwork.Publications.Api.Controllers
             this.commentService = commentService;
         }
 
+        /// <summary>
+        /// Create comment
+        /// </summary>
+        /// <param name="model">Comment</param>
+        /// <returns>Created comment</returns>
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -36,6 +41,10 @@ namespace GhostNetwork.Publications.Api.Controllers
             return BadRequest(domainResult.ToProblemDetails());
         }
 
+        /// <summary>
+        /// Get one comment by id
+        /// </summary>
+        /// <param name="id">Comment id</param>
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -50,6 +59,13 @@ namespace GhostNetwork.Publications.Api.Controllers
             return Ok(comment);
         }
 
+        /// <summary>
+        /// Search comments for publication
+        /// </summary>
+        /// <param name="publicationId">Publication id</param>
+        /// <param name="skip">Skip comments up to a specified position</param>
+        /// <param name="take">Take comments up to a specified position</param>
+        /// <returns>Comments related to publication</returns>
         [HttpGet("bypublication/{publicationId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<Comment>>> SearchAsync(
@@ -63,6 +79,10 @@ namespace GhostNetwork.Publications.Api.Controllers
             return Ok(comments);
         }
 
+        /// <summary>
+        /// Delete one comment
+        /// </summary>
+        /// <param name="id">Comment id</param>
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
