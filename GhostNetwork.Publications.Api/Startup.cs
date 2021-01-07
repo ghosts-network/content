@@ -33,12 +33,15 @@ namespace GhostNetwork.Publications.Api
             {
                 options.SwaggerDoc("v1", new OpenApiInfo
                 {
-                    Title = "GhostNetwork/Publications API",
+                    Title = "GhostNetwork.Publications",
+                    Description = "Http client for GhostNetwork.Publications",
                     Version = "1.0.0"
                 });
 
                 options.OperationFilter<OperationIdFilter>();
                 options.OperationFilter<AddResponseHeadersFilter>();
+
+                options.IncludeXmlComments(XmlPathProvider.XmlPath);;
             });
 
             services.AddScoped(provider =>
