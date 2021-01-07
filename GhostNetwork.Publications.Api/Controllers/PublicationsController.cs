@@ -20,6 +20,10 @@ namespace GhostNetwork.Publications.Api.Controllers
             this.publicationService = publicationService;
         }
 
+        /// <summary>
+        /// Get one publication by id
+        /// </summary>
+        /// <param name="id">Publication id</param>
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -35,9 +39,17 @@ namespace GhostNetwork.Publications.Api.Controllers
             return Ok(publication);
         }
 
+        /// <summary>
+        /// Search publications
+        /// </summary>
+        /// <param name="skip">Skip publications up to a specified position</param>
+        /// <param name="take">Take publications up to a specified position</param>
+        /// <param name="tags">Filters publications by tags</param>
+        /// <param name="order">Order by creation date</param>
+        /// <returns>Filtered sequence of publications</returns>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [SwaggerResponseHeader(StatusCodes.Status200OK, "X-TotalCount", "Number", "")]
+        [SwaggerResponseHeader(StatusCodes.Status200OK, "X-TotalCount", "Number", "Total count of publications with applied filters")]
         public async Task<ActionResult<IEnumerable<Publication>>> SearchAsync(
             [FromQuery, Range(0, int.MaxValue)] int skip,
             [FromQuery, Range(1, 100)] int take,
@@ -50,6 +62,11 @@ namespace GhostNetwork.Publications.Api.Controllers
             return Ok(list);
         }
 
+        /// <summary>
+        /// Create one publication
+        /// </summary>
+        /// <param name="model">Publication</param>
+        /// <returns>Created publication</returns>
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -66,6 +83,11 @@ namespace GhostNetwork.Publications.Api.Controllers
             return Created(Url.Action("GetById", new { id }), await publicationService.GetByIdAsync(id));
         }
 
+        /// <summary>
+        /// Update one publication
+        /// </summary>
+        /// <param name="id">Publication id</param>
+        /// <param name="model">Updated model</param>
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -87,6 +109,10 @@ namespace GhostNetwork.Publications.Api.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Delete one publication
+        /// </summary>
+        /// <param name="id">Publication id</param>
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
