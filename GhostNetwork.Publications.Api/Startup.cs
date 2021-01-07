@@ -41,7 +41,7 @@ namespace GhostNetwork.Publications.Api
                 options.OperationFilter<OperationIdFilter>();
                 options.OperationFilter<AddResponseHeadersFilter>();
 
-                options.IncludeXmlComments(XmlPathProvider.XmlPath);;
+                options.IncludeXmlComments(XmlPathProvider.XmlPath);
             });
 
             services.AddScoped(provider =>
