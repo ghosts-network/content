@@ -15,6 +15,6 @@ namespace GhostNetwork.Publications.Comments
 
         Task DeleteByPublicationAsync(string publicationId);
 
-        Task DeleteOneAsync(string commentId);
+        Task DeleteOneAsync(string commentId, string authorId);
     }
 }

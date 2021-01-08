@@ -16,7 +16,7 @@ namespace GhostNetwork.Publications
 
         Task<DomainResult> UpdateAsync(string id, string text);
 
-        Task DeleteAsync(string id);
+        Task DeleteAsync(string id, string authorId);
     }
 
     public class PublicationService : IPublicationService
@@ -83,10 +83,10 @@ namespace GhostNetwork.Publications
             return DomainResult.Success();
         }
 
-        public async Task DeleteAsync(string id)
+        public async Task DeleteAsync(string id, string authorId)
         {
             await commentStorage.DeleteByPublicationAsync(id);
-            await publicationStorage.DeleteOneAsync(id);
+            await publicationStorage.DeleteOneAsync(id, authorId);
         }
     }
 }

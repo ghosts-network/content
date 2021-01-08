@@ -83,17 +83,17 @@ namespace GhostNetwork.Publications.Api.Controllers
         /// Delete one comment
         /// </summary>
         /// <param name="id">Comment id</param>
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}/{authorId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<IEnumerable<Comment>>> DeleteAsync([FromRoute] string id)
+        public async Task<ActionResult<IEnumerable<Comment>>> DeleteAsync([FromRoute] string id, [FromRoute] string authorId)
         {
             if (await commentService.GetByIdAsync(id) == null)
             {
                 return NotFound();
             }
 
-            await commentService.DeleteAsync(id);
+            await commentService.DeleteAsync(id, authorId);
 
             return Ok();
         }

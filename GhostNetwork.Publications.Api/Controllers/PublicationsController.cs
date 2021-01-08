@@ -113,17 +113,17 @@ namespace GhostNetwork.Publications.Api.Controllers
         /// Delete one publication
         /// </summary>
         /// <param name="id">Publication id</param>
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}/{authorId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult> DeleteAsync([FromRoute] string id)
+        public async Task<ActionResult> DeleteAsync([FromRoute] string id, [FromRoute] string authorId)
         {
             if (await publicationService.GetByIdAsync(id) == null)
             {
                 return NotFound();
             }
 
-            await publicationService.DeleteAsync(id);
+            await publicationService.DeleteAsync(id, authorId);
 
             return Ok();
         }

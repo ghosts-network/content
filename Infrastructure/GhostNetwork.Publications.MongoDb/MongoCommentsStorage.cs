@@ -88,14 +88,15 @@ namespace GhostNetwork.Publications.MongoDb
             await context.Comments.DeleteManyAsync(filter);
         }
 
-        public async Task DeleteOneAsync(string commentId)
+        public async Task DeleteOneAsync(string commentId, string authorId)
         {
             if (!ObjectId.TryParse(commentId, out var oId))
             {
                 return;
             }
 
-            var filter = Builders<CommentEntity>.Filter.Eq(x => x.Id, oId);
+            var filter = Builders<CommentEntity>.Filter.Eq(x => x.Id, oId)
+                & Builders<CommentEntity>.Filter.Eq(x => x.AuthorId, authorId);
 
             await context.Comments.DeleteOneAsync(filter);
         }

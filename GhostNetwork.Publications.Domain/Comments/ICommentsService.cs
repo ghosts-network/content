@@ -14,7 +14,7 @@ namespace GhostNetwork.Publications.Comments
 
         Task<(DomainResult, string)> CreateAsync(string publicationId, string text, string replyCommentId, string authorId);
 
-        Task DeleteAsync(string id);
+        Task DeleteAsync(string id, string authorId);
     }
 
     public class CommentsService : ICommentsService
@@ -67,9 +67,9 @@ namespace GhostNetwork.Publications.Comments
             return await commentStorage.FindManyAsync(publicationId, skip, take);
         }
 
-        public async Task DeleteAsync(string id)
+        public async Task DeleteAsync(string id, string authorId)
         {
-            await commentStorage.DeleteOneAsync(id);
+            await commentStorage.DeleteOneAsync(id, authorId);
         }
     }
 }

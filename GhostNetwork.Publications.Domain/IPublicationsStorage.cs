@@ -13,6 +13,6 @@ namespace GhostNetwork.Publications
 
         Task UpdateOneAsync(Publication publication);
 
-        Task DeleteOneAsync(string id);
+        Task DeleteOneAsync(string id, string authorId);
     }
 }
