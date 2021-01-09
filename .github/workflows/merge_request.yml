@@ -40,6 +40,10 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+      - name: Build service
+        run: docker build -t test-image .
+      - name: Run service
+        run: docker run -d -p 5300:80
       - name: Test with pytest
         working-directory: ./tests/api
         run: pytest
