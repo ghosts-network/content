@@ -23,8 +23,6 @@ jobs:
         run: dotnet test --no-restore --verbosity normal
 
   api-test:
-    # temporary disabled because pytest+docker-compose error
-    if: ${{ false }}
     needs: unit-test
     runs-on: ubuntu-20.04
 
@@ -45,7 +43,7 @@ jobs:
         run: pytest
 
   push-image:
-    needs: unit-test
+    needs: api-test
     runs-on: ubuntu-20.04
 
     steps:
