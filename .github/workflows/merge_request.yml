@@ -40,3 +40,4 @@ jobs:
         working-directory: ./tests/api
         run: pytest
       - run: docker ps -a
+        if: ${{ failure() }}
