@@ -72,8 +72,7 @@ namespace GhostNetwork.Publications.Api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Publication>> CreateAsync([FromBody] CreatePublicationModel model)
         {
-            var authorId = model.AuthorId ?? "Unauthorized";
-            var (result, id) = await publicationService.CreateAsync(model.Content, authorId);
+            var (result, id) = await publicationService.CreateAsync(model.Content, (UserInfo)model.Author);
 
             if (!result.Successed)
             {

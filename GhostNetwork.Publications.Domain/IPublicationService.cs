@@ -12,7 +12,7 @@ namespace GhostNetwork.Publications
 
         Task<(IEnumerable<Publication>, long)> SearchAsync(int skip, int take, IEnumerable<string> tags, Ordering order);
 
-        Task<(DomainResult, string)> CreateAsync(string text, string authorId);
+        Task<(DomainResult, string)> CreateAsync(string text, UserInfo author);
 
         Task<DomainResult> UpdateAsync(string id, string text);
 
@@ -48,7 +48,7 @@ namespace GhostNetwork.Publications
             return await publicationStorage.FindManyAsync(skip, take, tags, order);
         }
 
-        public async Task<(DomainResult, string)> CreateAsync(string text, string authorId)
+        public async Task<(DomainResult, string)> CreateAsync(string text, UserInfo author)
         {
             var content = new PublicationContext(text);
             var result = await validator.ValidateAsync(content);
@@ -58,7 +58,7 @@ namespace GhostNetwork.Publications
                 return (result, null);
             }
 
-            var publication = Publication.New(text, authorId, hashTagsFetcher.Fetch);
+            var publication = Publication.New(text, author, hashTagsFetcher.Fetch);
             var id = await publicationStorage.InsertOneAsync(publication);
 
             return (result, id);

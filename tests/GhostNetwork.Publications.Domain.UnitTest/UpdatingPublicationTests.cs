@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using NUnit.Framework;
 
 namespace GhostNetwork.Publications.Domain.UnitTest
@@ -11,7 +10,7 @@ namespace GhostNetwork.Publications.Domain.UnitTest
         public void Publication_Not_Updated_Just_After_Creation()
         {
             // Setup
-            var publication = Publication.New("text1", "author", content => new string[] { });
+            var publication = Publication.New("text1", new UserInfo(Guid.Empty, string.Empty, null), content => new string[] { });
 
             // Assert
             Assert.IsFalse(publication.IsUpdated);
@@ -22,7 +21,7 @@ namespace GhostNetwork.Publications.Domain.UnitTest
         {
             // Setup
             var publication = Publication
-                .New("text1", "author", content => new string[] { })
+                .New("text1", new UserInfo(Guid.Empty, string.Empty, null), content => new string[] { })
                 .Update("text2", content => new string[] { });
 
             // Assert

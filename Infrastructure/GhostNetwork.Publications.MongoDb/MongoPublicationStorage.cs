@@ -35,7 +35,7 @@ namespace GhostNetwork.Publications.MongoDb
             {
                 Content = publication.Content,
                 Tags = publication.Tags.ToList(),
-                AuthorId = publication.AuthorId,
+                Author = (UserInfoEntity)publication.Author,
                 CreateOn = publication.CreatedOn.ToUnixTimeMilliseconds(),
                 UpdateOn = publication.UpdatedOn.ToUnixTimeMilliseconds()
             };
@@ -106,7 +106,7 @@ namespace GhostNetwork.Publications.MongoDb
                 entity.Id.ToString(),
                 entity.Content,
                 entity.Tags,
-                entity.AuthorId,
+                (UserInfo)entity.Author,
                 DateTimeOffset.FromUnixTimeMilliseconds(entity.CreateOn),
                 DateTimeOffset.FromUnixTimeMilliseconds(entity.UpdateOn));
         }

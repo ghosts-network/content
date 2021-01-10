@@ -4,14 +4,14 @@ namespace GhostNetwork.Publications.Comments
 {
     public class Comment
     {
-        public Comment(string id, string content, DateTimeOffset createdOn, string publicationId, string replyCommentId, string authorId)
+        public Comment(string id, string content, DateTimeOffset createdOn, string publicationId, string replyCommentId, UserInfo author)
         {
             Id = id;
             Content = content;
             CreatedOn = createdOn;
             PublicationId = publicationId;
             ReplyCommentId = replyCommentId;
-            AuthorId = authorId;
+            Author = author;
         }
 
         public string Id { get; }
@@ -20,7 +20,7 @@ namespace GhostNetwork.Publications.Comments
 
         public string PublicationId { get; }
 
-        public string AuthorId { get; }
+        public UserInfo Author { get; }
 
         public DateTimeOffset CreatedOn { get; }
 

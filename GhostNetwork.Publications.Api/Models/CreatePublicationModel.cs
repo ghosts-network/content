@@ -7,6 +7,6 @@ namespace GhostNetwork.Publications.Api.Models
         [Required]
         public string Content { get; set; }
 
-        public string AuthorId { get; set; }
+        public UserInfoModel Author { get; set; }
     }
 }

@@ -12,7 +12,7 @@ namespace GhostNetwork.Publications.Comments
 
         Task<(IEnumerable<Comment>, long)> SearchAsync(string publicationId, int skip, int take);
 
-        Task<(DomainResult, string)> CreateAsync(string publicationId, string text, string replyCommentId, string authorId);
+        Task<(DomainResult, string)> CreateAsync(string publicationId, string text, string replyCommentId, UserInfo author);
 
         Task DeleteAsync(string id);
     }
@@ -33,7 +33,7 @@ namespace GhostNetwork.Publications.Comments
             this.validator = validator;
         }
 
-        public async Task<(DomainResult, string)> CreateAsync(string publicationId, string text, string replyCommentId, string authorId)
+        public async Task<(DomainResult, string)> CreateAsync(string publicationId, string text, string replyCommentId, UserInfo author)
         {
             var publication = await publicationsStorage.FindOneByIdAsync(publicationId);
             if (publication == null)
@@ -49,7 +49,7 @@ namespace GhostNetwork.Publications.Comments
                     return (result, null);
                 }
 
-                var comment = new Comment(default, text, DateTimeOffset.UtcNow, publicationId, replyCommentId, authorId);
+                var comment = new Comment(default, text, DateTimeOffset.UtcNow, publicationId, replyCommentId, author);
 
                 return (result, await commentStorage.InsertOneAsync(comment));
             }

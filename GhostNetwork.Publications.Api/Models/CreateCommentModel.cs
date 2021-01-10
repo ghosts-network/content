@@ -12,6 +12,6 @@ namespace GhostNetwork.Publications.Api.Models
 
         public string ReplyCommentId { get; set; }
 
-        public string AuthorId { get; set; }
+        public UserInfoModel Author { get; set; }
     }
 }

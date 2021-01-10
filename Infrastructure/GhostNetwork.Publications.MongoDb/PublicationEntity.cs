@@ -14,8 +14,8 @@ namespace GhostNetwork.Publications.MongoDb
         [BsonElement("tags")]
         public IList<string> Tags { get; set; }
 
-        [BsonElement("authorId")]
-        public string AuthorId { get; set; }
+        [BsonElement("author")]
+        public UserInfoEntity Author { get; set; }
 
         [BsonElement("createOn")]
         public long CreateOn { get; set; }
