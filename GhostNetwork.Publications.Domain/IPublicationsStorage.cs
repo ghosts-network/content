@@ -14,5 +14,7 @@ namespace GhostNetwork.Publications
         Task UpdateOneAsync(Publication publication);
 
         Task DeleteOneAsync(string id);
+
+        Task<(IEnumerable<Publication>, long)> FindManyByAuthor(int skip, int take, string authorId, Ordering order);
     }
 }

@@ -72,6 +72,35 @@ namespace GhostNetwork.Publications.MongoDb
             return (entities.Select(ToDomain), totalCount);
         }
 
+        public async Task<(IEnumerable<Publication>, long)> FindManyByAuthor(int skip, int take, string authorId, Ordering order)
+        {
+            if (Guid.TryParse(authorId, out var oId))
+            {
+                var filter = Builders<PublicationEntity>.Filter.Where(x => x.Author.Id == oId);
+
+                var totalCount = await context.Publications
+                    .Find(filter)
+                    .CountDocumentsAsync();
+
+                var sorting = order switch
+                {
+                    Ordering.Desc => Builders<PublicationEntity>.Sort.Descending(x => x.CreateOn),
+                    _ => Builders<PublicationEntity>.Sort.Ascending(x => x.CreateOn)
+                };
+
+                var entities = await context.Publications
+                    .Find(filter)
+                    .Sort(sorting)
+                    .Skip(skip)
+                    .Limit(take)
+                    .ToListAsync();
+
+                return (entities.Select(ToDomain), totalCount);
+            }
+
+            return (new List<Publication>(), 0);
+        }
+
         public async Task UpdateOneAsync(Publication publication)
         {
             if (!ObjectId.TryParse(publication.Id, out var oId))
@@ -99,6 +128,8 @@ namespace GhostNetwork.Publications.MongoDb
 
             await context.Publications.DeleteOneAsync(filter);
         }
+
+
 
         private static Publication ToDomain(PublicationEntity entity)
         {

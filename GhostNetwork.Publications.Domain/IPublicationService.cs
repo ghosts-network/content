@@ -17,6 +17,8 @@ namespace GhostNetwork.Publications
         Task<DomainResult> UpdateAsync(string id, string text);
 
         Task DeleteAsync(string id);
+
+        Task<(IEnumerable<Publication>, long)> SearchByAuthor(int skip, int take, string authorId, Ordering order);
     }
 
     public class PublicationService : IPublicationService
@@ -87,6 +89,11 @@ namespace GhostNetwork.Publications
         {
             await commentStorage.DeleteByPublicationAsync(id);
             await publicationStorage.DeleteOneAsync(id);
+        }
+
+        public async Task<(IEnumerable<Publication>, long)> SearchByAuthor(int skip, int take, string authorId, Ordering order)
+        {
+            return await publicationStorage.FindManyByAuthor(skip, take, authorId, order);
         }
     }
 }
