@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
@@ -37,6 +38,29 @@ namespace GhostNetwork.Publications.Api.Controllers
             }
 
             return Ok(publication);
+        }
+
+        /// <summary>
+        /// Search publication by authorId
+        /// </summary>
+        /// <param name="skip">Skip publications up to a specified position</param>
+        /// <param name="take">Take publications up to a specified position</param>
+        /// <param name="authorId">Filters publications by authorId</param>
+        /// <param name="order">Order by creation date</param>
+        /// <returns>Filtered sequence of publications</returns>
+        [HttpGet("publications/{authorId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [SwaggerResponseHeader(StatusCodes.Status200OK, "X-TotalCount", "Number", "Total number of author publications")]
+        public async Task<ActionResult<IEnumerable<Publication>>> SearchByAuthorAsync(
+            [FromQuery, Range(0, int.MaxValue)] int skip,
+            [FromQuery, Range(1, 100)]int take,
+            [FromRoute] Guid authorId,
+            [FromQuery] Ordering order = Ordering.Asc)
+        {
+            var (publications, totalCount) = await publicationService.SearchByAuthor(skip, take, authorId, order);
+            Response.Headers.Add("X-TotalCount", totalCount.ToString());
+
+            return Ok(publications);
         }
 
         /// <summary>

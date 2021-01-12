@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -14,5 +15,7 @@ namespace GhostNetwork.Publications
         Task UpdateOneAsync(Publication publication);
 
         Task DeleteOneAsync(string id);
+
+        Task<(IEnumerable<Publication>, long)> FindManyByAuthorAsync(int skip, int take, Guid authorId, Ordering order);
     }
 }

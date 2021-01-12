@@ -72,6 +72,30 @@ namespace GhostNetwork.Publications.MongoDb
             return (entities.Select(ToDomain), totalCount);
         }
 
+        public async Task<(IEnumerable<Publication>, long)> FindManyByAuthorAsync(int skip, int take, Guid authorId, Ordering order)
+        {
+            var filter = Builders<PublicationEntity>.Filter.Where(x => x.Author.Id == authorId);
+
+            var totalCount = await context.Publications
+                .Find(filter)
+                .CountDocumentsAsync();
+
+            var sorting = order switch
+            {
+                Ordering.Desc => Builders<PublicationEntity>.Sort.Descending(x => x.CreateOn),
+                _ => Builders<PublicationEntity>.Sort.Ascending(x => x.CreateOn)
+            };
+
+            var entities = await context.Publications
+                .Find(filter)
+                .Sort(sorting)
+                .Skip(skip)
+                .Limit(take)
+                .ToListAsync();
+
+            return (entities.Select(ToDomain), totalCount);
+        }
+
         public async Task UpdateOneAsync(Publication publication)
         {
             if (!ObjectId.TryParse(publication.Id, out var oId))
