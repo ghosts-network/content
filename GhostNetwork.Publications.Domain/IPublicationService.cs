@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Domain;
 using Domain.Validation;
@@ -18,7 +19,7 @@ namespace GhostNetwork.Publications
 
         Task DeleteAsync(string id);
 
-        Task<(IEnumerable<Publication>, long)> SearchByAuthor(int skip, int take, string authorId, Ordering order);
+        Task<(IEnumerable<Publication>, long)> SearchByAuthor(int skip, int take, Guid authorId, Ordering order);
     }
 
     public class PublicationService : IPublicationService
@@ -91,9 +92,9 @@ namespace GhostNetwork.Publications
             await publicationStorage.DeleteOneAsync(id);
         }
 
-        public async Task<(IEnumerable<Publication>, long)> SearchByAuthor(int skip, int take, string authorId, Ordering order)
+        public async Task<(IEnumerable<Publication>, long)> SearchByAuthor(int skip, int take, Guid authorId, Ordering order)
         {
-            return await publicationStorage.FindManyByAuthor(skip, take, authorId, order);
+            return await publicationStorage.FindManyByAuthorAsync(skip, take, authorId, order);
         }
     }
 }

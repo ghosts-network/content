@@ -72,33 +72,28 @@ namespace GhostNetwork.Publications.MongoDb
             return (entities.Select(ToDomain), totalCount);
         }
 
-        public async Task<(IEnumerable<Publication>, long)> FindManyByAuthor(int skip, int take, string authorId, Ordering order)
+        public async Task<(IEnumerable<Publication>, long)> FindManyByAuthorAsync(int skip, int take, Guid authorId, Ordering order)
         {
-            if (Guid.TryParse(authorId, out var oId))
+            var filter = Builders<PublicationEntity>.Filter.Where(x => x.Author.Id == authorId);
+
+            var totalCount = await context.Publications
+                .Find(filter)
+                .CountDocumentsAsync();
+
+            var sorting = order switch
             {
-                var filter = Builders<PublicationEntity>.Filter.Where(x => x.Author.Id == oId);
+                Ordering.Desc => Builders<PublicationEntity>.Sort.Descending(x => x.CreateOn),
+                _ => Builders<PublicationEntity>.Sort.Ascending(x => x.CreateOn)
+            };
 
-                var totalCount = await context.Publications
-                    .Find(filter)
-                    .CountDocumentsAsync();
+            var entities = await context.Publications
+                .Find(filter)
+                .Sort(sorting)
+                .Skip(skip)
+                .Limit(take)
+                .ToListAsync();
 
-                var sorting = order switch
-                {
-                    Ordering.Desc => Builders<PublicationEntity>.Sort.Descending(x => x.CreateOn),
-                    _ => Builders<PublicationEntity>.Sort.Ascending(x => x.CreateOn)
-                };
-
-                var entities = await context.Publications
-                    .Find(filter)
-                    .Sort(sorting)
-                    .Skip(skip)
-                    .Limit(take)
-                    .ToListAsync();
-
-                return (entities.Select(ToDomain), totalCount);
-            }
-
-            return (new List<Publication>(), 0);
+            return (entities.Select(ToDomain), totalCount);
         }
 
         public async Task UpdateOneAsync(Publication publication)
@@ -128,8 +123,6 @@ namespace GhostNetwork.Publications.MongoDb
 
             await context.Publications.DeleteOneAsync(filter);
         }
-
-
 
         private static Publication ToDomain(PublicationEntity entity)
         {
