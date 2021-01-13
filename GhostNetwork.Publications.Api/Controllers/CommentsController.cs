@@ -66,11 +66,11 @@ namespace GhostNetwork.Publications.Api.Controllers
         /// <returns>Comments related to publications</returns>
         [HttpPost("comments/featured")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<Dictionary<string, IEnumerable<Comment>>>> SearchByPublicationsAsync(
+        public async Task<ActionResult<Dictionary<string, IEnumerable<Comment>>>> SearchFeaturedAsync(
             [FromBody] FindCommentsByIdsModel model,
             [FromQuery] Ordering order = Ordering.Asc)
         {
-            var result = await commentService.FindCommentsByPublicationsAsync(model.PublicationIds, order);
+            var result = await commentService.SearchFeaturedAsync(model.PublicationIds, order);
             return Ok(result);
         }
 

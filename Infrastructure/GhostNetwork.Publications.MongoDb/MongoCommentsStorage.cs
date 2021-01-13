@@ -100,7 +100,7 @@ namespace GhostNetwork.Publications.MongoDb
             await context.Comments.DeleteOneAsync(filter);
         }
 
-        public async Task<Dictionary<string, IEnumerable<Comment>>> FindCommentsByPublicationsAsync(string[] publicationsIds, Ordering order)
+        public async Task<Dictionary<string, IEnumerable<Comment>>> FindFeaturedAsync(string[] publicationsIds, Ordering order)
         {
             var sorting = order switch
             {
