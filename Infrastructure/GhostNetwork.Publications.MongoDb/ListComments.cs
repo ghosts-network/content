@@ -8,6 +8,7 @@ namespace GhostNetwork.Publications.MongoDb
         [BsonElement("_id")]
         public string Id { get; set; }
 
+        [BsonElement("comments")]
         public IEnumerable<CommentEntity> Comments { get; set; }
     }
 }

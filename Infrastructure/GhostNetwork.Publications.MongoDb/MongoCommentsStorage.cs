@@ -102,34 +102,51 @@ namespace GhostNetwork.Publications.MongoDb
 
         public async Task<Dictionary<string, IEnumerable<Comment>>> FindCommentsByIds(string[] ids, int take, Ordering order)
         {
-            var filter = Builders<CommentEntity>.Filter.In(x => x.PublicationId, ids);
-
             var sorting = order switch
             {
                 Ordering.Desc => Builders<CommentEntity>.Sort.Descending(x => x.CreateOn),
                 _ => Builders<CommentEntity>.Sort.Ascending(x => x.CreateOn)
             };
 
-            var group = new BsonDocument()
+            var group = new BsonDocument
             {
                 { "_id", "$publicationId" },
-                { "Comments", new BsonDocument() { { "$push", "$$ROOT" } } }
+                { "comments", new BsonDocument
+                    { { "$push", "$$ROOT" } }
+                }
             };
 
-            var result = context.Comments.Aggregate()
-                .Sort(sorting)
-                .Match(filter)
-                .Group<ListComments>(group)
-                .ToList();
-
-            var dictionary = new Dictionary<string, IEnumerable<Comment>>();
-
-            foreach (var comment in result)
+            var slice = new BsonDocument
             {
-                dictionary.Add(comment.Id, comment.Comments.Take(take).Select(ToDomain));
-            }
+                {
+                    "comments", new BsonDocument
+                        { { "$slice", new BsonArray(new BsonValue[]
+                        {
+                            "$comments",
+                            3
+                        }) } }
+                }
+            };
 
-            return dictionary;
+            var result = await context.Comments
+                .Aggregate()
+                .Sort(sorting)
+                .Match(Builders<CommentEntity>.Filter.In(x => x.PublicationId, ids))
+                .Group<ListComments>(group)
+                .Project<ListComments>(slice.ToBsonDocument())
+                .ToListAsync();
+
+            var dict = result
+                .ToDictionary(
+                    r => r.Id,
+                    r => r.Comments
+                        .Select(ToDomain)
+                        .ToList());
+
+            return ids
+                .ToDictionary(
+                    publicationId => publicationId,
+                    publicationId => dict.ContainsKey(publicationId) ? dict[publicationId] : Enumerable.Empty<Comment>());
         }
 
         private static Comment ToDomain(CommentEntity entity)

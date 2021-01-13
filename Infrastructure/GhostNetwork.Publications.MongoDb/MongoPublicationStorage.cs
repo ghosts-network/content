@@ -129,8 +129,6 @@ namespace GhostNetwork.Publications.MongoDb
             await context.Publications.DeleteOneAsync(filter);
         }
 
-
-
         private static Publication ToDomain(PublicationEntity entity)
         {
             return new Publication(
