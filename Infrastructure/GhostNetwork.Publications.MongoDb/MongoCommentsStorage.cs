@@ -100,6 +100,55 @@ namespace GhostNetwork.Publications.MongoDb
             await context.Comments.DeleteOneAsync(filter);
         }
 
+        public async Task<Dictionary<string, IEnumerable<Comment>>> FindFeaturedAsync(string[] publicationsIds, Ordering order)
+        {
+            var sorting = order switch
+            {
+                Ordering.Desc => Builders<CommentEntity>.Sort.Descending(x => x.CreateOn),
+                _ => Builders<CommentEntity>.Sort.Ascending(x => x.CreateOn)
+            };
+
+            var group = new BsonDocument
+            {
+                { "_id", "$publicationId" },
+                { "comments", new BsonDocument
+                    { { "$push", "$$ROOT" } }
+                }
+            };
+
+            var slice = new BsonDocument
+            {
+                {
+                    "comments", new BsonDocument
+                        { { "$slice", new BsonArray(new BsonValue[]
+                        {
+                            "$comments",
+                            3
+                        }) } }
+                }
+            };
+
+            var listComments = await context.Comments
+                .Aggregate()
+                .Sort(sorting)
+                .Match(Builders<CommentEntity>.Filter.In(x => x.PublicationId, publicationsIds))
+                .Group<ListComments>(group)
+                .Project<ListComments>(slice.ToBsonDocument())
+                .ToListAsync();
+
+            var dict = listComments
+                .ToDictionary(
+                    r => r.Id,
+                    r => r.Comments
+                        .Select(ToDomain)
+                        .ToList());
+
+            return publicationsIds
+                .ToDictionary(
+                    publicationId => publicationId,
+                    publicationId => dict.ContainsKey(publicationId) ? dict[publicationId] : Enumerable.Empty<Comment>());
+        }
+
         private static Comment ToDomain(CommentEntity entity)
         {
             return new Comment(
