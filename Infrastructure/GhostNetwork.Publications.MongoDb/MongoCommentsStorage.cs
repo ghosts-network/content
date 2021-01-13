@@ -100,7 +100,7 @@ namespace GhostNetwork.Publications.MongoDb
             await context.Comments.DeleteOneAsync(filter);
         }
 
-        public async Task<Dictionary<string, IEnumerable<Comment>>> FindCommentsByIds(string[] ids, int take, Ordering order)
+        public async Task<Dictionary<string, IEnumerable<Comment>>> FindCommentsByPublicationsAsync(string[] publicationsIds, Ordering order)
         {
             var sorting = order switch
             {
@@ -128,22 +128,22 @@ namespace GhostNetwork.Publications.MongoDb
                 }
             };
 
-            var result = await context.Comments
+            var listComments = await context.Comments
                 .Aggregate()
                 .Sort(sorting)
-                .Match(Builders<CommentEntity>.Filter.In(x => x.PublicationId, ids))
+                .Match(Builders<CommentEntity>.Filter.In(x => x.PublicationId, publicationsIds))
                 .Group<ListComments>(group)
                 .Project<ListComments>(slice.ToBsonDocument())
                 .ToListAsync();
 
-            var dict = result
+            var dict = listComments
                 .ToDictionary(
                     r => r.Id,
                     r => r.Comments
                         .Select(ToDomain)
                         .ToList());
 
-            return ids
+            return publicationsIds
                 .ToDictionary(
                     publicationId => publicationId,
                     publicationId => dict.ContainsKey(publicationId) ? dict[publicationId] : Enumerable.Empty<Comment>());

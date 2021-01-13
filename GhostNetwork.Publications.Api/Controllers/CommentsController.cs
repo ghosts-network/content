@@ -61,16 +61,16 @@ namespace GhostNetwork.Publications.Api.Controllers
         /// <summary>
         /// Search comments for publications
         /// </summary>
-        /// <param name="model">Array of ids</param>
+        /// <param name="model">Array of publications ids</param>
         /// <param name="order">Order by creation date</param>
         /// <returns>Comments related to publications</returns>
         [HttpPost("comments/featured")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<Dictionary<string, IEnumerable<Comment>>>> SearchByArrayAsync(
+        public async Task<ActionResult<Dictionary<string, IEnumerable<Comment>>>> SearchByPublicationsAsync(
             [FromBody] FindCommentsByIdsModel model,
             [FromQuery] Ordering order = Ordering.Asc)
         {
-            var result = await commentService.FindCommentsByIds(model.PublicationIds, model.Take, order);
+            var result = await commentService.FindCommentsByPublicationsAsync(model.PublicationIds, order);
             return Ok(result);
         }
 

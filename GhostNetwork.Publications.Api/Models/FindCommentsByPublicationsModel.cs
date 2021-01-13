@@ -6,7 +6,5 @@ namespace GhostNetwork.Publications.Api.Models
     {
         [Required]
         public string[] PublicationIds { get; set; }
-
-        public int Take { get; set; }
     }
 }
