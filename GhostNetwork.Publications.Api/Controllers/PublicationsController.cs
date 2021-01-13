@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
@@ -53,7 +54,7 @@ namespace GhostNetwork.Publications.Api.Controllers
         public async Task<ActionResult<IEnumerable<Publication>>> SearchByAuthorAsync(
             [FromQuery, Range(0, int.MaxValue)] int skip,
             [FromQuery, Range(1, 100)]int take,
-            [FromRoute] string authorId,
+            [FromRoute] Guid authorId,
             [FromQuery] Ordering order = Ordering.Asc)
         {
             var (publications, totalCount) = await publicationService.SearchByAuthor(skip, take, authorId, order);
