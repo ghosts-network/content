@@ -100,6 +100,38 @@ namespace GhostNetwork.Publications.MongoDb
             await context.Comments.DeleteOneAsync(filter);
         }
 
+        public async Task<Dictionary<string, IEnumerable<Comment>>> FindCommentsByIds(string[] ids, int take, Ordering order)
+        {
+            var filter = Builders<CommentEntity>.Filter.In(x => x.PublicationId, ids);
+
+            var sorting = order switch
+            {
+                Ordering.Desc => Builders<CommentEntity>.Sort.Descending(x => x.CreateOn),
+                _ => Builders<CommentEntity>.Sort.Ascending(x => x.CreateOn)
+            };
+
+            var group = new BsonDocument()
+            {
+                { "_id", "$publicationId" },
+                { "Comments", new BsonDocument() { { "$push", "$$ROOT" } } }
+            };
+
+            var result = context.Comments.Aggregate()
+                .Sort(sorting)
+                .Match(filter)
+                .Group<ListComments>(group)
+                .ToList();
+
+            var dictionary = new Dictionary<string, IEnumerable<Comment>>();
+
+            foreach (var comment in result)
+            {
+                dictionary.Add(comment.Id, comment.Comments.Take(take).Select(ToDomain));
+            }
+
+            return dictionary;
+        }
+
         private static Comment ToDomain(CommentEntity entity)
         {
             return new Comment(

@@ -15,6 +15,8 @@ namespace GhostNetwork.Publications.Comments
         Task<(DomainResult, string)> CreateAsync(string publicationId, string text, string replyCommentId, UserInfo author);
 
         Task DeleteAsync(string id);
+
+        Task<Dictionary<string, IEnumerable<Comment>>> FindCommentsByIds(string[] ids, int take, Ordering order);
     }
 
     public class CommentsService : ICommentsService
@@ -70,6 +72,11 @@ namespace GhostNetwork.Publications.Comments
         public async Task DeleteAsync(string id)
         {
             await commentStorage.DeleteOneAsync(id);
+        }
+
+        public async Task<Dictionary<string, IEnumerable<Comment>>> FindCommentsByIds(string[] ids, int take, Ordering order)
+        {
+            return await commentStorage.FindCommentsByIds(ids, take, order);
         }
     }
 }
