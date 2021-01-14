@@ -2,7 +2,7 @@
 
 namespace GhostNetwork.Publications.Api.Models
 {
-    public class FindCommentsByIdsModel
+    public class FeaturedQuery
     {
         [Required]
         public string[] PublicationIds { get; set; }

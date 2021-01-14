@@ -12,7 +12,9 @@ namespace GhostNetwork.Publications
         }
 
         public Guid Id { get; }
+
         public string FullName { get; }
+
         public string AvatarUrl { get; }
     }
 }

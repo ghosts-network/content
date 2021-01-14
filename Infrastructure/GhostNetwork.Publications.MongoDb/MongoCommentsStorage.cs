@@ -100,19 +100,16 @@ namespace GhostNetwork.Publications.MongoDb
             await context.Comments.DeleteOneAsync(filter);
         }
 
-        public async Task<Dictionary<string, IEnumerable<Comment>>> FindFeaturedAsync(string[] publicationsIds, Ordering order)
+        public async Task<Dictionary<string, IEnumerable<Comment>>> FindFeaturedAsync(string[] publicationsIds)
         {
-            var sorting = order switch
-            {
-                Ordering.Desc => Builders<CommentEntity>.Sort.Descending(x => x.CreateOn),
-                _ => Builders<CommentEntity>.Sort.Ascending(x => x.CreateOn)
-            };
-
             var group = new BsonDocument
             {
                 { "_id", "$publicationId" },
-                { "comments", new BsonDocument
-                    { { "$push", "$$ROOT" } }
+                {
+                    "comments", new BsonDocument
+                    {
+                        { "$push", "$$ROOT" }
+                    }
                 }
             };
 
@@ -120,17 +117,21 @@ namespace GhostNetwork.Publications.MongoDb
             {
                 {
                     "comments", new BsonDocument
-                        { { "$slice", new BsonArray(new BsonValue[]
+                    {
                         {
-                            "$comments",
-                            3
-                        }) } }
+                            "$slice", new BsonArray(new BsonValue[]
+                            {
+                                "$comments",
+                                3
+                            })
+                        }
+                    }
                 }
             };
 
             var listComments = await context.Comments
                 .Aggregate()
-                .Sort(sorting)
+                .Sort(Builders<CommentEntity>.Sort.Ascending(x => x.CreateOn))
                 .Match(Builders<CommentEntity>.Filter.In(x => x.PublicationId, publicationsIds))
                 .Group<ListComments>(group)
                 .Project<ListComments>(slice.ToBsonDocument())
