@@ -20,4 +20,9 @@ compile images from the sources - `docker-compose build && docker-compose up -d`
 
 ## Development
 
-To run dependent environment use `docker-compose -f dev-compose.yml up -d --build`
+To run dependent environment use
+
+```bash
+docker-compose -f dev-compose.yml pull
+docker-compose -f dev-compose.yml up --force-recreate
+```
