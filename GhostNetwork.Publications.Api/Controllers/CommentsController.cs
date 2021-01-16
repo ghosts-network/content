@@ -65,7 +65,7 @@ namespace GhostNetwork.Publications.Api.Controllers
         /// <returns>Comments related to publications</returns>
         [HttpPost("comments/featured")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<Dictionary<string, IEnumerable<Comment>>>> SearchFeaturedAsync(
+        public async Task<ActionResult<Dictionary<string, FeaturedInfo>>> SearchFeaturedAsync(
             [FromBody] FeaturedQuery model)
         {
             var result = await commentService.SearchFeaturedAsync(model.PublicationIds);

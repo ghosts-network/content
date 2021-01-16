@@ -100,7 +100,7 @@ namespace GhostNetwork.Publications.MongoDb
             await context.Comments.DeleteOneAsync(filter);
         }
 
-        public async Task<Dictionary<string, IEnumerable<Comment>>> FindFeaturedAsync(string[] publicationsIds)
+        public async Task<Dictionary<string, FeaturedInfo>> FindFeaturedAsync(string[] publicationsIds)
         {
             var group = new BsonDocument
             {
@@ -110,6 +110,9 @@ namespace GhostNetwork.Publications.MongoDb
                     {
                         { "$push", "$$ROOT" }
                     }
+                },
+                {
+                    "count", new BsonDocument("$sum", 1)
                 }
             };
 
@@ -126,28 +129,33 @@ namespace GhostNetwork.Publications.MongoDb
                             })
                         }
                     }
-                }
+                },
+                { "count", "$count" }
             };
 
             var listComments = await context.Comments
                 .Aggregate()
-                .Sort(Builders<CommentEntity>.Sort.Ascending(x => x.CreateOn))
                 .Match(Builders<CommentEntity>.Filter.In(x => x.PublicationId, publicationsIds))
-                .Group<ListComments>(group)
-                .Project<ListComments>(slice.ToBsonDocument())
+                .Sort(Builders<CommentEntity>.Sort.Ascending(x => x.CreateOn))
+                .Group<FeaturedInfoEntity>(group)
+                .Project<FeaturedInfoEntity>(slice.ToBsonDocument())
                 .ToListAsync();
 
             var dict = listComments
                 .ToDictionary(
                     r => r.Id,
-                    r => r.Comments
-                        .Select(ToDomain)
-                        .ToList());
+                    r => new FeaturedInfo(
+                        r.Comments.Select(ToDomain),
+                        r.TotalCount));
 
             return publicationsIds
                 .ToDictionary(
                     publicationId => publicationId,
-                    publicationId => dict.ContainsKey(publicationId) ? dict[publicationId] : Enumerable.Empty<Comment>());
+                    publicationId => dict.ContainsKey(publicationId)
+                        ? dict[publicationId]
+                        : new FeaturedInfo(
+                            Enumerable.Empty<Comment>(),
+                            0));
         }
 
         private static Comment ToDomain(CommentEntity entity)
