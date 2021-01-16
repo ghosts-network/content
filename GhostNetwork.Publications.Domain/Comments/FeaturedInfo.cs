@@ -4,8 +4,14 @@ namespace GhostNetwork.Publications.Comments
 {
     public class FeaturedInfo
     {
-        public IEnumerable<Comment> Comments { get; set; }
+        public FeaturedInfo(IEnumerable<Comment> comments, int totalCount)
+        {
+            Comments = comments;
+            TotalCount = totalCount;
+        }
 
-        public int TotalCount { get; set; }
+        public IEnumerable<Comment> Comments { get; }
+
+        public int TotalCount { get; }
     }
 }

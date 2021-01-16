@@ -144,20 +144,18 @@ namespace GhostNetwork.Publications.MongoDb
             var dict = listComments
                 .ToDictionary(
                     r => r.Id,
-                    r => new FeaturedInfo
-                    {
-                        Comments = r.Comments.Select(ToDomain),
-                        TotalCount = r.TotalCount
-                    });
+                    r => new FeaturedInfo(
+                        r.Comments.Select(ToDomain),
+                        r.TotalCount));
 
             return publicationsIds
                 .ToDictionary(
                     publicationId => publicationId,
-                    publicationId => dict.ContainsKey(publicationId) ? dict[publicationId] : new FeaturedInfo
-                    {
-                        Comments = Enumerable.Empty<Comment>(),
-                        TotalCount = 0
-                    });
+                    publicationId => dict.ContainsKey(publicationId)
+                        ? dict[publicationId]
+                        : new FeaturedInfo(
+                            Enumerable.Empty<Comment>(),
+                            0));
         }
 
         private static Comment ToDomain(CommentEntity entity)
