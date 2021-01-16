@@ -17,6 +17,6 @@ namespace GhostNetwork.Publications.Comments
 
         Task DeleteOneAsync(string commentId);
 
-        Task<Dictionary<string, IEnumerable<Comment>>> FindFeaturedAsync(string[] ids);
+        Task<Dictionary<string, FeaturedInfo>> FindFeaturedAsync(string[] ids);
     }
 }
