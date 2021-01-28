@@ -1,5 +1,4 @@
 using System.Linq;
-using FluentAssertions;
 using NUnit.Framework;
 
 namespace GhostNetwork.Publications.Domain.UnitTest
@@ -19,10 +18,10 @@ namespace GhostNetwork.Publications.Domain.UnitTest
                 .ToArray();
 
             // Assert
-            result.Length.Should().Be(3);
-            result[0].Should().Be("first");
-            result[1].Should().Be("post");
-            result[2].Should().Be("awesome");
+            Assert.AreEqual(3, result.Length);
+            Assert.AreEqual("first", result[0]);
+            Assert.AreEqual("post", result[1]);
+            Assert.AreEqual("awesome", result[2]);
         }
 
         [Test]
@@ -37,10 +36,10 @@ namespace GhostNetwork.Publications.Domain.UnitTest
                 .ToArray();
 
             // Assert
-            result.Length.Should().Be(3);
-            result[0].Should().Be("first");
-            result[1].Should().Be("post");
-            result[2].Should().Be("awesome");
+            Assert.AreEqual(3, result.Length);
+            Assert.AreEqual("first", result[0]);
+            Assert.AreEqual("post", result[1]);
+            Assert.AreEqual("awesome", result[2]);
         }
 
         [Test]
@@ -55,9 +54,9 @@ namespace GhostNetwork.Publications.Domain.UnitTest
                 .ToArray();
 
             // Assert
-            result.Length.Should().Be(2);
-            result[0].Should().Be("awesome");
-            result[1].Should().Be("so_cool");
+            Assert.AreEqual(2, result.Length);
+            Assert.AreEqual("awesome", result[0]);
+            Assert.AreEqual("so_cool", result[1]);
         }
     }
 }

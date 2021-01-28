@@ -12,7 +12,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\GhostNetwork.Publications.Domain\GhostNetwork.Publications.Domain.csproj" />
+        <ProjectReference Include="..\..\GhostNetwork.Publications.Api\GhostNetwork.Publications.Api.csproj" />
     </ItemGroup>
 
 </Project>

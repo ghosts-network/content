@@ -21,6 +21,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{A29DC94E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GhostNetwork.Publications.Domain.UnitTest", "tests\GhostNetwork.Publications.Domain.UnitTest\GhostNetwork.Publications.Domain.UnitTest.csproj", "{F0566F80-E9E3-463D-83BD-E22B54A1BBA2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GhostNetwork.Publications.Api.UnitTest", "tests\GhostNetwork.Publications.Api.UnitTest\GhostNetwork.Publications.Api.UnitTest.csproj", "{DBC69A11-EECB-46F9-9211-CD321E5104AC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,9 +45,14 @@ Global
 		{F0566F80-E9E3-463D-83BD-E22B54A1BBA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F0566F80-E9E3-463D-83BD-E22B54A1BBA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F0566F80-E9E3-463D-83BD-E22B54A1BBA2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DBC69A11-EECB-46F9-9211-CD321E5104AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DBC69A11-EECB-46F9-9211-CD321E5104AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DBC69A11-EECB-46F9-9211-CD321E5104AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DBC69A11-EECB-46F9-9211-CD321E5104AC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{7734ADCA-3BFD-4B7F-A939-F50DE763F8F5} = {261609E2-39E1-4534-B90C-F4ACA2477AAE}
 		{F0566F80-E9E3-463D-83BD-E22B54A1BBA2} = {A29DC94E-48FF-4E7D-9B53-9F2D39EA1A31}
+		{DBC69A11-EECB-46F9-9211-CD321E5104AC} = {A29DC94E-48FF-4E7D-9B53-9F2D39EA1A31}
 	EndGlobalSection
 EndGlobal
