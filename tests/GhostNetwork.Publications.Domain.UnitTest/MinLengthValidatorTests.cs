@@ -1,33 +1,26 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using GhostNetwork.Publications.Comments;
 using NUnit.Framework;
 
 namespace GhostNetwork.Publications.Domain.UnitTest
 {
     [TestFixture]
-    public class MaxLengthValidatorTests
+    public class MinLengthValidatorTests
     {
         [Test]
-        public async Task Publication_Content_Length_Longer_Than_MaxLength()
+        public void Invalid_MinLength_Parameter()
         {
-            // Setup
-            var validator = new MaxLengthValidator(5);
-            var content = "Hello_Hello";
-            var context = new PublicationContext(content);
-
-            // Act
-            var result = await validator.ValidateAsync(context);
-
             // Assert
-            Assert.IsFalse(result.Successed);
+            Assert.Throws<ArgumentException>(() => new MinLengthValidator(-1));
         }
 
         [Test]
-        public async Task Publication_Content_Length_Shorter_Than_MaxLength()
+        public async Task Publication_Content_Length_Longer_Than_MinLength()
         {
             // Setup
-            var validator = new MaxLengthValidator(5);
-            var content = "Hi";
+            var validator = new MinLengthValidator(5);
+            var content = "Hello_Hello";
             var context = new PublicationContext(content);
 
             // Act
@@ -38,10 +31,25 @@ namespace GhostNetwork.Publications.Domain.UnitTest
         }
 
         [Test]
-        public async Task Publication_Content_Length_Equal_MaxLength()
+        public async Task Publication_Content_Length_Shorter_Than_MinLength()
         {
             // Setup
-            var validator = new MaxLengthValidator(5);
+            var validator = new MinLengthValidator(5);
+            var content = "Hi";
+            var context = new PublicationContext(content);
+
+            // Act
+            var result = await validator.ValidateAsync(context);
+
+            // Assert
+            Assert.IsFalse(result.Successed);
+        }
+
+        [Test]
+        public async Task Publication_Content_Length_Equal_MinLength()
+        {
+            // Setup
+            var validator = new MinLengthValidator(5);
             var content = "Hello";
             var context = new PublicationContext(content);
 
@@ -51,27 +59,13 @@ namespace GhostNetwork.Publications.Domain.UnitTest
             // Assert
             Assert.IsTrue(result.Successed);
         }
+
         [Test]
-        public async Task Comment_Content_Length_Longer_Than_MaxLength()
+        public async Task Comment_Content_Length_Longer_Than_MinLength()
         {
             // Setup
-            var validator = new MaxLengthValidator(5);
+            var validator = new MinLengthValidator(5);
             var content = "Hello_Hello";
-            var context = new PublicationContext(content);
-
-            // Act
-            var result = await validator.ValidateAsync(context);
-
-            // Assert
-            Assert.IsFalse(result.Successed);
-        }
-
-        [Test]
-        public async Task Comment_Content_Length_Shorter_Than_MaxLength()
-        {
-            // Setup
-            var validator = new MaxLengthValidator(5);
-            var content = "Hi";
             var context = new CommentContext(content);
 
             // Act
@@ -82,10 +76,25 @@ namespace GhostNetwork.Publications.Domain.UnitTest
         }
 
         [Test]
-        public async Task Comment_Content_Length_Equal_MaxLength()
+        public async Task Comment_Content_Length_Shorter_Than_MinLength()
         {
             // Setup
-            var validator = new MaxLengthValidator(5);
+            var validator = new MinLengthValidator(5);
+            var content = "Hi";
+            var context = new CommentContext(content);
+
+            // Act
+            var result = await validator.ValidateAsync(context);
+
+            // Assert
+            Assert.IsFalse(result.Successed);
+        }
+
+        [Test]
+        public async Task Comment_Content_Length_Equal_MinLength()
+        {
+            // Setup
+            var validator = new MinLengthValidator(5);
             var content = "Hello";
             var context = new CommentContext(content);
 
