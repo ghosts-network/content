@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 
-namespace GhostNetwork.Publications.Api.UnitTest.PublicationsController
+namespace GhostNetwork.Publications.Domain.UnitTest.PublicationsController
 {
     [TestFixture]
     public class GetByIdTests
@@ -21,7 +21,7 @@ namespace GhostNetwork.Publications.Api.UnitTest.PublicationsController
                 .Setup(s => s.GetByIdAsync(id))
                 .ReturnsAsync(default(Publication));
             
-            var controller = new Controllers.PublicationsController(serviceMock.Object);
+            var controller = new Api.Controllers.PublicationsController(serviceMock.Object);
 
             // Act
             var response = await controller.GetByIdAsync(id);
@@ -43,7 +43,7 @@ namespace GhostNetwork.Publications.Api.UnitTest.PublicationsController
                 .Setup(s => s.GetByIdAsync(id))
                 .ReturnsAsync(new Publication(id, It.IsAny<string>(), new List<string>(), It.IsAny<UserInfo>(), It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>()));
 
-            var controller = new Controllers.PublicationsController(serviceMock.Object);
+            var controller = new Api.Controllers.PublicationsController(serviceMock.Object);
 
             // Act
             var response = await controller.GetByIdAsync(id);
