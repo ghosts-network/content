@@ -4,6 +4,9 @@ on:
   pull_request:
     branches: [ master ]
 
+env:
+  MIN_COVERAGE: 70
+
 jobs:
   unit-test:
     runs-on: ubuntu-20.04
@@ -23,8 +26,11 @@ jobs:
         run: dotnet tool install JetBrains.dotCover.GlobalTool -g
       - name: Calculate coverage
         run: dotnet dotcover test --dcReportType=XML --dcFilters=-:module=GhostNetwork.Publications.Domain.UnitTest
-      - name: Dispaly total coverage
-        run: grep -o 'CoveragePercent="[^"]*"' -m 1 dotCover.Output.xml | cut -c 18-19
+      - name: Validate coverage
+        run: |
+          total=$(grep -o 'CoveragePercent="[^"]*"' -m 1 dotCover.Output.xml | cut -c 18-19)
+          echo $total
+          if [ $a -lt $MIN_COVERAGE ]; then exit 1; fi
 
   api-test:
     needs: unit-test
