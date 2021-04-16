@@ -19,6 +19,12 @@ jobs:
         run: dotnet build --configuration Release --no-restore
       - name: Test
         run: dotnet test --no-restore --verbosity normal
+      - name: Install dotCover
+        run: dotnet tool install JetBrains.dotCover.GlobalTool -g
+      - name: Calculate coverage
+        run: dotnet dotcover test --dcReportType=XML --dcFilters=-:module=GhostNetwork.Publications.Domain.UnitTest
+      - name: Disaply total coverage
+        run: xpath -e 'string(//Root/@CoveragePercent)' dotCover.Output.xml 2>/dev/null
 
   api-test:
     needs: unit-test
