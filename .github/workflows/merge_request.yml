@@ -5,7 +5,7 @@ on:
     branches: [ master ]
 
 env:
-  MIN_COVERAGE: 70
+  MIN_COVERAGE: 20
 
 jobs:
   unit-test:
