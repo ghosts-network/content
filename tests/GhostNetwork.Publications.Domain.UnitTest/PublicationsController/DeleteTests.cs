@@ -2,6 +2,8 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Domain;
+using GhostNetwork.Publications.Api.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using NUnit.Framework;
@@ -9,10 +11,10 @@ using NUnit.Framework;
 namespace GhostNetwork.Publications.Domain.UnitTest.PublicationsController
 {
     [TestFixture]
-    public class GetByIdTests
+    public class DeleteTests
     {
         [Test]
-        public async Task GetById_Ok()
+        public async Task Delete_NoContent()
         {
             // Setup
             var id = "some_id";
@@ -31,14 +33,14 @@ namespace GhostNetwork.Publications.Domain.UnitTest.PublicationsController
             });
 
             // Act
-            var response = await client.GetAsync($"/publications/{id}/");
+            var response = await client.DeleteAsync($"/publications/{id}/");
 
             // Assert
-            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+            Assert.AreEqual(HttpStatusCode.NoContent, response.StatusCode);
         }
 
         [Test]
-        public async Task GetById_NotFound()
+        public async Task Delete_NotFound()
         {
             // Setup
             var id = "some_id";
@@ -55,7 +57,7 @@ namespace GhostNetwork.Publications.Domain.UnitTest.PublicationsController
             });
 
             // Act
-            var response = await client.GetAsync($"/publications/{id}/");
+            var response = await client.DeleteAsync($"/publications/{id}/");
 
             // Assert
             Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);

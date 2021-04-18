@@ -148,7 +148,7 @@ namespace GhostNetwork.Publications.Api.Controllers
 
             await publicationService.DeleteAsync(id);
 
-            return Ok();
+            return NoContent();
         }
     }
 }
