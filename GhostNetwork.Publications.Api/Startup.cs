@@ -6,6 +6,7 @@ using Domain.Validation;
 using GhostNetwork.Publications.Api.Helpers.OpenApi;
 using GhostNetwork.Publications.Comments;
 using GhostNetwork.Publications.MongoDb;
+using GhostNetwork.Publications.Reactions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -52,6 +53,8 @@ namespace GhostNetwork.Publications.Api
 
             services.AddScoped<IHashTagsFetcher, DefaultHashTagsFetcher>();
             services.AddScoped(provider => new ForbiddenWordsValidator(Enumerable.Empty<string>()));
+
+            services.AddScoped<IReactionStorage, MongoReactionStorage>();
 
             services.AddScoped<IPublicationsStorage, MongoPublicationStorage>();
             services.AddScoped<IPublicationService, PublicationService>();

@@ -16,5 +16,8 @@ namespace GhostNetwork.Publications.MongoDb
 
         public IMongoCollection<CommentEntity> Comments =>
             database.GetCollection<CommentEntity>("comments");
+
+        public IMongoCollection<ReactionEntity> Reactions =>
+            database.GetCollection<ReactionEntity>("reactions");
     }
 }
