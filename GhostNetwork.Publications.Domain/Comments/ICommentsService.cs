@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Domain;
 using Domain.Validation;
@@ -22,41 +21,14 @@ namespace GhostNetwork.Publications.Comments
     public class CommentsService : ICommentsService
     {
         private readonly ICommentsStorage commentStorage;
-        private readonly IPublicationsStorage publicationsStorage;
         private readonly IValidator<CommentContext> validator;
 
         public CommentsService(
             ICommentsStorage commentStorage,
-            IPublicationsStorage publicationsStorage,
             IValidator<CommentContext> validator)
         {
             this.commentStorage = commentStorage;
-            this.publicationsStorage = publicationsStorage;
             this.validator = validator;
-        }
-
-        public async Task<(DomainResult, string)> CreateAsync(string publicationId, string text, string replyCommentId, UserInfo author)
-        {
-            var publication = await publicationsStorage.FindOneByIdAsync(publicationId);
-            if (publication == null)
-            {
-                return (DomainResult.Error("Publication not found"), null);
-            }
-
-            if (replyCommentId == null || await commentStorage.IsCommentInPublicationAsync(replyCommentId, publicationId))
-            {
-                var result = await validator.ValidateAsync(new CommentContext(text));
-                if (!result.Successed)
-                {
-                    return (result, null);
-                }
-
-                var comment = new Comment(default, text, DateTimeOffset.UtcNow, publicationId, replyCommentId, author);
-
-                return (result, await commentStorage.InsertOneAsync(comment));
-            }
-
-            return (DomainResult.Error("Comment id not found"), null);
         }
 
         public Task<Comment> GetByIdAsync(string id)
@@ -69,14 +41,28 @@ namespace GhostNetwork.Publications.Comments
             return await commentStorage.FindManyAsync(publicationId, skip, take);
         }
 
+        public Task<Dictionary<string, FeaturedInfo>> SearchFeaturedAsync(string[] ids)
+        {
+            return commentStorage.FindFeaturedAsync(ids);
+        }
+
+        public async Task<(DomainResult, string)> CreateAsync(string publicationId, string text, string replyId, UserInfo author)
+        {
+            var result = await validator.ValidateAsync(new CommentContext(text, replyId));
+            if (!result.Successed)
+            {
+                return (result, null);
+            }
+
+            var comment = Comment.New(text, publicationId, replyId, author);
+            var id = await commentStorage.InsertOneAsync(comment);
+
+            return (DomainResult.Success(), id);
+        }
+
         public async Task DeleteAsync(string id)
         {
             await commentStorage.DeleteOneAsync(id);
-        }
-
-        public async Task<Dictionary<string, FeaturedInfo>> SearchFeaturedAsync(string[] ids)
-        {
-            return await commentStorage.FindFeaturedAsync(ids);
         }
     }
 }

@@ -25,5 +25,10 @@ namespace GhostNetwork.Publications.Comments
         public DateTimeOffset CreatedOn { get; }
 
         public string ReplyCommentId { get; }
+
+        public static Comment New(string text, string publicationId, string replyId, UserInfo author)
+        {
+            return new Comment(default, text, DateTimeOffset.UtcNow, publicationId, replyId, author);
+        }
     }
 }
