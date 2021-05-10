@@ -60,6 +60,7 @@ namespace GhostNetwork.Publications.Api
             services.AddScoped<IPublicationService, PublicationService>();
             services.AddScoped(BuildPublicationValidator);
 
+            services.AddScoped<CommentReplyValidator>();
             services.AddScoped<ICommentsStorage, MongoCommentsStorage>();
             services.AddScoped<ICommentsService, CommentsService>();
             services.AddScoped(BuildCommentValidator);
@@ -113,6 +114,7 @@ namespace GhostNetwork.Publications.Api
         {
             var validators = new List<IValidator<CommentContext>>
             {
+                provider.GetService<CommentReplyValidator>(),
                 provider.GetService<ForbiddenWordsValidator>(),
                 new MaxLengthValidator(configuration.GetValue<int?>("COMMENT_CONTENT_MAX_LENGTH") ?? 5000)
             };
