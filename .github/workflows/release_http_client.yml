@@ -7,7 +7,7 @@ on:
         description: 'Version of nuget package'
         required: true
 env:
-  PACKAGE_NAME: GhostNetwork.Publications
+  PACKAGE_NAME: GhostNetwork.Content
   PACKAGE_REGISTRY: https://api.nuget.org/v3/index.json
 
 jobs:

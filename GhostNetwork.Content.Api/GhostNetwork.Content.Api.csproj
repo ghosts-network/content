@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <CodeAnalysisRuleSet>../GhostNetwork.ruleset</CodeAnalysisRuleSet>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>$(NoWarn);1591</NoWarn>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" />
+      <PackageReference Include="Swashbuckle.AspNetCore" Version="5.5.1" />
+      <PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="6.0.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\GhostNetwork.Content\GhostNetwork.Content.csproj" />
+      <ProjectReference Include="..\Infrastructure\GhostNetwork.Content.MongoDb\GhostNetwork.Content.MongoDb.csproj" />
+    </ItemGroup>
+
+</Project>

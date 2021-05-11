@@ -4,7 +4,7 @@ on:
   push:
     branches: [ master ]
 env:
-  SERVICE_NAME: publications
+  SERVICE_NAME: content
 
 jobs:
   unit-test:

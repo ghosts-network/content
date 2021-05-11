@@ -25,7 +25,7 @@ jobs:
       - name: Install dotCover
         run: dotnet tool install JetBrains.dotCover.GlobalTool -g
       - name: Calculate coverage
-        run: dotnet dotcover test --dcReportType=XML --dcFilters=-:module=GhostNetwork.Publications.Domain.UnitTest
+        run: dotnet dotcover test --dcReportType=XML --dcFilters=-:module=GhostNetwork.Content.Domain.UnitTest
       - name: Validate coverage
         run: |
           total=$(grep -o 'CoveragePercent="[^"]*"' -m 1 dotCover.Output.xml | cut -c 18-19)
