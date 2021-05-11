@@ -6,7 +6,7 @@ using Domain.Validation;
 using GhostNetwork.Content.Comments;
 using GhostNetwork.Content.Publications;
 
-namespace GhostNetwork.Publications
+namespace GhostNetwork.Content
 {
     public class ForbiddenWordsValidator : IValidator<PublicationContext>,
         IValidator<CommentContext>

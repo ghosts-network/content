@@ -4,7 +4,6 @@ using Domain;
 using Domain.Validation;
 using GhostNetwork.Content.Comments;
 using GhostNetwork.Content.Publications;
-using GhostNetwork.Publications;
 
 namespace GhostNetwork.Content
 {

@@ -8,7 +8,6 @@ using GhostNetwork.Content.Comments;
 using GhostNetwork.Content.MongoDb;
 using GhostNetwork.Content.Publications;
 using GhostNetwork.Content.Reactions;
-using GhostNetwork.Publications;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -36,8 +35,8 @@ namespace GhostNetwork.Content.Api
             {
                 options.SwaggerDoc("v1", new OpenApiInfo
                 {
-                    Title = "GhostNetwork.Publications",
-                    Description = "Http client for GhostNetwork.Publications",
+                    Title = "GhostNetwork.Content",
+                    Description = "Http client for GhostNetwork.Content",
                     Version = "1.0.0"
                 });
 

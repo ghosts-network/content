@@ -1,8 +1,7 @@
-using GhostNetwork.Content.Api;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace GhostNetwork.Publications.Api
+namespace GhostNetwork.Content.Api
 {
     public class Program
     {

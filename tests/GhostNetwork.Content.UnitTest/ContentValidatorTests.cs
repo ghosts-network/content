@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using GhostNetwork.Content.Publications;
-using GhostNetwork.Publications;
 using NUnit.Framework;
 
 namespace GhostNetwork.Content.UnitTest
