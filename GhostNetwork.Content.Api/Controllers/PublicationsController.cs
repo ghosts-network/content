@@ -16,10 +16,12 @@ namespace GhostNetwork.Content.Api.Controllers
     public class PublicationsController : ControllerBase
     {
         private readonly IPublicationService publicationService;
+        private readonly IUserProvider userProvider;
 
-        public PublicationsController(IPublicationService publicationService)
+        public PublicationsController(IPublicationService publicationService, IUserProvider userProvider)
         {
             this.publicationService = publicationService;
+            this.userProvider = userProvider;
         }
 
         /// <summary>
@@ -97,7 +99,10 @@ namespace GhostNetwork.Content.Api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Publication>> CreateAsync([FromBody] CreatePublicationModel model)
         {
-            var (result, id) = await publicationService.CreateAsync(model.Content, (UserInfo)model.Author);
+            var author = await userProvider.GetByIdAsync(model.AuthorId);
+#pragma warning disable 612
+            var (result, id) = await publicationService.CreateAsync(model.Content, author ?? (UserInfo)model.Author);
+#pragma warning restore 612
 
             if (!result.Successed)
             {

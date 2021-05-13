@@ -12,6 +12,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="GhostNetwork.Profiles" Version="1.1.0" />
       <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" />
       <PackageReference Include="Swashbuckle.AspNetCore" Version="5.5.1" />
       <PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="6.0.1" />

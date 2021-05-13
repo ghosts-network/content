@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
 using Domain.Validation;
+using GhostNetwork.Content.Api.Helpers;
 using GhostNetwork.Content.Api.Helpers.OpenApi;
 using GhostNetwork.Content.Comments;
 using GhostNetwork.Content.MongoDb;
 using GhostNetwork.Content.Publications;
 using GhostNetwork.Content.Reactions;
+using GhostNetwork.Profiles.Api;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -51,6 +53,9 @@ namespace GhostNetwork.Content.Api
                 var client = new MongoClient($"mongodb://{configuration["MONGO_ADDRESS"]}/gpublications");
                 return new MongoDbContext(client.GetDatabase("gpublications"));
             });
+
+            services.AddScoped<IProfilesApi>(_ => new ProfilesApi(configuration["PROFILES_ADDRESS"]));
+            services.AddScoped<IUserProvider, ProfilesApiUserProvider>();
 
             services.AddScoped<IHashTagsFetcher, DefaultHashTagsFetcher>();
             services.AddScoped(_ => new ForbiddenWordsValidator(Enumerable.Empty<string>()));
