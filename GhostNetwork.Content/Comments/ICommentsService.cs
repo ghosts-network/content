@@ -9,15 +9,15 @@ namespace GhostNetwork.Content.Comments
     {
         Task<Comment> GetByIdAsync(string id);
 
-        Task<(IEnumerable<Comment>, long)> SearchAsync(string publicationId, int skip, int take);
+        Task<(IEnumerable<Comment>, long)> SearchAsync(string key, int skip, int take);
 
-        Task<(DomainResult, string)> CreateAsync(string publicationId, string text, string replyCommentId, UserInfo author);
+        Task<(DomainResult, string)> CreateAsync(string key, string text, string replyCommentId, UserInfo author);
 
-        Task<Dictionary<string, FeaturedInfo>> SearchFeaturedAsync(string[] ids);
+        Task<Dictionary<string, FeaturedInfo>> SearchFeaturedAsync(IEnumerable<string> ids);
 
         Task DeleteAsync(string id);
 
-        Task DeleteByPublicationAsync(string publicationId);
+        Task DeleteByKeyAsync(string key);
     }
 
     public class CommentsService : ICommentsService
@@ -43,12 +43,12 @@ namespace GhostNetwork.Content.Comments
             return commentStorage.FindManyAsync(publicationId, skip, take);
         }
 
-        public Task<Dictionary<string, FeaturedInfo>> SearchFeaturedAsync(string[] ids)
+        public Task<Dictionary<string, FeaturedInfo>> SearchFeaturedAsync(IEnumerable<string> keys)
         {
-            return commentStorage.FindFeaturedAsync(ids);
+            return commentStorage.FindFeaturedAsync(keys);
         }
 
-        public async Task<(DomainResult, string)> CreateAsync(string publicationId, string text, string replyId, UserInfo author)
+        public async Task<(DomainResult, string)> CreateAsync(string key, string text, string replyId, UserInfo author)
         {
             var result = await validator.ValidateAsync(new CommentContext(text, replyId));
             if (!result.Successed)
@@ -56,7 +56,7 @@ namespace GhostNetwork.Content.Comments
                 return (result, null);
             }
 
-            var comment = Comment.New(text, publicationId, replyId, author);
+            var comment = Comment.New(text, key, replyId, author);
             var id = await commentStorage.InsertOneAsync(comment);
 
             return (DomainResult.Success(), id);
@@ -67,9 +67,9 @@ namespace GhostNetwork.Content.Comments
             return commentStorage.DeleteOneAsync(id);
         }
 
-        public Task DeleteByPublicationAsync(string publicationId)
+        public Task DeleteByKeyAsync(string key)
         {
-            return commentStorage.DeleteByPublicationAsync(publicationId);
+            return commentStorage.DeleteByKeyAsync(key);
         }
     }
 }

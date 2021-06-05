@@ -1,10 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
 
 namespace GhostNetwork.Content.Api.Models
 {
     public class FeaturedQuery
     {
-        [Required]
+        [Obsolete]
         public string[] PublicationIds { get; set; }
+
+        public string[] Keys { get; set; }
     }
 }

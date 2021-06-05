@@ -39,7 +39,7 @@ namespace GhostNetwork.Content.MongoDb
             {
                 Content = comment.Content,
                 CreateOn = comment.CreatedOn.ToUnixTimeMilliseconds(),
-                PublicationId = comment.PublicationId,
+                Key = comment.Key,
                 ReplyCommentId = comment.ReplyCommentId,
                 Author = (UserInfoEntity)comment.Author
             };
@@ -49,9 +49,9 @@ namespace GhostNetwork.Content.MongoDb
             return entity.Id.ToString();
         }
 
-        public async Task<(IEnumerable<Comment>, long)> FindManyAsync(string publicationId, int skip, int take)
+        public async Task<(IEnumerable<Comment>, long)> FindManyAsync(string key, int skip, int take)
         {
-            var filter = Builders<CommentEntity>.Filter.Eq(x => x.PublicationId, publicationId);
+            var filter = Builders<CommentEntity>.Filter.Eq(x => x.Key, key);
 
             var totalCount = await context.Comments
                 .Find(filter)
@@ -68,26 +68,6 @@ namespace GhostNetwork.Content.MongoDb
                 .ToList(), totalCount);
         }
 
-        public async Task<bool> IsCommentInPublicationAsync(string commentId, string publicationId)
-        {
-            if (!ObjectId.TryParse(commentId, out var id))
-            {
-                return false;
-            }
-
-            var filter = Builders<CommentEntity>.Filter.Eq(x => x.PublicationId, publicationId) &
-                         Builders<CommentEntity>.Filter.Eq(x => x.Id, id);
-
-            return await context.Comments.Find(filter).AnyAsync();
-        }
-
-        public async Task DeleteByPublicationAsync(string publicationId)
-        {
-            var filter = Builders<CommentEntity>.Filter.Eq(x => x.PublicationId, publicationId);
-
-            await context.Comments.DeleteManyAsync(filter);
-        }
-
         public async Task DeleteOneAsync(string commentId)
         {
             if (!ObjectId.TryParse(commentId, out var oId))
@@ -100,11 +80,18 @@ namespace GhostNetwork.Content.MongoDb
             await context.Comments.DeleteOneAsync(filter);
         }
 
-        public async Task<Dictionary<string, FeaturedInfo>> FindFeaturedAsync(string[] publicationsIds)
+        public async Task DeleteByKeyAsync(string key)
+        {
+            var filter = Builders<CommentEntity>.Filter.Eq(x => x.Key, key);
+
+            await context.Comments.DeleteManyAsync(filter);
+        }
+
+        public async Task<Dictionary<string, FeaturedInfo>> FindFeaturedAsync(IEnumerable<string> keys)
         {
             var group = new BsonDocument
             {
-                { "_id", "$publicationId" },
+                { "_id", "$key" },
                 {
                     "comments", new BsonDocument
                     {
@@ -135,7 +122,7 @@ namespace GhostNetwork.Content.MongoDb
 
             var listComments = await context.Comments
                 .Aggregate()
-                .Match(Builders<CommentEntity>.Filter.In(x => x.PublicationId, publicationsIds))
+                .Match(Builders<CommentEntity>.Filter.In(x => x.Key, keys))
                 .Sort(Builders<CommentEntity>.Sort.Ascending(x => x.CreateOn))
                 .Group<FeaturedInfoEntity>(group)
                 .Project<FeaturedInfoEntity>(slice.ToBsonDocument())
@@ -148,11 +135,11 @@ namespace GhostNetwork.Content.MongoDb
                         r.Comments.Select(ToDomain),
                         r.TotalCount));
 
-            return publicationsIds
+            return keys
                 .ToDictionary(
-                    publicationId => publicationId,
-                    publicationId => dict.ContainsKey(publicationId)
-                        ? dict[publicationId]
+                    key => key,
+                    key => dict.ContainsKey(key)
+                        ? dict[key]
                         : new FeaturedInfo(
                             Enumerable.Empty<Comment>(),
                             0));
@@ -160,13 +147,43 @@ namespace GhostNetwork.Content.MongoDb
 
         private static Comment ToDomain(CommentEntity entity)
         {
-            return new Comment(
+            return new(
                 entity.Id.ToString(),
                 entity.Content,
                 DateTimeOffset.FromUnixTimeMilliseconds(entity.CreateOn),
-                entity.PublicationId,
+                entity.Key,
                 entity.ReplyCommentId,
                 (UserInfo)entity.Author);
         }
+
+        public async Task MigratePublicationIdToKey()
+        {
+            var filter = Builders<BsonDocument>.Filter.Exists("key", false)
+                         & Builders<BsonDocument>.Filter.Exists("publicationId", true);
+
+            var commentsToMigrate = await context.Comments
+                .Database
+                .GetCollection<BsonDocument>("comments")
+                .Find(Builders<BsonDocument>.Filter.Exists("key", false))
+                .ToListAsync();
+
+            if (!commentsToMigrate.Any())
+            {
+                return;
+            }
+
+            var updates = commentsToMigrate.Select(comment =>
+                Builders<BsonDocument>.Update
+                    .Set("key", PublicationKey(comment["publicationId"].AsString))
+                    .Unset("publicationId"))
+                .ToList();
+            var update = Builders<BsonDocument>.Update.Combine(updates);
+            await context.Comments
+                .Database
+                .GetCollection<BsonDocument>("comments")
+                .UpdateManyAsync(filter, update);
+        }
+
+        private static string PublicationKey(string publicationId) => $"publication_{publicationId}";
     }
 }

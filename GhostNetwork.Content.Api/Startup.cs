@@ -97,6 +97,11 @@ namespace GhostNetwork.Content.Api
             app.UseRouting();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+
+            app.ApplicationServices.GetRequiredService<MongoCommentsStorage>()
+                .MigratePublicationIdToKey()
+                .GetAwaiter()
+                .GetResult();
         }
 
         private IValidator<PublicationContext> BuildPublicationValidator(IServiceProvider provider)

@@ -4,12 +4,12 @@ namespace GhostNetwork.Content.Comments
 {
     public class Comment
     {
-        public Comment(string id, string content, DateTimeOffset createdOn, string publicationId, string replyCommentId, UserInfo author)
+        public Comment(string id, string content, DateTimeOffset createdOn, string key, string replyCommentId, UserInfo author)
         {
             Id = id;
             Content = content;
             CreatedOn = createdOn;
-            PublicationId = publicationId;
+            Key = key;
             ReplyCommentId = replyCommentId;
             Author = author;
         }
@@ -18,7 +18,7 @@ namespace GhostNetwork.Content.Comments
 
         public string Content { get; }
 
-        public string PublicationId { get; }
+        public string Key { get; }
 
         public UserInfo Author { get; }
 
@@ -26,9 +26,9 @@ namespace GhostNetwork.Content.Comments
 
         public string ReplyCommentId { get; }
 
-        public static Comment New(string text, string publicationId, string replyId, UserInfo author)
+        public static Comment New(string text, string key, string replyId, UserInfo author)
         {
-            return new Comment(default, text, DateTimeOffset.UtcNow, publicationId, replyId, author);
+            return new(default, text, DateTimeOffset.UtcNow, key, replyId, author);
         }
     }
 }
