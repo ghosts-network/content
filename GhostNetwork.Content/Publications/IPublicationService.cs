@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Domain;
 using Domain.Validation;
-using GhostNetwork.Content.Comments;
 
 namespace GhostNetwork.Content.Publications
 {
@@ -26,18 +25,15 @@ namespace GhostNetwork.Content.Publications
     {
         private readonly IValidator<PublicationContext> validator;
         private readonly IPublicationsStorage publicationStorage;
-        private readonly ICommentsStorage commentStorage;
         private readonly IHashTagsFetcher hashTagsFetcher;
 
         public PublicationService(
             IValidator<PublicationContext> validator,
             IPublicationsStorage publicationStorage,
-            ICommentsStorage commentStorage,
             IHashTagsFetcher hashTagsFetcher)
         {
             this.validator = validator;
             this.publicationStorage = publicationStorage;
-            this.commentStorage = commentStorage;
             this.hashTagsFetcher = hashTagsFetcher;
         }
 
@@ -88,7 +84,6 @@ namespace GhostNetwork.Content.Publications
 
         public async Task DeleteAsync(string id)
         {
-            await commentStorage.DeleteByPublicationAsync(id);
             await publicationStorage.DeleteOneAsync(id);
         }
 

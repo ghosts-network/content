@@ -103,7 +103,7 @@ namespace GhostNetwork.Content.Api.Controllers
         /// </summary>
         /// <param name="id">Comment id</param>
         [HttpDelete("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<IEnumerable<Comment>>> DeleteAsync([FromRoute] string id)
         {
@@ -114,7 +114,21 @@ namespace GhostNetwork.Content.Api.Controllers
 
             await commentService.DeleteAsync(id);
 
-            return Ok();
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Delete all publication comments
+        /// </summary>
+        /// <param name="publicationId">Publication id</param>
+        [HttpDelete("bypublication/{publicationId}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<IEnumerable<Comment>>> DeleteByPublicationAsync([FromRoute] string publicationId)
+        {
+            await commentService.DeleteByPublicationAsync(publicationId);
+
+            return NoContent();
         }
     }
 }
