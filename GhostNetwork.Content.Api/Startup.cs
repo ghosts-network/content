@@ -98,7 +98,8 @@ namespace GhostNetwork.Content.Api
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 
-            app.ApplicationServices.GetRequiredService<MongoCommentsStorage>()
+            using var scope = app.ApplicationServices.CreateScope();
+            (scope.ServiceProvider.GetRequiredService<ICommentsStorage>() as MongoCommentsStorage)
                 .MigratePublicationIdToKey()
                 .GetAwaiter()
                 .GetResult();

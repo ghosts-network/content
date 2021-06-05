@@ -156,15 +156,16 @@ namespace GhostNetwork.Content.MongoDb
                 (UserInfo)entity.Author);
         }
 
+        // TODO: Remove after first deployment
         public async Task MigratePublicationIdToKey()
         {
             var filter = Builders<BsonDocument>.Filter.Exists("key", false)
-                         & Builders<BsonDocument>.Filter.Exists("publicationId", true);
+                         & Builders<BsonDocument>.Filter.Exists("publicationId");
 
             var commentsToMigrate = await context.Comments
                 .Database
                 .GetCollection<BsonDocument>("comments")
-                .Find(Builders<BsonDocument>.Filter.Exists("key", false))
+                .Find(filter)
                 .ToListAsync();
 
             if (!commentsToMigrate.Any())
@@ -172,16 +173,20 @@ namespace GhostNetwork.Content.MongoDb
                 return;
             }
 
-            var updates = commentsToMigrate.Select(comment =>
-                Builders<BsonDocument>.Update
-                    .Set("key", PublicationKey(comment["publicationId"].AsString))
-                    .Unset("publicationId"))
-                .ToList();
-            var update = Builders<BsonDocument>.Update.Combine(updates);
-            await context.Comments
-                .Database
-                .GetCollection<BsonDocument>("comments")
-                .UpdateManyAsync(filter, update);
+            await Task.WhenAll(
+                commentsToMigrate
+                    .Select(comment =>
+                        context.Comments
+                            .Database
+                            .GetCollection<BsonDocument>("comments")
+                            .UpdateOneAsync(
+                                Builders<BsonDocument>.Filter.Eq("_id", comment["_id"].AsObjectId),
+                                Builders<BsonDocument>.Update
+                                    .Set("key", PublicationKey(comment["publicationId"].AsString))
+                                    .Unset("publicationId")
+                            )
+                    )
+            );
         }
 
         private static string PublicationKey(string publicationId) => $"publication_{publicationId}";
