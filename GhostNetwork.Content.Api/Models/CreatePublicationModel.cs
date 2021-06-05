@@ -9,8 +9,5 @@ namespace GhostNetwork.Content.Api.Models
         public string Content { get; set; }
 
         public string AuthorId { get; set; }
-
-        [Obsolete]
-        public UserInfoModel Author { get; set; }
     }
 }
