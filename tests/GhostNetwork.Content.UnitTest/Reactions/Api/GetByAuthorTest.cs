@@ -1,17 +1,16 @@
-using Moq;
-using System.Net;
-using System.Linq;
-using NUnit.Framework;
+﻿using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
-using GhostNetwork.Content.MongoDb;
 using GhostNetwork.Content.Reactions;
 using Microsoft.Extensions.DependencyInjection;
-using System.Net.Http;
+using Moq;
+using Newtonsoft.Json;
+using NUnit.Framework;
 
 namespace GhostNetwork.Content.UnitTest.Reactions.Api
 {
     [TestFixture]
-    public class GetByAuthorTest
+    internal class GetByAuthorTest
     {
         [Test]
         public async Task GetByAuthor_Ok()
@@ -34,14 +33,17 @@ namespace GhostNetwork.Content.UnitTest.Reactions.Api
                 collection.AddScoped(provider => storageMock.Object);
             });
 
-            var request = new HttpRequestMessage(HttpMethod.Get, $"reactions/{ reactionKey }/author");
+            var request = new HttpRequestMessage(HttpMethod.Get, $"reactions/{reactionKey}/author");
             request.Headers.Add("author", authorKey);
 
             // Act
             var response = await client.SendAsync(request);
 
+            var result = JsonConvert.DeserializeObject<Reaction>(await response.Content.ReadAsStringAsync());
+
             // Assert
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+            Assert.IsTrue(ReactionСomparator.Compare(reaction, result));
         }
 
         [Test]
@@ -50,7 +52,7 @@ namespace GhostNetwork.Content.UnitTest.Reactions.Api
             var authorKey = "non_exist_author";
             var reactionKey = "non_exist_reaction";
 
-            Reaction reaction = null; 
+            Reaction reaction = null;
 
             var storageMock = new Mock<IReactionStorage>();
 
@@ -63,7 +65,7 @@ namespace GhostNetwork.Content.UnitTest.Reactions.Api
                 collection.AddScoped(provider => storageMock.Object);
             });
 
-            var request = new HttpRequestMessage(HttpMethod.Get, $"reactions/{ reactionKey }/author");
+            var request = new HttpRequestMessage(HttpMethod.Get, $"reactions/{reactionKey}/author");
             request.Headers.Add("author", authorKey);
 
             // Act

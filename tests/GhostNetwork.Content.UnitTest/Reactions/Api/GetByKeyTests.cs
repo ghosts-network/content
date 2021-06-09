@@ -1,16 +1,17 @@
-using Moq;
-using System.Net;
+﻿using System.Collections.Generic;
 using System.Linq;
-using NUnit.Framework;
+using System.Net;
 using System.Threading.Tasks;
 using GhostNetwork.Content.MongoDb;
 using GhostNetwork.Content.Reactions;
 using Microsoft.Extensions.DependencyInjection;
+using Moq;
+using NUnit.Framework;
 
 namespace GhostNetwork.Content.UnitTest.Reactions.Api
 {
     [TestFixture]
-    public class GetByIdTests
+    internal class GetByKeyTests
     {
         [Test]
         public async Task GetByKey_Ok()
@@ -32,7 +33,7 @@ namespace GhostNetwork.Content.UnitTest.Reactions.Api
                 .Setup(s => s.GetStats(key))
                 .ReturnsAsync(reactions);
 
-            var client = TestServerHelper.New(collection => 
+            var client = TestServerHelper.New(collection =>
             {
                 collection.AddScoped(provider => storageMock.Object);
             });
@@ -40,8 +41,11 @@ namespace GhostNetwork.Content.UnitTest.Reactions.Api
             // Act
             var response = await client.GetAsync($"/reactions/{key}");
 
+            var result = await response.Content.DeserializeContent<IDictionary<string, int>>();
+
             // Assert
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+            Assert.IsTrue(ReactionСomparator.CompareStats(reactions, result));
         }
 
         [Test]
@@ -50,7 +54,7 @@ namespace GhostNetwork.Content.UnitTest.Reactions.Api
             // Setup
             var key = "non_existent_key";
 
-            var reactions = new ReactionEntity[] {}
+            var reactions = new ReactionEntity[] { }
                 .ToDictionary(k => k.Key)
                 .GroupBy(r => r.Value)
                 .ToDictionary(rg => rg.Key.Key, rg => rg.Count());
@@ -61,7 +65,7 @@ namespace GhostNetwork.Content.UnitTest.Reactions.Api
                 .Setup(s => s.GetStats(key))
                 .ReturnsAsync(reactions);
 
-            var client = TestServerHelper.New(collection => 
+            var client = TestServerHelper.New(collection =>
             {
                 collection.AddScoped(provider => storageMock.Object);
             });

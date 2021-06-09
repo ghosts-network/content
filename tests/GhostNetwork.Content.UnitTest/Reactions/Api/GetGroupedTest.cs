@@ -1,17 +1,17 @@
-using Moq;
+using System.Collections.Generic;
 using System.Net;
-using NUnit.Framework;
 using System.Threading.Tasks;
+using GhostNetwork.Content.Api.Models;
 using GhostNetwork.Content.Reactions;
 using Microsoft.Extensions.DependencyInjection;
-using System.Collections.Generic;
+using Moq;
 using Newtonsoft.Json;
-using GhostNetwork.Content.Api.Models;
+using NUnit.Framework;
 
 namespace GhostNetwork.Content.UnitTest.Reactions.Api
 {
     [TestFixture]
-    public class GetGroupedTest
+    internal class GetGroupedTest
     {
         [Test]
         public async Task GetGrouppedReactions_Ok()
@@ -31,7 +31,7 @@ namespace GhostNetwork.Content.UnitTest.Reactions.Api
                 .Setup(s => s.GetGroupedReactionsAsync(keys))
                 .ReturnsAsync(data);
 
-            var client = TestServerHelper.New(collection => 
+            var client = TestServerHelper.New(collection =>
             {
                 collection.AddScoped(provider => storageMock.Object);
             });
@@ -39,10 +39,9 @@ namespace GhostNetwork.Content.UnitTest.Reactions.Api
             var input = new ReactionsQuery { Keys = keys };
 
             // Act
-            var response = await client.PostAsync("reactions/grouped", input.AsJsonContent<ReactionsQuery>());
+            var response = await client.PostAsync("reactions/grouped", input.AsJsonContent());
+            var result = await response.Content.DeserializeContent<Dictionary<string, Dictionary<string, int>>>();
 
-            var result = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, int>>>(
-                await response.Content.ReadAsStringAsync());
             // Assert
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
             Assert.IsTrue(result["Post_Test1"]["wow"] == 2 && result["Post_Test1"]["like"] == 1 && result["Post_Test2"]["like"] == 1);
