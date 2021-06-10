@@ -13,7 +13,7 @@ namespace GhostNetwork.Content.Comments
 
         Task<(DomainResult, string)> CreateAsync(string key, string text, string replyCommentId, UserInfo author);
 
-        Task<Dictionary<string, FeaturedInfo>> SearchFeaturedAsync(IEnumerable<string> ids);
+        Task<Dictionary<string, FeaturedInfo>> SearchFeaturedAsync(IEnumerable<string> keys);
 
         Task DeleteAsync(string id);
 
@@ -38,9 +38,9 @@ namespace GhostNetwork.Content.Comments
             return commentStorage.FindOneByIdAsync(id);
         }
 
-        public Task<(IEnumerable<Comment>, long)> SearchAsync(string publicationId, int skip, int take)
+        public Task<(IEnumerable<Comment>, long)> SearchAsync(string key, int skip, int take)
         {
-            return commentStorage.FindManyAsync(publicationId, skip, take);
+            return commentStorage.FindManyAsync(key, skip, take);
         }
 
         public Task<Dictionary<string, FeaturedInfo>> SearchFeaturedAsync(IEnumerable<string> keys)

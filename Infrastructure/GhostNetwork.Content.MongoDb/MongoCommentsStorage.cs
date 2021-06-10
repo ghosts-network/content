@@ -182,13 +182,11 @@ namespace GhostNetwork.Content.MongoDb
                             .UpdateOneAsync(
                                 Builders<BsonDocument>.Filter.Eq("_id", comment["_id"].AsObjectId),
                                 Builders<BsonDocument>.Update
-                                    .Set("key", PublicationKey(comment["publicationId"].AsString))
+                                    .Set("key", $"publication_{comment["publicationId"].AsString}")
                                     .Unset("publicationId")
                             )
                     )
             );
         }
-
-        private static string PublicationKey(string publicationId) => $"publication_{publicationId}";
     }
 }
