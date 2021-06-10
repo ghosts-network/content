@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Threading.Tasks;
 using GhostNetwork.Content.Api.Helpers;
 using GhostNetwork.Content.Api.Models;
@@ -36,15 +34,12 @@ namespace GhostNetwork.Content.Api.Controllers
         {
             var author = await userProvider.GetByIdAsync(model.AuthorId);
 
-#pragma warning disable 612
-            var key = model.Key ?? PublicationKey(model.PublicationId);
             var (domainResult, id) = await commentService
-                .CreateAsync(key, model.Content, model.ReplyCommentId, author);
-#pragma warning restore 612
+                .CreateAsync(model.Key, model.Content, model.ReplyCommentId, author);
 
             if (domainResult.Successed)
             {
-                return Created(Url.Action("GetById", new {id}), await commentService.GetByIdAsync(id));
+                return Created(Url.Action("GetById", new { id }), await commentService.GetByIdAsync(id));
             }
 
             return BadRequest(domainResult.ToProblemDetails());
@@ -69,53 +64,26 @@ namespace GhostNetwork.Content.Api.Controllers
         }
 
         /// <summary>
-        /// Search comments for publications
+        /// Search featured comments for keys
         /// </summary>
-        /// <param name="model">Array of publications ids</param>
-        /// <returns>Comments related to publications</returns>
+        /// <param name="model">Array of keys</param>
+        /// <returns>Featured comments by keys</returns>
         [HttpPost("comments/featured")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<Dictionary<string, FeaturedInfo>>> SearchFeaturedAsync(
             [FromBody] FeaturedQuery model)
         {
-#pragma warning disable 612
-            var keys = model.Keys?.ToList() ?? model.PublicationIds
-#pragma warning restore 612
-                .Select(PublicationKey)
-                .ToList();
-
-            var result = await commentService.SearchFeaturedAsync(keys);
+            var result = await commentService.SearchFeaturedAsync(model.Keys);
             return Ok(result);
         }
 
         /// <summary>
-        /// Search comments for publication
-        /// </summary>
-        /// <param name="publicationId">Publication id</param>
-        /// <param name="skip">Skip comments up to a specified position</param>
-        /// <param name="take">Take comments up to a specified position</param>
-        /// <returns>Comments related to publication</returns>
-        [Obsolete]
-        [HttpGet("bypublication/{publicationId}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<Comment>>> SearchAsync(
-            [FromRoute] string publicationId,
-            [FromQuery, Range(0, int.MaxValue)] int skip,
-            [FromQuery, Range(0, 100)] int take = 10)
-        {
-            var (comments, totalCount) = await commentService.SearchAsync(PublicationKey(publicationId), skip, take);
-            Response.Headers.Add("X-TotalCount", totalCount.ToString());
-
-            return Ok(comments);
-        }
-
-        /// <summary>
-        /// Search comments for publication
+        /// Search comments for key
         /// </summary>
         /// <param name="key">Comment key</param>
         /// <param name="skip">Skip comments up to a specified position</param>
         /// <param name="take">Take comments up to a specified position</param>
-        /// <returns>Comments related to publication</returns>
+        /// <returns>Comments related to key</returns>
         [HttpGet("bykey/{key}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<Comment>>> SearchByKeyAsync(
@@ -149,21 +117,6 @@ namespace GhostNetwork.Content.Api.Controllers
         }
 
         /// <summary>
-        /// Delete all publication comments
-        /// </summary>
-        /// <param name="publicationId">Publication id</param>
-        [Obsolete]
-        [HttpDelete("bypublication/{publicationId}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<IEnumerable<Comment>>> DeleteByPublicationAsync([FromRoute] string publicationId)
-        {
-            await commentService.DeleteByKeyAsync(PublicationKey(publicationId));
-
-            return NoContent();
-        }
-
-        /// <summary>
         /// Delete all comments by key
         /// </summary>
         /// <param name="key">Comments key</param>
@@ -176,7 +129,5 @@ namespace GhostNetwork.Content.Api.Controllers
 
             return NoContent();
         }
-
-        private static string PublicationKey(string publicationId) => $"publication_{publicationId}";
     }
 }

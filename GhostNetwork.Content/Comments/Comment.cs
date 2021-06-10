@@ -20,9 +20,6 @@ namespace GhostNetwork.Content.Comments
 
         public string Key { get; }
 
-        [Obsolete]
-        public string PublicationId => Key.Remove(0, 12);
-
         public UserInfo Author { get; }
 
         public DateTimeOffset CreatedOn { get; }
