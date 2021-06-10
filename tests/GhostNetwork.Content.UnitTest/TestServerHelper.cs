@@ -23,7 +23,7 @@ namespace GhostNetwork.Content.UnitTest
 
         public static StringContent AsJsonContent<T>(this T input)
         {
-            return new StringContent(JsonConvert.SerializeObject(input), Encoding.Default, "application/json");
+            return new(JsonConvert.SerializeObject(input), Encoding.Default, "application/json");
         }
 
         public static async Task<T> DeserializeContent<T>(this HttpContent content)

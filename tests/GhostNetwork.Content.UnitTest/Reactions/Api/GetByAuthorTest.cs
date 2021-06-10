@@ -23,14 +23,13 @@ namespace GhostNetwork.Content.UnitTest.Reactions.Api
             var reaction = new Reaction(reactionKey, type);
 
             var storageMock = new Mock<IReactionStorage>();
-
             storageMock
                 .Setup(s => s.GetReactionByAuthorAsync(reactionKey, authorKey))
                 .ReturnsAsync(reaction);
 
             var client = TestServerHelper.New(collection =>
             {
-                collection.AddScoped(provider => storageMock.Object);
+                collection.AddScoped(_ => storageMock.Object);
             });
 
             var request = new HttpRequestMessage(HttpMethod.Get, $"reactions/{reactionKey}/author");
@@ -43,7 +42,8 @@ namespace GhostNetwork.Content.UnitTest.Reactions.Api
 
             // Assert
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-            Assert.IsTrue(ReactionСomparator.Compare(reaction, result));
+            Assert.AreEqual(reaction.Key, result.Key);
+            Assert.AreEqual(reaction.Type, result.Type);
         }
 
         [Test]
@@ -52,17 +52,14 @@ namespace GhostNetwork.Content.UnitTest.Reactions.Api
             var authorKey = "non_exist_author";
             var reactionKey = "non_exist_reaction";
 
-            Reaction reaction = null;
-
             var storageMock = new Mock<IReactionStorage>();
-
             storageMock
                 .Setup(s => s.GetReactionByAuthorAsync(reactionKey, authorKey))
-                .ReturnsAsync(reaction);
+                .ReturnsAsync(default(Reaction));
 
             var client = TestServerHelper.New(collection =>
             {
-                collection.AddScoped(provider => storageMock.Object);
+                collection.AddScoped(_ => storageMock.Object);
             });
 
             var request = new HttpRequestMessage(HttpMethod.Get, $"reactions/{reactionKey}/author");

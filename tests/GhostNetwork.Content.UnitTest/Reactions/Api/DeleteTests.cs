@@ -19,23 +19,22 @@ namespace GhostNetwork.Content.UnitTest.Reactions.Api
         {
             // Setup
             var key = "key1";
-            var type = "wow";
             var author = "some_author";
 
-            var reactions = new ReactionEntity[] { new ReactionEntity { Key = key, Author = author, Type = type } }
-                .ToDictionary(k => k.Key)
-                .GroupBy(r => r.Value)
-                .ToDictionary(rg => rg.Key.Key, rg => rg.Count());
+            var stats = new Dictionary<string, int>
+            {
+                ["wow"] = 1
+            };
 
             var storageMock = new Mock<IReactionStorage>();
 
             storageMock
                 .Setup(s => s.GetStats(key))
-                .ReturnsAsync(reactions);
+                .ReturnsAsync(stats);
 
             var client = TestServerHelper.New(collection =>
             {
-                collection.AddScoped(provider => storageMock.Object);
+                collection.AddScoped(_ => storageMock.Object);
             });
 
             var request = new HttpRequestMessage(HttpMethod.Delete, $"reactions/{key}/author");
@@ -47,7 +46,7 @@ namespace GhostNetwork.Content.UnitTest.Reactions.Api
 
             // Assert
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-            Assert.IsTrue(ReactionСomparator.CompareStats(reactions, result));
+            Assert.AreEqual(stats["wow"], result["wow"]);
         }
 
         [Test]
@@ -57,20 +56,16 @@ namespace GhostNetwork.Content.UnitTest.Reactions.Api
             var key = "key1";
             var author = "some_author";
 
-            var reactions = new ReactionEntity[] { }
-                .ToDictionary(k => k.Key)
-                .GroupBy(r => r.Value)
-                .ToDictionary(rg => rg.Key.Key, rg => rg.Count());
+            var reactions = new Dictionary<string, int>();
 
             var storageMock = new Mock<IReactionStorage>();
-
             storageMock
                 .Setup(s => s.GetStats(key))
                 .ReturnsAsync(reactions);
 
             var client = TestServerHelper.New(collection =>
             {
-                collection.AddScoped(provider => storageMock.Object);
+                collection.AddScoped(_ => storageMock.Object);
             });
 
             var request = new HttpRequestMessage(HttpMethod.Delete, $"reactions/{key}/author");
@@ -91,23 +86,20 @@ namespace GhostNetwork.Content.UnitTest.Reactions.Api
             var type = "wow";
             var author = "some_author";
 
-            var reactions = new ReactionEntity[]
+            var stats = new Dictionary<string, int>
             {
-                new ReactionEntity { Key = key, Author = author, Type = type },
-                new ReactionEntity { Key = "key2", Author = author, Type = type }
-            }.ToDictionary(k => k.Key)
-            .GroupBy(r => r.Value)
-            .ToDictionary(rg => rg.Key.Key, rg => rg.Count());
+                ["key2"] = 1
+            };
 
             var storageMock = new Mock<IReactionStorage>();
 
             storageMock
                 .Setup(s => s.GetStats(key))
-                .ReturnsAsync(reactions);
+                .ReturnsAsync(stats);
 
             var client = TestServerHelper.New(collection =>
             {
-                collection.AddScoped(provider => storageMock.Object);
+                collection.AddScoped(_ => storageMock.Object);
             });
 
             // Act
@@ -116,7 +108,7 @@ namespace GhostNetwork.Content.UnitTest.Reactions.Api
 
             // Assert
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-            Assert.IsTrue(ReactionСomparator.CompareStats(reactions, result));
+            Assert.AreEqual(stats["key2"], result["key2"]);
         }
     }
 }

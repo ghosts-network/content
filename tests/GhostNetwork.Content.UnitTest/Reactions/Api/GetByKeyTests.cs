@@ -18,34 +18,31 @@ namespace GhostNetwork.Content.UnitTest.Reactions.Api
         {
             // Setup
             var key = "some_key";
-
-            var reactions = new ReactionEntity[]
+            var stats = new Dictionary<string, int>()
             {
-                new ReactionEntity() { Key = key + 1, Type = "some_type1" },
-                new ReactionEntity() { Key = key, Type = "some_type2" }
-            }.ToDictionary(k => k.Key)
-            .GroupBy(r => r.Value)
-            .ToDictionary(rg => rg.Key.Key, rg => rg.Count());
+                ["like"] = 2,
+                ["wow"] = 1
+            };
 
             var storageMock = new Mock<IReactionStorage>();
 
             storageMock
                 .Setup(s => s.GetStats(key))
-                .ReturnsAsync(reactions);
+                .ReturnsAsync(stats);
 
             var client = TestServerHelper.New(collection =>
             {
-                collection.AddScoped(provider => storageMock.Object);
+                collection.AddScoped(_ => storageMock.Object);
             });
 
             // Act
             var response = await client.GetAsync($"/reactions/{key}");
-
             var result = await response.Content.DeserializeContent<IDictionary<string, int>>();
 
             // Assert
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-            Assert.IsTrue(ReactionСomparator.CompareStats(reactions, result));
+            Assert.AreEqual(2, result["like"]);
+            Assert.AreEqual(1, result["wow"]);
         }
 
         [Test]
@@ -54,20 +51,16 @@ namespace GhostNetwork.Content.UnitTest.Reactions.Api
             // Setup
             var key = "non_existent_key";
 
-            var reactions = new ReactionEntity[] { }
-                .ToDictionary(k => k.Key)
-                .GroupBy(r => r.Value)
-                .ToDictionary(rg => rg.Key.Key, rg => rg.Count());
+            var stats = new Dictionary<string, int>();
 
             var storageMock = new Mock<IReactionStorage>();
-
             storageMock
                 .Setup(s => s.GetStats(key))
-                .ReturnsAsync(reactions);
+                .ReturnsAsync(stats);
 
             var client = TestServerHelper.New(collection =>
             {
-                collection.AddScoped(provider => storageMock.Object);
+                collection.AddScoped(_ => storageMock.Object);
             });
 
             // Act

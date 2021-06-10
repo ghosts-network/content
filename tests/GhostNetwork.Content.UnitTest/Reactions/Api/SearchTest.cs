@@ -44,7 +44,7 @@ namespace GhostNetwork.Content.UnitTest.Reactions.Api
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
             Assert.AreEqual(2, result.Length);
             Assert.AreEqual(new ReactionDto(reactions[0].Key, reactions[0].Type), result[0]);
-            Assert.AreEqual(new ReactionDto(reactions[1].Key, reactions[1].Type), result[0]);
+            Assert.AreEqual(new ReactionDto(reactions[1].Key, reactions[1].Type), result[1]);
         }
     }
 

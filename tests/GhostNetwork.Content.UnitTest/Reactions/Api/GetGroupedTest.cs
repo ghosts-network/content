@@ -1,11 +1,11 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using GhostNetwork.Content.Api.Models;
 using GhostNetwork.Content.Reactions;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
-using Newtonsoft.Json;
 using NUnit.Framework;
 
 namespace GhostNetwork.Content.UnitTest.Reactions.Api
@@ -14,26 +14,24 @@ namespace GhostNetwork.Content.UnitTest.Reactions.Api
     internal class GetGroupedTest
     {
         [Test]
-        public async Task GetGrouppedReactions_Ok()
+        public async Task GetGroupedReactions_Ok()
         {
             // Setup
-            var keys = new string[] { "Post_Test1", "Post_Test2" };
-
             var data = new Dictionary<string, Dictionary<string, int>>
             {
-                { "Post_Test1", new Dictionary<string, int>() { ["like"] = 1, ["wow"] = 2 } },
-                { "Post_Test2", new Dictionary<string, int>() { ["like"] = 1 } }
+                { "Post_Test1", new Dictionary<string, int> { ["like"] = 1, ["wow"] = 2 } },
+                { "Post_Test2", new Dictionary<string, int> { ["like"] = 1 } }
             };
+            var keys = data.Select(d => d.Key);
 
             var storageMock = new Mock<IReactionStorage>();
-
             storageMock
                 .Setup(s => s.GetGroupedReactionsAsync(keys))
                 .ReturnsAsync(data);
 
             var client = TestServerHelper.New(collection =>
             {
-                collection.AddScoped(provider => storageMock.Object);
+                collection.AddScoped(_ => storageMock.Object);
             });
 
             var input = new ReactionsQuery { Keys = keys };
@@ -44,7 +42,9 @@ namespace GhostNetwork.Content.UnitTest.Reactions.Api
 
             // Assert
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-            Assert.IsTrue(result["Post_Test1"]["wow"] == 2 && result["Post_Test1"]["like"] == 1 && result["Post_Test2"]["like"] == 1);
+            Assert.AreEqual(2, result["Post_Test1"]["wow"]);
+            Assert.AreEqual(1, result["Post_Test1"]["like"]);
+            Assert.AreEqual(1, result["Post_Test2"]["like"]);
         }
     }
 }
