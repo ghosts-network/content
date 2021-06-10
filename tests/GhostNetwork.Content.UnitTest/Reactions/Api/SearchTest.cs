@@ -1,11 +1,10 @@
-using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using GhostNetwork.Content.Api.Models;
 using GhostNetwork.Content.Reactions;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
-using Newtonsoft.Json;
 using NUnit.Framework;
 
 namespace GhostNetwork.Content.UnitTest.Reactions.Api
@@ -17,13 +16,12 @@ namespace GhostNetwork.Content.UnitTest.Reactions.Api
         public async Task SearchTest_Ok()
         {
             var author = "some_author";
-            var keys = new string[] { "key1", "key2" };
-
-            var reactions = new Reaction[]
+            var reactions = new[]
             {
-                new Reaction(keys[0], "like"),
-                new Reaction(keys[1], "wow")
+                new Reaction("key1", "like"),
+                new Reaction("key2", "wow")
             };
+            var keys = reactions.Select(r => r.Key).ToList();
 
             var storageMock = new Mock<IReactionStorage>();
 
@@ -33,18 +31,22 @@ namespace GhostNetwork.Content.UnitTest.Reactions.Api
 
             var client = TestServerHelper.New(collection =>
             {
-                collection.AddScoped(provider => storageMock.Object);
+                collection.AddScoped(_ => storageMock.Object);
             });
 
-            var input = new ReactionsQuery() { Keys = keys };
+            var input = new ReactionsQuery { Keys = keys };
 
             // Act
             var response = await client.PostAsync($"reactions/search?author={author}", input.AsJsonContent());
-            var result = await response.Content.DeserializeContent<Reaction[]>();
+            var result = await response.Content.DeserializeContent<ReactionDto[]>();
 
             // Assert
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-            Assert.IsTrue(ReactionСomparator.Compare(reactions, result));
+            Assert.AreEqual(2, result.Length);
+            Assert.AreEqual(new ReactionDto(reactions[0].Key, reactions[0].Type), result[0]);
+            Assert.AreEqual(new ReactionDto(reactions[1].Key, reactions[1].Type), result[0]);
         }
     }
+
+    public record ReactionDto(string Key, string Type);
 }
