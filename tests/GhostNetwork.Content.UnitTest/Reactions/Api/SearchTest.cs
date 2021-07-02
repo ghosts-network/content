@@ -48,5 +48,5 @@ namespace GhostNetwork.Content.UnitTest.Reactions.Api
         }
     }
 
-    public record ReactionDto(string Key, string Type);
+    public record ReactionDto(string key, string type);
 }

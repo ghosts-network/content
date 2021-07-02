@@ -83,8 +83,6 @@ namespace GhostNetwork.Content.UnitTest.Reactions.Api
         {
             // Setup
             var key = "key1";
-            var type = "wow";
-            var author = "some_author";
 
             var stats = new Dictionary<string, int>
             {
