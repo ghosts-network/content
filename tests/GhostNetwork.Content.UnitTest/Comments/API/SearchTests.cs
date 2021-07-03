@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using GhostNetwork.Content.Comments;
 using Moq;
 using NUnit.Framework;
+using GhostNetwork.Content.Api.Models;
 
 namespace GhostNetwork.Content.UnitTest.Comments.Api
 {
@@ -47,6 +48,65 @@ namespace GhostNetwork.Content.UnitTest.Comments.Api
             // Assert
             Assert.AreEqual(response.StatusCode, HttpStatusCode.OK);
             Assert.AreEqual(result.Count(), 3);
+        }
+
+        [Test]
+        public async Task SearchFeatured_Ok()
+        {
+            // Setup
+            const string firstPublicationId = "firstId";
+            const string secondPublicationId = "secondId";
+            
+            int commentId = 1;
+
+            var author = new UserInfo(Guid.NewGuid(), "SomeName", null);
+
+            var featuredComments = new Dictionary<string, FeaturedInfo>()
+            {
+                {
+                    firstPublicationId, new FeaturedInfo(
+                        new Comment[]
+                        {
+                            new Comment((commentId++).ToString(), "someContent1", DateTimeOffset.Now, firstPublicationId, null, author),
+                            new Comment((commentId++).ToString(), "someContent2", DateTimeOffset.Now, firstPublicationId, null, author),
+                        }, 2
+                    )
+                },
+                {
+                    secondPublicationId, new FeaturedInfo(
+                        new Comment[]
+                        {
+                            new Comment((commentId++).ToString(), "someContent1", DateTimeOffset.Now, secondPublicationId, null, author),
+                            new Comment((commentId++).ToString(), "someContent2", DateTimeOffset.Now, secondPublicationId, null, author),
+                        }, 2
+                    )
+                }
+            };
+            var model = new FeaturedQuery() 
+            { 
+                PublicationIds = new string[] { firstPublicationId, secondPublicationId } 
+            };
+
+            var serviceMock = new Mock<ICommentsService>();
+            serviceMock
+                .Setup(s => s.SearchFeaturedAsync(new string[] { firstPublicationId, secondPublicationId }))
+                .ReturnsAsync(featuredComments);
+
+            var client = TestServerHelper.New(collection => 
+            {
+                collection.AddScoped(_ => serviceMock.Object);
+            });
+            
+            // Act
+            var response = await client.PostAsync("Comments/comments/featured", model.AsJsonContent()); 
+            var result = await response.Content.DeserializeContent<Dictionary<string, FeaturedInfo>>();
+
+            // Assert
+            Assert.AreEqual(response.StatusCode, HttpStatusCode.OK);
+
+            Assert.IsTrue(result.Count == 2);
+            Assert.IsTrue(result[firstPublicationId].Comments.Count() == 2);
+            Assert.IsTrue(result[secondPublicationId].Comments.Count() == 2);
         }
     }
 }
