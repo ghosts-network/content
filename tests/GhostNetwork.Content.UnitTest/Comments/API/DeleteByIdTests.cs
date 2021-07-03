@@ -49,7 +49,7 @@ namespace GhostNetwork.Content.UnitTest.Comments.Api
             const string commentId = "someId";
 
             var serviceMock = new Mock<ICommentsService>();
-            serviceMock.Setup(s => s.GetByIdAsync(commentId)).ReturnsAsync(await Task.FromResult<Comment>(null));
+            serviceMock.Setup(s => s.GetByIdAsync(commentId)).ReturnsAsync(default(Comment));
 
             var client = TestServerHelper.New(collection =>
             {
