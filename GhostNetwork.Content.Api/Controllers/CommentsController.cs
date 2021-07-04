@@ -39,7 +39,7 @@ namespace GhostNetwork.Content.Api.Controllers
 
             if (domainResult.Successed)
             {
-                return Created(Url.Action("GetById", new {id}), await commentService.GetByIdAsync(id));
+                return Created(Url.Action("GetById", new { id }), await commentService.GetByIdAsync(id));
             }
 
             return BadRequest(domainResult.ToProblemDetails());
