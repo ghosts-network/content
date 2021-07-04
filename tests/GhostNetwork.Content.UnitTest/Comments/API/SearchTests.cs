@@ -1,13 +1,13 @@
+using GhostNetwork.Content.Api.Models;
+using GhostNetwork.Content.Comments;
+using Microsoft.Extensions.DependencyInjection;
+using Moq;
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using GhostNetwork.Content.Comments;
-using Moq;
-using NUnit.Framework;
-using GhostNetwork.Content.Api.Models;
 
 namespace GhostNetwork.Content.UnitTest.Comments.Api
 {
@@ -21,7 +21,7 @@ namespace GhostNetwork.Content.UnitTest.Comments.Api
             const string publicationId = "someId";
             const int skip = 0;
             const int take = 5;
-            
+
             int commentId = 1;
 
             var author = new UserInfo(Guid.NewGuid(), "SomeName", null);
@@ -42,7 +42,7 @@ namespace GhostNetwork.Content.UnitTest.Comments.Api
             });
 
             // Act
-            var response = await client.GetAsync($"comments/bypublication/{publicationId}?skip={skip}&take={take}");
+            var response = await client.GetAsync($"comments/bykey/{publicationId}?skip={skip}&take={take}");
             var result = await response.Content.DeserializeContent<IEnumerable<Comment>>();
 
             // Assert
@@ -56,7 +56,7 @@ namespace GhostNetwork.Content.UnitTest.Comments.Api
             // Setup
             const string firstPublicationId = "firstId";
             const string secondPublicationId = "secondId";
-            
+
             int commentId = 1;
 
             var author = new UserInfo(Guid.NewGuid(), "SomeName", null);
@@ -69,8 +69,7 @@ namespace GhostNetwork.Content.UnitTest.Comments.Api
                         {
                             new Comment((commentId++).ToString(), "someContent1", DateTimeOffset.Now, firstPublicationId, null, author),
                             new Comment((commentId++).ToString(), "someContent2", DateTimeOffset.Now, firstPublicationId, null, author),
-                        }, 2
-                    )
+                        }, 2)
                 },
                 {
                     secondPublicationId, new FeaturedInfo(
@@ -78,13 +77,13 @@ namespace GhostNetwork.Content.UnitTest.Comments.Api
                         {
                             new Comment((commentId++).ToString(), "someContent1", DateTimeOffset.Now, secondPublicationId, null, author),
                             new Comment((commentId++).ToString(), "someContent2", DateTimeOffset.Now, secondPublicationId, null, author),
-                        }, 2
-                    )
+                        }, 2)
                 }
             };
-            var model = new FeaturedQuery() 
-            { 
-                PublicationIds = new string[] { firstPublicationId, secondPublicationId } 
+
+            var model = new FeaturedQuery()
+            {
+                Keys = new string[] { firstPublicationId, secondPublicationId }
             };
 
             var serviceMock = new Mock<ICommentsService>();
@@ -92,13 +91,13 @@ namespace GhostNetwork.Content.UnitTest.Comments.Api
                 .Setup(s => s.SearchFeaturedAsync(new string[] { firstPublicationId, secondPublicationId }))
                 .ReturnsAsync(featuredComments);
 
-            var client = TestServerHelper.New(collection => 
+            var client = TestServerHelper.New(collection =>
             {
                 collection.AddScoped(_ => serviceMock.Object);
             });
-            
+
             // Act
-            var response = await client.PostAsync("Comments/comments/featured", model.AsJsonContent()); 
+            var response = await client.PostAsync("Comments/comments/featured", model.AsJsonContent());
             var result = await response.Content.DeserializeContent<Dictionary<string, FeaturedInfo>>();
 
             // Assert

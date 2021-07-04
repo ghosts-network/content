@@ -1,14 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
+using Domain;
+using GhostNetwork.Content.Api.Models;
 using GhostNetwork.Content.Comments;
+using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using NUnit.Framework;
-using GhostNetwork.Content.Api.Models;
-using Domain;
+using System;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace GhostNetwork.Content.UnitTest.Comments.Api
 {
@@ -28,7 +26,7 @@ namespace GhostNetwork.Content.UnitTest.Comments.Api
 
             var model = new CreateCommentModel()
             {
-                PublicationId = publicationId,
+                Key = publicationId,
                 Content = content,
                 ReplyCommentId = null,
                 AuthorId = authorId
@@ -48,7 +46,7 @@ namespace GhostNetwork.Content.UnitTest.Comments.Api
                 .Setup(s => s.GetByIdAsync(model.AuthorId))
                 .ReturnsAsync(author);
 
-            var client = TestServerHelper.New(collection => 
+            var client = TestServerHelper.New(collection =>
             {
                 collection.AddScoped(_ => commentServiceMock.Object);
                 collection.AddScoped(_ => userProvideMock.Object);
@@ -73,7 +71,7 @@ namespace GhostNetwork.Content.UnitTest.Comments.Api
 
             var model = new CreateCommentModel()
             {
-                PublicationId = publicationId,
+                Key = publicationId,
                 Content = content,
                 ReplyCommentId = null,
                 AuthorId = authorId
@@ -89,7 +87,7 @@ namespace GhostNetwork.Content.UnitTest.Comments.Api
                 .Setup(s => s.GetByIdAsync(model.AuthorId))
                 .ReturnsAsync(author);
 
-            var client = TestServerHelper.New(collection => 
+            var client = TestServerHelper.New(collection =>
             {
                 collection.AddScoped(_ => serviceMock.Object);
                 collection.AddScoped(_ => userProvideMock.Object);
