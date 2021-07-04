@@ -5,8 +5,7 @@ namespace GhostNetwork.Content.Api.Models
 {
     public class CreateCommentModel
     {
-        [Required]
-        public string PublicationId { get; set; }
+        public string Key { get; set; }
 
         [Required]
         public string Content { get; set; }
@@ -14,8 +13,5 @@ namespace GhostNetwork.Content.Api.Models
         public string ReplyCommentId { get; set; }
 
         public string AuthorId { get; set; }
-
-        [Obsolete]
-        public UserInfoModel Author { get; set; }
     }
 }

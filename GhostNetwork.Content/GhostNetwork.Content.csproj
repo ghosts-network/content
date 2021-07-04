@@ -3,7 +3,6 @@
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
         <CodeAnalysisRuleSet>../GhostNetwork.ruleset</CodeAnalysisRuleSet>
-        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <RootNamespace>GhostNetwork.Content</RootNamespace>
     </PropertyGroup>
 

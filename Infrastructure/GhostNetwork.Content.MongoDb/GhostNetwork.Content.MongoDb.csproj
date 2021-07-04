@@ -3,11 +3,10 @@
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
         <CodeAnalysisRuleSet>../../GhostNetwork.ruleset</CodeAnalysisRuleSet>
-        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="MongoDB.Driver" Version="2.11.0" />
+      <PackageReference Include="MongoDB.Driver" Version="2.12.4" />
       <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" />
     </ItemGroup>
 

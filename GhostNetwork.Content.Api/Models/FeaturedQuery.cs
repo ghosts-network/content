@@ -5,6 +5,6 @@ namespace GhostNetwork.Content.Api.Models
     public class FeaturedQuery
     {
         [Required]
-        public string[] PublicationIds { get; set; }
+        public string[] Keys { get; set; }
     }
 }

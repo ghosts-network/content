@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 using Domain.Validation;
 using GhostNetwork.Content.Api.Helpers;
 using GhostNetwork.Content.Api.Helpers.OpenApi;
@@ -97,6 +98,15 @@ namespace GhostNetwork.Content.Api
             app.UseRouting();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+
+            Task.Run(() =>
+            {
+                using var scope = app.ApplicationServices.CreateScope();
+                (scope.ServiceProvider.GetRequiredService<ICommentsStorage>() as MongoCommentsStorage)
+                    .MigratePublicationIdToKey()
+                    .GetAwaiter()
+                    .GetResult();
+            });
         }
 
         private IValidator<PublicationContext> BuildPublicationValidator(IServiceProvider provider)

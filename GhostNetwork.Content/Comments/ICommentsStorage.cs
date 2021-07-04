@@ -7,16 +7,14 @@ namespace GhostNetwork.Content.Comments
     {
         Task<Comment> FindOneByIdAsync(string id);
 
-        Task<(IEnumerable<Comment>, long)> FindManyAsync(string publicationId, int skip, int take);
+        Task<(IEnumerable<Comment>, long)> FindManyAsync(string key, int skip, int take);
 
-        Task<bool> IsCommentInPublicationAsync(string commentId, string publicationId);
+        Task<Dictionary<string, FeaturedInfo>> FindFeaturedAsync(IEnumerable<string> keys);
 
-        Task<string> InsertOneAsync(Comment publication);
+        Task<string> InsertOneAsync(Comment comment);
 
-        Task DeleteByPublicationAsync(string publicationId);
+        Task DeleteByKeyAsync(string key);
 
         Task DeleteOneAsync(string commentId);
-
-        Task<Dictionary<string, FeaturedInfo>> FindFeaturedAsync(string[] ids);
     }
 }

@@ -34,13 +34,12 @@ namespace GhostNetwork.Content.Api.Controllers
         {
             var author = await userProvider.GetByIdAsync(model.AuthorId);
 
-#pragma warning disable 612
-            var (domainResult, id) = await commentService.CreateAsync(model.PublicationId, model.Content, model.ReplyCommentId, author ?? (UserInfo)model.Author);
-#pragma warning restore 612
+            var (domainResult, id) = await commentService
+                .CreateAsync(model.Key, model.Content, model.ReplyCommentId, author);
 
             if (domainResult.Successed)
             {
-                return Created(Url.Action("GetById", new { id }), await commentService.GetByIdAsync(id));
+                return Created(Url.Action("GetById", new {id}), await commentService.GetByIdAsync(id));
             }
 
             return BadRequest(domainResult.ToProblemDetails());
@@ -65,34 +64,34 @@ namespace GhostNetwork.Content.Api.Controllers
         }
 
         /// <summary>
-        /// Search comments for publications
+        /// Search featured comments for keys
         /// </summary>
-        /// <param name="model">Array of publications ids</param>
-        /// <returns>Comments related to publications</returns>
+        /// <param name="model">Array of keys</param>
+        /// <returns>Featured comments related to keys</returns>
         [HttpPost("comments/featured")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<Dictionary<string, FeaturedInfo>>> SearchFeaturedAsync(
             [FromBody] FeaturedQuery model)
         {
-            var result = await commentService.SearchFeaturedAsync(model.PublicationIds);
+            var result = await commentService.SearchFeaturedAsync(model.Keys);
             return Ok(result);
         }
 
         /// <summary>
-        /// Search comments for publication
+        /// Search comments for key
         /// </summary>
-        /// <param name="publicationId">Publication id</param>
+        /// <param name="key">Comment key</param>
         /// <param name="skip">Skip comments up to a specified position</param>
         /// <param name="take">Take comments up to a specified position</param>
-        /// <returns>Comments related to publication</returns>
-        [HttpGet("bypublication/{publicationId}")]
+        /// <returns>Comments related to key</returns>
+        [HttpGet("bykey/{key}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<Comment>>> SearchAsync(
-            [FromRoute] string publicationId,
+        public async Task<ActionResult<IEnumerable<Comment>>> SearchByKeyAsync(
+            [FromRoute] string key,
             [FromQuery, Range(0, int.MaxValue)] int skip,
             [FromQuery, Range(0, 100)] int take = 10)
         {
-            var (comments, totalCount) = await commentService.SearchAsync(publicationId, skip, take);
+            var (comments, totalCount) = await commentService.SearchAsync(key, skip, take);
             Response.Headers.Add("X-TotalCount", totalCount.ToString());
 
             return Ok(comments);
@@ -118,15 +117,15 @@ namespace GhostNetwork.Content.Api.Controllers
         }
 
         /// <summary>
-        /// Delete all publication comments
+        /// Delete all comments by key
         /// </summary>
-        /// <param name="publicationId">Publication id</param>
-        [HttpDelete("bypublication/{publicationId}")]
+        /// <param name="key">Comments key</param>
+        [HttpDelete("bykey/{key}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<IEnumerable<Comment>>> DeleteByPublicationAsync([FromRoute] string publicationId)
+        public async Task<ActionResult<IEnumerable<Comment>>> DeleteByKeyAsync([FromRoute] string key)
         {
-            await commentService.DeleteByPublicationAsync(publicationId);
+            await commentService.DeleteByKeyAsync(key);
 
             return NoContent();
         }
