@@ -11,7 +11,7 @@ services:
     depends_on:
       - db
     environment:
-      - MONGO_ADDRESS=db:27017
+      - MONGO_CONNECTION=mongodb://db:27017/gpublications
       - ASPNETCORE_ENVIRONMENT=Development
 
   profiles:
@@ -21,4 +21,4 @@ services:
     depends_on:
       - db
     environment:
-      - MONGO_ADDRESS=db:27017
+      - MONGO_CONNECTION=mongodb://db:27017/gprofiles
