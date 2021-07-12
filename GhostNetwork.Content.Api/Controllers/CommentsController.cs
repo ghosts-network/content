@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 using GhostNetwork.Content.Api.Helpers;
 using GhostNetwork.Content.Api.Models;
@@ -43,6 +44,28 @@ namespace GhostNetwork.Content.Api.Controllers
             }
 
             return BadRequest(domainResult.ToProblemDetails());
+        }
+
+        /// <summary>
+        /// Update comment content
+        /// </summary>
+        /// <param name="commentId">Existing comment ID</param>
+        /// <param name="content">New content</param>
+        /// <returns>Updated comment</returns>
+        [HttpPut("{commentId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<Comment>> UpdateAsync([FromRoute] string commentId, [FromBody] string content)
+        {
+            var (domainResult, comment) = await commentService.UpdateAsync(commentId, content);
+
+            if (!domainResult.Successed)
+            {
+                return domainResult.Errors.Any(e => e.Message == "Not Found") ? NotFound() : BadRequest();
+            }
+
+            return comment != null ? Ok(comment) : NoContent();
         }
 
         /// <summary>
