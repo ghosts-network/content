@@ -141,7 +141,7 @@ namespace GhostNetwork.Content.Api
                 new MaxLengthValidator(configuration.GetValue<int?>("COMMENT_CONTENT_MAX_LENGTH") ?? 5000)
             };
 
-            var minLength = configuration.GetValue<int?>("COMMENT_CONTENT_MIN_LENGTH");
+            var minLength = configuration.GetValue<int?>("COMMENT_CONTENT_MIN_LENGTH") ?? (int?)1;
             if (minLength.HasValue)
             {
                 validators.Add(new MinLengthValidator(minLength.Value));
