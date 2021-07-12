@@ -49,6 +49,22 @@ namespace GhostNetwork.Content.MongoDb
             return entity.Id.ToString();
         }
 
+        public async Task<Comment> UpdateOneAsync(string commentId, string content)
+        {
+            if (!ObjectId.TryParse(commentId, out var oId))
+            {
+                return null;
+            }
+
+            var filter = Builders<CommentEntity>.Filter.Eq(x => x.Id, oId);
+            var update = Builders<CommentEntity>.Update.Set(x => x.Content, content);
+
+            var updateResult = await context.Comments
+                .UpdateOneAsync(filter, update);
+
+            return updateResult.ModifiedCount > 0 ? ToDomain((await context.Comments.FindAsync(filter)).First()) : default(Comment);
+        }
+
         public async Task<(IEnumerable<Comment>, long)> FindManyAsync(string key, int skip, int take)
         {
             var filter = Builders<CommentEntity>.Filter.Eq(x => x.Key, key);
