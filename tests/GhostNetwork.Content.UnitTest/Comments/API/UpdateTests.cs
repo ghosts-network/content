@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
-using GhostNetwork.Content.Api.Helpers;
-using GhostNetwork.Content.Api.Models;
+using Domain;
 using GhostNetwork.Content.Comments;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
-using Domain;
 using NUnit.Framework;
 
 namespace GhostNetwork.Content.UnitTest.Comments.Api
