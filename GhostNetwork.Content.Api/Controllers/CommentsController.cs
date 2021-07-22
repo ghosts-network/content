@@ -57,7 +57,7 @@ namespace GhostNetwork.Content.Api.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<Comment>> UpdateAsync([FromRoute] string commentId, [FromBody] string content)
+        public async Task<ActionResult<Comment>> UpdateAsync([FromRoute] string commentId, [FromBody][Required] string content)
         {
             var (domainResult, comment) = await commentService.UpdateAsync(commentId, content);
 
