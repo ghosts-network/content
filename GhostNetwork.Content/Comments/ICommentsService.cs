@@ -13,7 +13,7 @@ namespace GhostNetwork.Content.Comments
 
         Task<(DomainResult, string)> CreateAsync(string key, string text, string replyCommentId, UserInfo author);
 
-        Task<(DomainResult, Comment)> UpdateAsync(string commentId, string content);
+        Task<(DomainResult, (Comment, int))> UpdateAsync(string commentId, string content);
 
         Task<Dictionary<string, FeaturedInfo>> SearchFeaturedAsync(IEnumerable<string> keys);
 
@@ -64,18 +64,18 @@ namespace GhostNetwork.Content.Comments
             return (DomainResult.Success(), id);
         }
 
-        public async Task<(DomainResult, Comment)> UpdateAsync(string commentId, string content)
+        public async Task<(DomainResult, (Comment, int))> UpdateAsync(string commentId, string content)
         {
             var result = await validator.ValidateAsync(new CommentContext(content));
 
             if (!result.Successed)
             {
-                return (result, null);
+                return (result, (null, default(int)));
             }
 
             var updated = await commentStorage.UpdateOneAsync(commentId, content);
 
-            return (updated != null ? DomainResult.Success() : DomainResult.Error(new DomainError("Not Found")), updated);
+            return (DomainResult.Success(), updated);
         }
 
         public Task DeleteAsync(string id)

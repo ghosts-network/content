@@ -59,14 +59,24 @@ namespace GhostNetwork.Content.Api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<Comment>> UpdateAsync([FromRoute] string commentId, [FromBody][Required] string content)
         {
-            var (domainResult, comment) = await commentService.UpdateAsync(commentId, content);
+            var (domainResult, (comment, updateCount)) = await commentService.UpdateAsync(commentId, content);
 
             if (!domainResult.Successed)
             {
-                return domainResult.Errors.Any(e => e.Message == "Not Found") ? NotFound() : BadRequest();
+                return BadRequest();
             }
 
-            return comment != null ? Ok(comment) : NoContent();
+            if (comment == null)
+            {
+                return NotFound();
+            }
+
+            if (updateCount == 0)
+            {
+                return NoContent();
+            }
+
+            return Ok(comment);
         }
 
         /// <summary>
