@@ -92,7 +92,7 @@ namespace GhostNetwork.Content.UnitTest.Comments.Api
         }
 
       [Test]
-      public async Task Update_BadRequest_BlankContent()
+      public async Task Update_BadRequest_EmptyContent()
         {
             // Setup
             const string commentId = "someId";
