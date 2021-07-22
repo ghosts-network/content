@@ -66,17 +66,7 @@ namespace GhostNetwork.Content.Api.Controllers
                 return BadRequest();
             }
 
-            if (comment == null)
-            {
-                return NotFound();
-            }
-
-            if (updateCount == 0)
-            {
-                return NoContent();
-            }
-
-            return Ok(comment);
+            return comment == null ? NotFound() : updateCount == 0 ? NoContent() : Ok(comment);
         }
 
         /// <summary>
