@@ -53,20 +53,19 @@ namespace GhostNetwork.Content.Api.Controllers
         /// <param name="content">New content</param>
         /// <returns>Updated comment</returns>
         [HttpPut("{commentId}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<Comment>> UpdateAsync([FromRoute] string commentId, [FromBody][Required] string content)
         {
-            var (domainResult, (comment, updateCount)) = await commentService.UpdateAsync(commentId, content);
-
-            if (!domainResult.Successed)
+            if (await commentService.GetByIdAsync(commentId) == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
-            return comment == null ? NotFound() : updateCount == 0 ? NoContent() : Ok(comment);
+            await commentService.UpdateAsync(commentId, content);
+
+            return NoContent();
         }
 
         /// <summary>
