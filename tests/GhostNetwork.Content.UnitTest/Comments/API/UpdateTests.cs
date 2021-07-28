@@ -14,34 +14,6 @@ namespace GhostNetwork.Content.UnitTest.Comments.Api
     public class UpdateTests
     {
       [Test]
-      public async Task Update_Ok()
-        {
-            // Setup
-            const string commentId = "someId";
-
-            const string content = "New Content";
-
-            DomainResult domainResult = DomainResult.Success();
-
-            Comment comment = new Comment(commentId, content, DateTimeOffset.Now, null, null, null);
-
-            var serviceMock = new Mock<ICommentsService>();
-            serviceMock.Setup(s => s.UpdateAsync(commentId, content)).ReturnsAsync((domainResult, (comment, 1)));
-
-            var client = TestServerHelper.New(collection =>
-            {
-                collection.AddScoped(_ => serviceMock.Object);
-            });
-
-            // Act
-            var response = await client.PutAsync($"comments/{commentId}", content.AsJsonContent());
-            Comment result = await response.Content.DeserializeContent<Comment>();
-
-            Assert.AreEqual(response.StatusCode, HttpStatusCode.OK);
-            Assert.AreEqual(result, comment);
-        }
-
-      [Test]
       public async Task Update_NoContent()
         {
             // Setup
@@ -54,7 +26,8 @@ namespace GhostNetwork.Content.UnitTest.Comments.Api
             Comment comment = new Comment(commentId, content, DateTimeOffset.Now, null, null, null);
 
             var serviceMock = new Mock<ICommentsService>();
-            serviceMock.Setup(s => s.UpdateAsync(commentId, content)).ReturnsAsync((domainResult, (comment, 0)));
+            serviceMock.Setup(s => s.UpdateAsync(commentId, content)).ReturnsAsync(domainResult);
+            serviceMock.Setup(s => s.GetByIdAsync(commentId)).ReturnsAsync(comment);
 
             var client = TestServerHelper.New(collection =>
             {
@@ -63,32 +36,9 @@ namespace GhostNetwork.Content.UnitTest.Comments.Api
 
             // Act
             var response = await client.PutAsync($"comments/{commentId}", content.AsJsonContent());
+            Comment result = await response.Content.DeserializeContent<Comment>();
 
             Assert.AreEqual(response.StatusCode, HttpStatusCode.NoContent);
-        }
-
-      [Test]
-      public async Task Update_BadRequest_ServiceValidator()
-        {
-            // Setup
-            const string commentId = "someId";
-
-            const string content = "New Content";
-
-            DomainResult domainResult = DomainResult.Error(new DomainError("Some Error"));
-
-            var serviceMock = new Mock<ICommentsService>();
-            serviceMock.Setup(s => s.UpdateAsync(commentId, content)).ReturnsAsync((domainResult, (null, 0)));
-
-            var client = TestServerHelper.New(collection =>
-            {
-                collection.AddScoped(_ => serviceMock.Object);
-            });
-
-            // Act
-            var response = await client.PutAsync($"comments/{commentId}", content.AsJsonContent());
-
-            Assert.AreEqual(response.StatusCode, HttpStatusCode.BadRequest);
         }
 
       [Test]
@@ -104,7 +54,7 @@ namespace GhostNetwork.Content.UnitTest.Comments.Api
             Comment comment = new Comment(commentId, content, DateTimeOffset.Now, null, null, null);
 
             var serviceMock = new Mock<ICommentsService>();
-            serviceMock.Setup(s => s.UpdateAsync(commentId, content)).ReturnsAsync((domainResult, (comment, 1)));
+            serviceMock.Setup(s => s.UpdateAsync(commentId, content)).ReturnsAsync(domainResult);
 
             var client = TestServerHelper.New(collection =>
             {
@@ -128,7 +78,8 @@ namespace GhostNetwork.Content.UnitTest.Comments.Api
             DomainResult domainResult = DomainResult.Success();
 
             var serviceMock = new Mock<ICommentsService>();
-            serviceMock.Setup(s => s.UpdateAsync(commentId, content)).ReturnsAsync((domainResult, (null, 0)));
+            serviceMock.Setup(s => s.UpdateAsync(commentId, content)).ReturnsAsync(domainResult);
+            serviceMock.Setup(s => s.GetByIdAsync(commentId)).ReturnsAsync(default(Comment));
 
             var client = TestServerHelper.New(collection =>
             {
