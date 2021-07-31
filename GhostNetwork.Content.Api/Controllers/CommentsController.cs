@@ -63,7 +63,12 @@ namespace GhostNetwork.Content.Api.Controllers
                 return NotFound();
             }
 
-            await commentService.UpdateAsync(commentId, content);
+            var domainResult = await commentService.UpdateAsync(commentId, content);
+
+            if (!domainResult.Successed)
+            {
+                return BadRequest();
+            }
 
             return NoContent();
         }
