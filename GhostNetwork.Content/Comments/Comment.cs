@@ -29,18 +29,8 @@ namespace GhostNetwork.Content.Comments
 
         public static Comment New(string text, string key, string replyId, UserInfo author)
         {
-            return new(default, text, DateTimeOffset.UtcNow, key, replyId, author);
+            return new (default, text, DateTimeOffset.UtcNow, key, replyId, author);
         }
 
-        public override bool Equals(object obj)
-        {
-            return obj is Comment comment &&
-                   Id == comment.Id &&
-                   Content == comment.Content &&
-                   Key == comment.Key &&
-                   EqualityComparer<UserInfo>.Default.Equals(Author, comment.Author) &&
-                   CreatedOn.Equals(comment.CreatedOn) &&
-                   ReplyCommentId == comment.ReplyCommentId;
-        }
     }
 }
