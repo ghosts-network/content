@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace GhostNetwork.Content.Comments
 {
@@ -28,7 +29,8 @@ namespace GhostNetwork.Content.Comments
 
         public static Comment New(string text, string key, string replyId, UserInfo author)
         {
-            return new(default, text, DateTimeOffset.UtcNow, key, replyId, author);
+            return new (default, text, DateTimeOffset.UtcNow, key, replyId, author);
         }
+
     }
 }

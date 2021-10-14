@@ -13,6 +13,8 @@ namespace GhostNetwork.Content.Comments
 
         Task<string> InsertOneAsync(Comment comment);
 
+        Task UpdateOneAsync(string commentId, string content);
+
         Task DeleteByKeyAsync(string key);
 
         Task DeleteOneAsync(string commentId);
