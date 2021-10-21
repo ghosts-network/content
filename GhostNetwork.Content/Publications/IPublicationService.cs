@@ -26,15 +26,18 @@ namespace GhostNetwork.Content.Publications
         private readonly IValidator<PublicationContext> validator;
         private readonly IPublicationsStorage publicationStorage;
         private readonly IHashTagsFetcher hashTagsFetcher;
+        private readonly IEventBus eventBus;
 
         public PublicationService(
             IValidator<PublicationContext> validator,
             IPublicationsStorage publicationStorage,
-            IHashTagsFetcher hashTagsFetcher)
+            IHashTagsFetcher hashTagsFetcher,
+            IEventBus eventBus)
         {
             this.validator = validator;
             this.publicationStorage = publicationStorage;
             this.hashTagsFetcher = hashTagsFetcher;
+            this.eventBus = eventBus;
         }
 
         public async Task<Publication> GetByIdAsync(string id)
@@ -59,6 +62,7 @@ namespace GhostNetwork.Content.Publications
 
             var publication = Publication.New(text, author, hashTagsFetcher.Fetch);
             var id = await publicationStorage.InsertOneAsync(publication);
+            await eventBus.PublishAsync(new PublicationCreatedEvent(id, publication.Content, author));
 
             return (result, id);
         }
@@ -78,6 +82,9 @@ namespace GhostNetwork.Content.Publications
             publication.Update(text, hashTagsFetcher.Fetch);
 
             await publicationStorage.UpdateOneAsync(publication);
+            await eventBus.PublishAsync(new PublicationCreatedEvent(publication.Id,
+                publication.Content,
+                publication.Author));
 
             return DomainResult.Success();
         }

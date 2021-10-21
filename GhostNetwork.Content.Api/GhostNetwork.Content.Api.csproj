@@ -19,6 +19,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\GhostNetwork.Content\GhostNetwork.Content.csproj" />
+      <ProjectReference Include="..\Infrastructure\GhostNetwork.Content.EventBus.RabbitMq\GhostNetwork.Content.EventBus.RabbitMq.csproj" />
       <ProjectReference Include="..\Infrastructure\GhostNetwork.Content.MongoDb\GhostNetwork.Content.MongoDb.csproj" />
     </ItemGroup>
 

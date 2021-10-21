@@ -51,6 +51,8 @@ namespace GhostNetwork.Content.Api
                 options.IncludeXmlComments(XmlPathProvider.XmlPath);
             });
 
+            services.AddSingleton<IEventBus, NullEventBus>();
+
             services.AddScoped(_ =>
             {
                 // TODO: Remove MONGO_ADDRESS usage after update of all compose files
@@ -108,7 +110,7 @@ namespace GhostNetwork.Content.Api
             Task.Run(() =>
             {
                 using var scope = app.ApplicationServices.CreateScope();
-                (scope.ServiceProvider.GetRequiredService<ICommentsStorage>() as MongoCommentsStorage)
+                ((MongoCommentsStorage)scope.ServiceProvider.GetRequiredService<ICommentsStorage>())
                     .MigratePublicationIdToKey()
                     .GetAwaiter()
                     .GetResult();

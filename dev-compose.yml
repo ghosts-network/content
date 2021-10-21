@@ -4,7 +4,13 @@ services:
   db:
     image: mvertes/alpine-mongo
     ports:
-    - "27017:27017"
+      - "27017:27017"
+
+  rabbit:
+    image: rabbitmq:3.9.8-management-alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
 
   profiles:
     image: ghcr.io/ghosts-network/profiles:latest
