@@ -7,6 +7,7 @@ using Domain.Validation;
 using GhostNetwork.Content.Api.Helpers;
 using GhostNetwork.Content.Api.Helpers.OpenApi;
 using GhostNetwork.Content.Comments;
+using GhostNetwork.Content.EventBus.RabbitMq;
 using GhostNetwork.Content.MongoDb;
 using GhostNetwork.Content.Publications;
 using GhostNetwork.Content.Reactions;
@@ -18,6 +19,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
+using RabbitMQ.Client;
 using Swashbuckle.AspNetCore.Filters;
 
 namespace GhostNetwork.Content.Api
@@ -51,7 +53,17 @@ namespace GhostNetwork.Content.Api
                 options.IncludeXmlComments(XmlPathProvider.XmlPath);
             });
 
-            services.AddSingleton<IEventBus, NullEventBus>();
+            if (configuration["EVENTHUB_TYPE"]?.ToLower() == "rabbit")
+            {
+                services.AddSingleton<IEventBus>(_ => new RabbitMqEventBus(new ConnectionFactory
+                {
+                    Uri = new Uri(configuration["RABBIT_CONNECTION"])
+                }));
+            }
+            else
+            {
+                services.AddSingleton<IEventBus, NullEventBus>();
+            }
 
             services.AddScoped(_ =>
             {

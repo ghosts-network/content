@@ -1,8 +1,8 @@
 namespace GhostNetwork.Content.Publications
 {
-    public class PublicationUpdatedEvent : Event
+    public class CreatedEvent : Event
     {
-        public PublicationUpdatedEvent(string id, string content, UserInfo author)
+        public CreatedEvent(string id, string content, UserInfo author)
         {
             Id = id;
             Content = content;

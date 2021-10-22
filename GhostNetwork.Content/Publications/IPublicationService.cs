@@ -62,7 +62,7 @@ namespace GhostNetwork.Content.Publications
 
             var publication = Publication.New(text, author, hashTagsFetcher.Fetch);
             var id = await publicationStorage.InsertOneAsync(publication);
-            await eventBus.PublishAsync(new PublicationCreatedEvent(id, publication.Content, author));
+            await eventBus.PublishAsync(new CreatedEvent(id, publication.Content, author));
 
             return (result, id);
         }
@@ -82,7 +82,7 @@ namespace GhostNetwork.Content.Publications
             publication.Update(text, hashTagsFetcher.Fetch);
 
             await publicationStorage.UpdateOneAsync(publication);
-            await eventBus.PublishAsync(new PublicationCreatedEvent(publication.Id,
+            await eventBus.PublishAsync(new CreatedEvent(publication.Id,
                 publication.Content,
                 publication.Author));
 
