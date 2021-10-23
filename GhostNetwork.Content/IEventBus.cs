@@ -16,9 +16,9 @@ namespace GhostNetwork.Content
         }
     }
 
-    public abstract class Event
+    public abstract record TrackableEvent : Event
     {
-        protected Event()
+        protected TrackableEvent()
         {
             CreatedOn = DateTimeOffset.UtcNow;
             TrackerId = Guid.NewGuid();
@@ -27,4 +27,6 @@ namespace GhostNetwork.Content
         public DateTimeOffset CreatedOn { get; }
         public Guid TrackerId { get; }
     }
+
+    public abstract record Event;
 }
