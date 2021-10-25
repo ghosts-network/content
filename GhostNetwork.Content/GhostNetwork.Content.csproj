@@ -8,7 +8,7 @@
 
     <ItemGroup>
         <PackageReference Include="Boberneprotiv.Domain" Version="0.0.3" />
-        <PackageReference Include="Ghost-EventBus" Version="1.0.2" />
+        <PackageReference Include="Ghost-EventBus" Version="1.0.6" />
         <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" />
     </ItemGroup>
 

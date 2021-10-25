@@ -4,7 +4,7 @@ namespace GhostNetwork.Content
 {
     public class UserInfo
     {
-        public UserInfo(Guid id, string fullName, string avatarUrl)
+        public UserInfo(Guid id, string fullName, string avatarUrl = null)
         {
             Id = id;
             FullName = fullName;
