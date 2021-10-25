@@ -54,15 +54,17 @@ namespace GhostNetwork.Content.Api
 
             if (configuration["EVENTHUB_TYPE"]?.ToLower() == "rabbit")
             {
-                services.AddSingleton<IEventBus>(_ => new RabbitMqEventBus(new ConnectionFactory
+                services.AddSingleton<IEventBus>(provider => new RabbitMqEventBus(new ConnectionFactory
                 {
                     Uri = new Uri(configuration["RABBIT_CONNECTION"])
-                }));
+                }, new HandlerProvider(provider)));
             }
             else
             {
                 services.AddSingleton<IEventBus, NullEventBus>();
             }
+
+            services.AddScoped<TestHandler>();
 
             services.AddScoped(_ =>
             {
@@ -175,6 +177,22 @@ namespace GhostNetwork.Content.Api
             }
 
             return new ValidatorsContainer<CommentContext>(validators.ToArray());
+        }
+    }
+
+    public class HandlerProvider : IHandlerProvider
+    {
+        private readonly IServiceProvider serviceProvider;
+
+        public HandlerProvider(IServiceProvider serviceProvider)
+        {
+            this.serviceProvider = serviceProvider;
+        }
+        
+        public object GetRequiredService(Type type)
+        {
+            var scope = serviceProvider.CreateScope();
+            return scope.ServiceProvider.GetRequiredService(type);
         }
     }
 }

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Text;
 using System.Threading.Tasks;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -12,11 +10,14 @@ namespace GhostNetwork.Content.EventBus.RabbitMq
         private readonly ConnectionProvider connectionProvider;
         private readonly IMessageProvider messageProvider;
         private readonly INameProvider nameProvider;
-        private readonly ConcurrentDictionary<string, IModel> subscriptions = new();
+        private readonly IHandlerProvider handlerProvider;
+        private readonly SubscriptionManager subscriptionManager;
 
-        public RabbitMqEventBus(ConnectionFactory connectionFactory, IMessageProvider messageProvider = null, INameProvider nameProvider = null)
+        public RabbitMqEventBus(ConnectionFactory connectionFactory, IHandlerProvider handlerProvider, IMessageProvider messageProvider = null, INameProvider nameProvider = null)
         {
             connectionProvider = new ConnectionProvider(connectionFactory);
+            subscriptionManager = new SubscriptionManager();
+            this.handlerProvider = handlerProvider;
             this.messageProvider = messageProvider ?? new JsonMessageProvider();
             this.nameProvider = nameProvider ?? new DefaultQueueNameProvider();
         }
@@ -46,18 +47,18 @@ namespace GhostNetwork.Content.EventBus.RabbitMq
             var consumer = new EventingBasicConsumer(channel);
             consumer.Received += (_, ea) =>
             {
-                var body = ea.Body.ToArray();
-                var message = Encoding.UTF8.GetString(body);
-                Console.WriteLine("[x] {0}", message);
+                var message = messageProvider.GetEvent(ea.Body.ToArray(), typeof(TEvent)) as TEvent;
+                var handler = handlerProvider.GetRequiredService(typeof(THandler));
+                (handler as IEventHandler<TEvent>)!.ProcessAsync(message);
             };
 
             channel.BasicConsume(queueName, true, consumer);
-            subscriptions.TryAdd(nameProvider.GetSubscriptionName<TEvent, THandler>(), channel);
+            subscriptionManager.Subscribe<TEvent, THandler>(channel);
         }
 
         public void Unsubscribe<TEvent, THandler>() where TEvent : Event where THandler : IEventHandler<TEvent>
         {
-            subscriptions.TryRemove(nameProvider.GetSubscriptionName<TEvent, THandler>(), out _);
+            subscriptionManager.Unsubscribe<TEvent, THandler>();
         }
 
         public void Dispose()

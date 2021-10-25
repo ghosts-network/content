@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using GhostNetwork.Content.Publications;
 
@@ -8,7 +7,7 @@ namespace GhostNetwork.Content.Api
     {
         public async Task ProcessAsync(CreatedEvent @event)
         {
-            throw new NotImplementedException();
+            
         }
     }
 }
