@@ -8,7 +8,9 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "MONGO_CONNECTION": "mongodb://127.0.0.1:27017/gpublications",
-        "PROFILES_ADDRESS": "http://localhost:5400"
+        "PROFILES_ADDRESS": "http://localhost:5400",
+        "REDIS_ADDRESS": "localhost:50002",
+        "EVENT-BUS_ENABLED": "false"
       }
     }
   }
