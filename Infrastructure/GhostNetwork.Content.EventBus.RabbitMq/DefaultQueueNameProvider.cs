@@ -1,10 +1,20 @@
 namespace GhostNetwork.Content.EventBus.RabbitMq
 {
-    public class DefaultQueueNameProvider : IQueueNameProvider
+    public class DefaultQueueNameProvider : INameProvider
     {
-        public string GetName<TEvent>(TEvent @event) where TEvent : Event
+        public string GetSubscriptionName<TEvent, THandler>() where TEvent : Event where THandler : IEventHandler<TEvent>
         {
-            var name = @event.GetType().FullName!.ToLower();
+            return $"{GetExchangeName<TEvent>()}-{GetQueueName<TEvent, THandler>()}";
+        }
+
+        public string GetQueueName<TEvent, THandler>() where TEvent : Event where THandler : IEventHandler<TEvent>
+        {
+            return typeof(THandler).FullName!.ToLower();
+        }
+
+        public string GetExchangeName<TEvent>() where TEvent : Event
+        {
+            var name = typeof(TEvent).FullName!.ToLower();
             if (name.EndsWith("event"))
             {
                 name = name[..^5];

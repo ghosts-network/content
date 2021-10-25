@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 using Domain.Validation;
 using GhostNetwork.Content.Api.Helpers;
 using GhostNetwork.Content.Api.Helpers.OpenApi;
@@ -99,7 +98,9 @@ namespace GhostNetwork.Content.Api
                 });
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app,
+            IWebHostEnvironment env,
+            IHostApplicationLifetime hostApplicationLifetime)
         {
             if (env.IsDevelopment())
             {
@@ -119,13 +120,25 @@ namespace GhostNetwork.Content.Api
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 
-            Task.Run(() =>
+            hostApplicationLifetime.ApplicationStarted.Register(() =>
             {
                 using var scope = app.ApplicationServices.CreateScope();
                 ((MongoCommentsStorage)scope.ServiceProvider.GetRequiredService<ICommentsStorage>())
                     .MigratePublicationIdToKey()
                     .GetAwaiter()
                     .GetResult();
+            });
+
+            hostApplicationLifetime.ApplicationStarted.Register(() =>
+            {
+                var eventBus = app.ApplicationServices.GetRequiredService<IEventBus>();
+                eventBus.Subscribe<Publications.CreatedEvent, TestHandler>();
+            });
+
+            hostApplicationLifetime.ApplicationStopped.Register(() =>
+            {
+                var eventBus = app.ApplicationServices.GetRequiredService<IEventBus>();
+                eventBus.Unsubscribe<Publications.CreatedEvent, TestHandler>();
             });
         }
 

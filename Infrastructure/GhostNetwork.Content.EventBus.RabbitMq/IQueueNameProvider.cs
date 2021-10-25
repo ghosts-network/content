@@ -1,7 +1,14 @@
 namespace GhostNetwork.Content.EventBus.RabbitMq
 {
-    public interface IQueueNameProvider
+    public interface INameProvider
     {
-        string GetName<TEvent>(TEvent @event) where TEvent : Event;
+        string GetSubscriptionName<TEvent, THandler>()
+            where TEvent : Event
+            where THandler : IEventHandler<TEvent>;
+        string GetQueueName<TEvent, THandler>()
+            where TEvent : Event
+            where THandler : IEventHandler<TEvent>;
+        string GetExchangeName<TEvent>()
+            where TEvent : Event;
     }
 }
