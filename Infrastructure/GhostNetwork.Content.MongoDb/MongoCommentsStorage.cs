@@ -188,5 +188,19 @@ namespace GhostNetwork.Content.MongoDb
                     )
             );
         }
+
+        public async Task UpdateAuthorInfo(Guid authorId, UserInfo user)
+        {
+            var filter = Builders<CommentEntity>.Filter.Eq(s => s.Author.Id, user.Id);
+            var update = Builders<CommentEntity>.Update
+                .Set(s => s.Author, new UserInfoEntity()
+                {
+                    Id = user.Id,
+                    FullName = user.FullName,
+                    AvatarUrl = user.AvatarUrl
+                });
+
+            await context.Comments.UpdateManyAsync(filter, update);
+        }
     }
 }
