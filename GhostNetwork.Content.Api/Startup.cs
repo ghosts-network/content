@@ -1,12 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 using Domain.Validation;
+using GhostEventBus.RedisMq.Extensions;
 using GhostNetwork.Content.Api.Helpers;
 using GhostNetwork.Content.Api.Helpers.OpenApi;
 using GhostNetwork.Content.Comments;
+using GhostNetwork.Content.Handlers;
 using GhostNetwork.Content.MongoDb;
 using GhostNetwork.Content.Publications;
 using GhostNetwork.Content.Reactions;
@@ -19,6 +16,11 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using Swashbuckle.AspNetCore.Filters;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 
 namespace GhostNetwork.Content.Api
 {
@@ -83,6 +85,15 @@ namespace GhostNetwork.Content.Api
                 {
                     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
                 });
+
+            // Events handlers
+            services.AddScoped<ProfileChangedEventHandler>();
+
+            // Add event worker to DI
+            if (configuration.GetValue<bool>("EVENT-BUS_ENABLED"))
+            {
+                services.AddHostedWorkerService(configuration.GetValue<string>("REDIS_ADDRESS"));
+            }
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
