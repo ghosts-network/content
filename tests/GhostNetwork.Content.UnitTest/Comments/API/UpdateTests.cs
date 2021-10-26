@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Domain;
+using GhostNetwork.Content.Api.Models;
 using GhostNetwork.Content.Comments;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -18,15 +19,17 @@ namespace GhostNetwork.Content.UnitTest.Comments.Api
         {
             // Setup
             const string commentId = "someId";
-
-            const string content = "New Content";
+            var model = new UpdateCommentModel
+            {
+                Content = "New Content"
+            };
 
             DomainResult domainResult = DomainResult.Success();
 
-            Comment comment = new Comment(commentId, content, DateTimeOffset.Now, null, null, null);
+            Comment comment = new Comment(commentId, model.Content, DateTimeOffset.Now, null, null, null);
 
             var serviceMock = new Mock<ICommentsService>();
-            serviceMock.Setup(s => s.UpdateAsync(commentId, content)).ReturnsAsync(domainResult);
+            serviceMock.Setup(s => s.UpdateAsync(commentId, model.Content)).ReturnsAsync(domainResult);
             serviceMock.Setup(s => s.GetByIdAsync(commentId)).ReturnsAsync(comment);
 
             var client = TestServerHelper.New(collection =>
@@ -35,7 +38,7 @@ namespace GhostNetwork.Content.UnitTest.Comments.Api
             });
 
             // Act
-            var response = await client.PutAsync($"comments/{commentId}", content.AsJsonContent());
+            var response = await client.PutAsync($"comments/{commentId}", model.AsJsonContent());
             Comment result = await response.Content.DeserializeContent<Comment>();
 
             Assert.AreEqual(response.StatusCode, HttpStatusCode.NoContent);
@@ -46,15 +49,14 @@ namespace GhostNetwork.Content.UnitTest.Comments.Api
         {
             // Setup
             const string commentId = "someId";
-
-            const string content = "";
+            var model = new UpdateCommentModel();
 
             DomainResult domainResult = DomainResult.Success();
 
-            Comment comment = new Comment(commentId, content, DateTimeOffset.Now, null, null, null);
+            Comment comment = new Comment(commentId, model.Content, DateTimeOffset.Now, null, null, null);
 
             var serviceMock = new Mock<ICommentsService>();
-            serviceMock.Setup(s => s.UpdateAsync(commentId, content)).ReturnsAsync(domainResult);
+            serviceMock.Setup(s => s.UpdateAsync(commentId, model.Content)).ReturnsAsync(domainResult);
 
             var client = TestServerHelper.New(collection =>
             {
@@ -62,7 +64,7 @@ namespace GhostNetwork.Content.UnitTest.Comments.Api
             });
 
             // Act
-            var response = await client.PutAsync($"comments/{commentId}", content.AsJsonContent());
+            var response = await client.PutAsync($"comments/{commentId}", model.AsJsonContent());
 
             Assert.AreEqual(response.StatusCode, HttpStatusCode.BadRequest);
         }
@@ -72,13 +74,15 @@ namespace GhostNetwork.Content.UnitTest.Comments.Api
         {
             // Setup
             const string commentId = "someId";
-
-            const string content = "New Content";
+            var model = new UpdateCommentModel
+            {
+                Content = "New Content"
+            };
 
             DomainResult domainResult = DomainResult.Success();
 
             var serviceMock = new Mock<ICommentsService>();
-            serviceMock.Setup(s => s.UpdateAsync(commentId, content)).ReturnsAsync(domainResult);
+            serviceMock.Setup(s => s.UpdateAsync(commentId, model.Content)).ReturnsAsync(domainResult);
             serviceMock.Setup(s => s.GetByIdAsync(commentId)).ReturnsAsync(default(Comment));
 
             var client = TestServerHelper.New(collection =>
@@ -87,7 +91,7 @@ namespace GhostNetwork.Content.UnitTest.Comments.Api
             });
 
             // Act
-            var response = await client.PutAsync($"comments/{commentId}", content.AsJsonContent());
+            var response = await client.PutAsync($"comments/{commentId}", model.AsJsonContent());
 
             Assert.AreEqual(response.StatusCode, HttpStatusCode.NotFound);
         }
