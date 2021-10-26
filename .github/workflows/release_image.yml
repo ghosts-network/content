@@ -1,4 +1,4 @@
-name: Deploy production
+name: Release image
 
 on:
   push:
@@ -42,24 +42,3 @@ jobs:
 
           docker tag $SERVICE_NAME $IMAGE_ID
           docker push $IMAGE_ID
-
-  deploy:
-    needs: push-image
-    runs-on: ubuntu-20.04
-    
-    steps:
-      - uses: boberneprotiv/setup-ssh-key@v1
-        id: setup-ssh
-        with:
-          private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-          known-hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
-
-      - uses: boberneprotiv/ssh-remove-run@v1
-        with:
-          user: ${{ secrets.SSH_REMOTE_USER }}
-          host: ${{ secrets.SSH_REMOTE_HOST }}
-          private-key-path: ${{ steps.setup-ssh.outputs.private-key-path }}
-          run: |
-            cd gh
-            docker-compose pull
-            docker-compose up -d --force-recreate $SERVICE_NAME
