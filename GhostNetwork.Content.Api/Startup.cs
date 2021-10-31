@@ -6,10 +6,11 @@ using Domain.Validation;
 using GhostNetwork.Content.Api.Helpers;
 using GhostNetwork.Content.Api.Helpers.OpenApi;
 using GhostNetwork.Content.Comments;
-using GhostNetwork.Content.EventBus.RabbitMq;
 using GhostNetwork.Content.MongoDb;
 using GhostNetwork.Content.Publications;
 using GhostNetwork.Content.Reactions;
+using GhostNetwork.EventBus;
+using GhostNetwork.EventBus.RabbitMq;
 using GhostNetwork.Profiles.Api;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -63,8 +64,6 @@ namespace GhostNetwork.Content.Api
             {
                 services.AddSingleton<IEventBus, NullEventBus>();
             }
-
-            services.AddScoped<TestHandler>();
 
             services.AddScoped(_ =>
             {
@@ -130,18 +129,6 @@ namespace GhostNetwork.Content.Api
                     .GetAwaiter()
                     .GetResult();
             });
-
-            hostApplicationLifetime.ApplicationStarted.Register(() =>
-            {
-                var eventBus = app.ApplicationServices.GetRequiredService<IEventBus>();
-                eventBus.Subscribe<Publications.CreatedEvent, TestHandler>();
-            });
-
-            hostApplicationLifetime.ApplicationStopped.Register(() =>
-            {
-                var eventBus = app.ApplicationServices.GetRequiredService<IEventBus>();
-                eventBus.Unsubscribe<Publications.CreatedEvent, TestHandler>();
-            });
         }
 
         private IValidator<PublicationContext> BuildPublicationValidator(IServiceProvider provider)
@@ -177,22 +164,6 @@ namespace GhostNetwork.Content.Api
             }
 
             return new ValidatorsContainer<CommentContext>(validators.ToArray());
-        }
-    }
-
-    public class HandlerProvider : IHandlerProvider
-    {
-        private readonly IServiceProvider serviceProvider;
-
-        public HandlerProvider(IServiceProvider serviceProvider)
-        {
-            this.serviceProvider = serviceProvider;
-        }
-        
-        public object GetRequiredService(Type type)
-        {
-            var scope = serviceProvider.CreateScope();
-            return scope.ServiceProvider.GetRequiredService(type);
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Domain;
 using Domain.Validation;
+using GhostNetwork.EventBus;
 
 namespace GhostNetwork.Content.Publications
 {
@@ -82,7 +83,7 @@ namespace GhostNetwork.Content.Publications
             publication.Update(text, hashTagsFetcher.Fetch);
 
             await publicationStorage.UpdateOneAsync(publication);
-            await eventBus.PublishAsync(new CreatedEvent(publication.Id,
+            await eventBus.PublishAsync(new UpdatedEvent(publication.Id,
                 publication.Content,
                 publication.Author));
 
@@ -91,7 +92,9 @@ namespace GhostNetwork.Content.Publications
 
         public async Task DeleteAsync(string id)
         {
+            var publication = await publicationStorage.FindOneByIdAsync(id);
             await publicationStorage.DeleteOneAsync(id);
+            await eventBus.PublishAsync(new DeletedEvent(publication.Id, publication.Author));
         }
 
         public async Task<(IEnumerable<Publication>, long)> SearchByAuthor(int skip, int take, Guid authorId, Ordering order)

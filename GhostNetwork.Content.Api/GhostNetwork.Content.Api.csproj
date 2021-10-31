@@ -11,6 +11,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="GhostNetwork.EventBus.RabbitMq" Version="1.0.0" />
       <PackageReference Include="GhostNetwork.Profiles" Version="1.1.0" />
       <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" />
       <PackageReference Include="Swashbuckle.AspNetCore" Version="5.5.1" />
@@ -19,7 +20,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\GhostNetwork.Content\GhostNetwork.Content.csproj" />
-      <ProjectReference Include="..\Infrastructure\GhostNetwork.Content.EventBus.RabbitMq\GhostNetwork.Content.EventBus.RabbitMq.csproj" />
       <ProjectReference Include="..\Infrastructure\GhostNetwork.Content.MongoDb\GhostNetwork.Content.MongoDb.csproj" />
     </ItemGroup>
 
