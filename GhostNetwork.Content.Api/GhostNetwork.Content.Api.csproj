@@ -11,6 +11,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="GhostNetwork.EventBus.RabbitMq" Version="1.0.0" />
       <PackageReference Include="GhostNetwork.Profiles" Version="1.1.0" />
       <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" />
       <PackageReference Include="Swashbuckle.AspNetCore" Version="5.5.1" />

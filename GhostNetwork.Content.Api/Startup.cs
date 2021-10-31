@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 using Domain.Validation;
 using GhostNetwork.Content.Api.Helpers;
 using GhostNetwork.Content.Api.Helpers.OpenApi;
@@ -10,6 +9,8 @@ using GhostNetwork.Content.Comments;
 using GhostNetwork.Content.MongoDb;
 using GhostNetwork.Content.Publications;
 using GhostNetwork.Content.Reactions;
+using GhostNetwork.EventBus;
+using GhostNetwork.EventBus.RabbitMq;
 using GhostNetwork.Profiles.Api;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -18,6 +19,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
+using RabbitMQ.Client;
 using Swashbuckle.AspNetCore.Filters;
 
 namespace GhostNetwork.Content.Api
@@ -50,6 +52,18 @@ namespace GhostNetwork.Content.Api
 
                 options.IncludeXmlComments(XmlPathProvider.XmlPath);
             });
+
+            if (configuration["EVENTHUB_TYPE"]?.ToLower() == "rabbit")
+            {
+                services.AddSingleton<IEventBus>(provider => new RabbitMqEventBus(new ConnectionFactory
+                {
+                    Uri = new Uri(configuration["RABBIT_CONNECTION"])
+                }, new HandlerProvider(provider)));
+            }
+            else
+            {
+                services.AddSingleton<IEventBus, NullEventBus>();
+            }
 
             services.AddScoped(_ =>
             {
@@ -85,7 +99,9 @@ namespace GhostNetwork.Content.Api
                 });
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app,
+            IWebHostEnvironment env,
+            IHostApplicationLifetime hostApplicationLifetime)
         {
             if (env.IsDevelopment())
             {
@@ -105,10 +121,10 @@ namespace GhostNetwork.Content.Api
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 
-            Task.Run(() =>
+            hostApplicationLifetime.ApplicationStarted.Register(() =>
             {
                 using var scope = app.ApplicationServices.CreateScope();
-                (scope.ServiceProvider.GetRequiredService<ICommentsStorage>() as MongoCommentsStorage)
+                ((MongoCommentsStorage)scope.ServiceProvider.GetRequiredService<ICommentsStorage>())
                     .MigratePublicationIdToKey()
                     .GetAwaiter()
                     .GetResult();
