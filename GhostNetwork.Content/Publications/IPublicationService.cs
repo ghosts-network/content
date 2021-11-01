@@ -35,12 +35,15 @@ namespace GhostNetwork.Content.Publications
             IValidator<PublicationContext> validator,
             IPublicationsStorage publicationStorage,
             IHashTagsFetcher hashTagsFetcher,
-            IEventBus eventBus)
+            IEventBus eventBus,
+            long? allowTimeToDelete = null)
         {
             this.validator = validator;
             this.publicationStorage = publicationStorage;
             this.hashTagsFetcher = hashTagsFetcher;
             this.eventBus = eventBus;
+
+            this.allowTimeToDelete = allowTimeToDelete;
         }
 
         public async Task<Publication> GetByIdAsync(string id)
@@ -85,7 +88,7 @@ namespace GhostNetwork.Content.Publications
 
             if (allowTimeToDelete.HasValue && publication.CreatedOn.AddMinutes(allowTimeToDelete.Value) < DateTimeOffset.UtcNow)
             {
-                return DomainResult.Error($"you cannot update a post { allowTimeToDelete.Value } minutes after it was created");
+                return DomainResult.Error($"You cannot update a post {allowTimeToDelete.Value} minutes after it was created");
             }
 
             publication.Update(text, hashTagsFetcher.Fetch);
