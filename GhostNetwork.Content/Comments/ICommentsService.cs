@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Domain;
 using Domain.Validation;
@@ -26,6 +27,8 @@ namespace GhostNetwork.Content.Comments
     {
         private readonly ICommentsStorage commentStorage;
         private readonly IValidator<CommentContext> validator;
+
+        private readonly long? allowTimeToDelete;
 
         public CommentsService(
             ICommentsStorage commentStorage,
@@ -71,6 +74,13 @@ namespace GhostNetwork.Content.Comments
             if (!result.Successed)
             {
                 return result;
+            }
+
+            var comment = await GetByIdAsync(commentId);
+
+            if (allowTimeToDelete.HasValue && comment.CreatedOn.AddMinutes(allowTimeToDelete.Value) < DateTimeOffset.UtcNow)
+            {
+                return DomainResult.Error($"you cannot update a comment {allowTimeToDelete.Value} minutes after it was created");
             }
 
             await commentStorage.UpdateOneAsync(commentId, content);
