@@ -84,12 +84,24 @@ namespace GhostNetwork.Content.Api
             services.AddScoped<IReactionStorage, MongoReactionStorage>();
 
             services.AddScoped<IPublicationsStorage, MongoPublicationStorage>();
-            services.AddScoped<IPublicationService, PublicationService>();
+            services.AddScoped<IPublicationService>(p =>
+            {
+                return new PublicationService(p.GetRequiredService<IValidator<PublicationContext>>(),
+                                                p.GetRequiredService<IPublicationsStorage>(),
+                                                p.GetRequiredService<IHashTagsFetcher>(),
+                                                p.GetRequiredService<IEventBus>(),
+                                                configuration.GetValue<long>("EDIT_ALLOW_TIME_PUBLICATIONS"));
+            });
             services.AddScoped(BuildPublicationValidator);
 
             services.AddScoped<CommentReplyValidator>();
             services.AddScoped<ICommentsStorage, MongoCommentsStorage>();
-            services.AddScoped<ICommentsService, CommentsService>();
+            services.AddScoped<ICommentsService>(p => 
+            {
+                return new CommentsService(p.GetRequiredService<ICommentsStorage>(), 
+                                            p.GetRequiredService<IValidator<CommentContext>>(), 
+                                            configuration.GetValue<long>("EDIT_ALLOW_TIME_COMMENTS"));
+            });
             services.AddScoped(BuildCommentValidator);
 
             services.AddControllers()
