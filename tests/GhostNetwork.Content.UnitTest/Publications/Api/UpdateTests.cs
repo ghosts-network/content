@@ -100,47 +100,6 @@ namespace GhostNetwork.Content.UnitTest.Publications.Api
         }
 
         [Test]
-        public async Task Update_AllowTimeToEdit_Expired_BadRequest()
-        {
-            // Setup
-            var id = "some_id";
-
-            var publication = new Publication(
-                id, "content", Enumerable.Empty<string>(),
-                new UserInfo(Guid.Empty, "Some Name", null),
-                DateTimeOffset.UtcNow.AddDays(-1),
-                DateTimeOffset.UtcNow.AddDays(-1));
-
-            var input = new UpdatePublicationModel
-            {
-                Content = "someContent"
-            };
-
-            var serviceMock = new Mock<IPublicationService>();
-            var storageMock = new Mock<IPublicationsStorage>();
-
-            serviceMock
-                .Setup(s => s.GetByIdAsync(id))
-                .ReturnsAsync(publication);
-
-            serviceMock
-                .Setup(s => s.UpdateAsync(id, input.Content))
-                .ReturnsAsync(DomainResult.Error("API error!"));
-
-            var client = TestServerHelper.New(collection =>
-            {
-                collection.AddScoped(provider => serviceMock.Object);
-                collection.AddScoped(provider => storageMock.Object);
-            });
-
-            // Act
-            var response = await client.PutAsync($"/publications/{id}/", input.AsJsonContent());
-
-            // Assert
-            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
-        }
-
-        [Test]
         public async Task Create_ServiceError_BadRequest()
         {
             // Setup
