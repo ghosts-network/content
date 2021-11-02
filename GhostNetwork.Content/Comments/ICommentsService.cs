@@ -26,19 +26,14 @@ namespace GhostNetwork.Content.Comments
     public class CommentsService : ICommentsService
     {
         private readonly ICommentsStorage commentStorage;
-        private readonly IValidator<CommentContext> validator;
-
-        private readonly TimeSpan? allowTimeToEdit;
+        private readonly IValidator<Comment> validator;
 
         public CommentsService(
             ICommentsStorage commentStorage,
-            IValidator<CommentContext> validator,
-            TimeSpan? allowTimeToEdit = null)
+            IValidator<Comment> validator)
         {
             this.commentStorage = commentStorage;
             this.validator = validator;
-
-            this.allowTimeToEdit = allowTimeToEdit;
         }
 
         public Task<Comment> GetByIdAsync(string id)
@@ -58,13 +53,14 @@ namespace GhostNetwork.Content.Comments
 
         public async Task<(DomainResult, string)> CreateAsync(string key, string text, string replyId, UserInfo author)
         {
-            var result = await validator.ValidateAsync(new CommentContext(text, replyId));
+            var comment = Comment.New(text, key, replyId, author);
+            var result = await validator.ValidateAsync(comment);
+
             if (!result.Successed)
             {
                 return (result, null);
             }
 
-            var comment = Comment.New(text, key, replyId, author);
             var id = await commentStorage.InsertOneAsync(comment);
 
             return (DomainResult.Success(), id);
@@ -72,18 +68,12 @@ namespace GhostNetwork.Content.Comments
 
         public async Task<DomainResult> UpdateAsync(string commentId, string content)
         {
-            var result = await validator.ValidateAsync(new CommentContext(content));
+            var comment = await GetByIdAsync(commentId);
+            var result = await validator.ValidateAsync(comment);
 
             if (!result.Successed)
             {
                 return result;
-            }
-
-            var comment = await GetByIdAsync(commentId);
-
-            if (allowTimeToEdit.HasValue && comment.CreatedOn.Add(allowTimeToEdit.Value) < DateTimeOffset.UtcNow)
-            {
-                return DomainResult.Error($"Comment cannot update after {allowTimeToEdit.Value.Minutes} minutes after it was created");
             }
 
             await commentStorage.UpdateOneAsync(commentId, content);

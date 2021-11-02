@@ -24,26 +24,21 @@ namespace GhostNetwork.Content.Publications
 
     public class PublicationService : IPublicationService
     {
-        private readonly IValidator<PublicationContext> validator;
+        private readonly IValidator<Publication> validator;
         private readonly IPublicationsStorage publicationStorage;
         private readonly IHashTagsFetcher hashTagsFetcher;
         private readonly IEventBus eventBus;
 
-        private readonly TimeSpan? allowTimeToDelete;
-
         public PublicationService(
-            IValidator<PublicationContext> validator,
+            IValidator<Publication> validator,
             IPublicationsStorage publicationStorage,
             IHashTagsFetcher hashTagsFetcher,
-            IEventBus eventBus,
-            TimeSpan? allowTimeToDelete = null)
+            IEventBus eventBus)
         {
             this.validator = validator;
             this.publicationStorage = publicationStorage;
             this.hashTagsFetcher = hashTagsFetcher;
             this.eventBus = eventBus;
-
-            this.allowTimeToDelete = allowTimeToDelete;
         }
 
         public async Task<Publication> GetByIdAsync(string id)
@@ -58,15 +53,14 @@ namespace GhostNetwork.Content.Publications
 
         public async Task<(DomainResult, string)> CreateAsync(string text, UserInfo author)
         {
-            var content = new PublicationContext(text);
-            var result = await validator.ValidateAsync(content);
+            var publication = Publication.New(text, author, hashTagsFetcher.Fetch);
+            var result = await validator.ValidateAsync(publication);
 
             if (!result.Successed)
             {
                 return (result, null);
             }
 
-            var publication = Publication.New(text, author, hashTagsFetcher.Fetch);
             var id = await publicationStorage.InsertOneAsync(publication);
 
             await eventBus.PublishAsync(new CreatedEvent(id, publication.Content, author));
@@ -76,19 +70,12 @@ namespace GhostNetwork.Content.Publications
 
         public async Task<DomainResult> UpdateAsync(string id, string text)
         {
-            var content = new PublicationContext(text);
-            var result = await validator.ValidateAsync(content);
+            var publication = await publicationStorage.FindOneByIdAsync(id);
+            var result = await validator.ValidateAsync(publication);
 
             if (!result.Successed)
             {
                 return result;
-            }
-
-            var publication = await publicationStorage.FindOneByIdAsync(id);
-
-            if (allowTimeToDelete.HasValue && publication.CreatedOn.Add(allowTimeToDelete.Value) < DateTimeOffset.UtcNow)
-            {
-                return DomainResult.Error($"Post cannot update after {allowTimeToDelete.Value.Minutes} minutes after it was created");
             }
 
             publication.Update(text, hashTagsFetcher.Fetch);
