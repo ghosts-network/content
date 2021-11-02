@@ -28,17 +28,17 @@ namespace GhostNetwork.Content.Comments
         private readonly ICommentsStorage commentStorage;
         private readonly IValidator<CommentContext> validator;
 
-        private readonly long? allowTimeToDelete;
+        private readonly TimeSpan? allowTimeToEdit;
 
         public CommentsService(
             ICommentsStorage commentStorage,
             IValidator<CommentContext> validator,
-            long? allowTimeToDelete = null)
+            TimeSpan? allowTimeToEdit = null)
         {
             this.commentStorage = commentStorage;
             this.validator = validator;
 
-            this.allowTimeToDelete = allowTimeToDelete;
+            this.allowTimeToEdit = allowTimeToEdit;
         }
 
         public Task<Comment> GetByIdAsync(string id)
@@ -81,9 +81,9 @@ namespace GhostNetwork.Content.Comments
 
             var comment = await GetByIdAsync(commentId);
 
-            if (allowTimeToDelete.HasValue && comment.CreatedOn.AddMinutes(allowTimeToDelete.Value) < DateTimeOffset.UtcNow)
+            if (allowTimeToEdit.HasValue && comment.CreatedOn.Add(allowTimeToEdit.Value) < DateTimeOffset.UtcNow)
             {
-                return DomainResult.Error($"You cannot update a comment {allowTimeToDelete.Value} minutes after it was created");
+                return DomainResult.Error($"Comment cannot update after {allowTimeToEdit.Value.Minutes} minutes after it was created");
             }
 
             await commentStorage.UpdateOneAsync(commentId, content);
