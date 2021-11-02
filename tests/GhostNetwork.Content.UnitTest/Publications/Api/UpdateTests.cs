@@ -106,9 +106,9 @@ namespace GhostNetwork.Content.UnitTest.Publications.Api
             var id = "some_id";
 
             var publication = new Publication(
-                id, "content", Enumerable.Empty<string>(), 
-                new UserInfo(Guid.Empty, "Some Name", null), 
-                DateTimeOffset.UtcNow.AddDays(-1), 
+                id, "content", Enumerable.Empty<string>(),
+                new UserInfo(Guid.Empty, "Some Name", null),
+                DateTimeOffset.UtcNow.AddDays(-1),
                 DateTimeOffset.UtcNow.AddDays(-1));
 
             var input = new UpdatePublicationModel
@@ -117,7 +117,8 @@ namespace GhostNetwork.Content.UnitTest.Publications.Api
             };
 
             var serviceMock = new Mock<IPublicationService>();
-            
+            var storageMock = new Mock<IPublicationsStorage>();
+
             serviceMock
                 .Setup(s => s.GetByIdAsync(id))
                 .ReturnsAsync(publication);
@@ -129,6 +130,7 @@ namespace GhostNetwork.Content.UnitTest.Publications.Api
             var client = TestServerHelper.New(collection =>
             {
                 collection.AddScoped(provider => serviceMock.Object);
+                collection.AddScoped(provider => storageMock.Object);
             });
 
             // Act
