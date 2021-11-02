@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 using GhostNetwork.Content.Comments;
 using GhostNetwork.Content.Publications;
 using NUnit.Framework;
@@ -14,10 +16,17 @@ namespace GhostNetwork.Content.UnitTest
             // Setup
             var validator = new MaxLengthValidator(5);
             var content = "Hello_Hello";
-            var context = new PublicationContext(content);
+
+            var publication = new Publication(
+                string.Empty,
+                content,
+                Enumerable.Empty<string>(),
+                null,
+                DateTimeOffset.Now,
+                DateTimeOffset.Now);
 
             // Act
-            var result = await validator.ValidateAsync(context);
+            var result = await validator.ValidateAsync(publication);
 
             // Assert
             Assert.IsFalse(result.Successed);
@@ -29,10 +38,17 @@ namespace GhostNetwork.Content.UnitTest
             // Setup
             var validator = new MaxLengthValidator(5);
             var content = "Hi";
-            var context = new PublicationContext(content);
+
+            var publication = new Publication(
+                string.Empty,
+                content,
+                Enumerable.Empty<string>(),
+                null,
+                DateTimeOffset.Now,
+                DateTimeOffset.Now);
 
             // Act
-            var result = await validator.ValidateAsync(context);
+            var result = await validator.ValidateAsync(publication);
 
             // Assert
             Assert.IsTrue(result.Successed);
@@ -44,10 +60,17 @@ namespace GhostNetwork.Content.UnitTest
             // Setup
             var validator = new MaxLengthValidator(5);
             var content = "Hello";
-            var context = new PublicationContext(content);
+
+            var publication = new Publication(
+                string.Empty,
+                content,
+                Enumerable.Empty<string>(),
+                null,
+                DateTimeOffset.Now,
+                DateTimeOffset.Now);
 
             // Act
-            var result = await validator.ValidateAsync(context);
+            var result = await validator.ValidateAsync(publication);
 
             // Assert
             Assert.IsTrue(result.Successed);
@@ -59,10 +82,11 @@ namespace GhostNetwork.Content.UnitTest
             // Setup
             var validator = new MaxLengthValidator(5);
             var content = "Hello_Hello";
-            var context = new PublicationContext(content);
+
+            var comment = new Comment(string.Empty, content, DateTimeOffset.Now, string.Empty, null, null);
 
             // Act
-            var result = await validator.ValidateAsync(context);
+            var result = await validator.ValidateAsync(comment);
 
             // Assert
             Assert.IsFalse(result.Successed);
@@ -74,10 +98,11 @@ namespace GhostNetwork.Content.UnitTest
             // Setup
             var validator = new MaxLengthValidator(5);
             var content = "Hi";
-            var context = new CommentContext(content);
+
+            var comment = new Comment(string.Empty, content, DateTimeOffset.Now, string.Empty, null, null);
 
             // Act
-            var result = await validator.ValidateAsync(context);
+            var result = await validator.ValidateAsync(comment);
 
             // Assert
             Assert.IsTrue(result.Successed);
@@ -89,10 +114,11 @@ namespace GhostNetwork.Content.UnitTest
             // Setup
             var validator = new MaxLengthValidator(5);
             var content = "Hello";
-            var context = new CommentContext(content);
+
+            var comment = new Comment(string.Empty, content, DateTimeOffset.Now, string.Empty, null, null);
 
             // Act
-            var result = await validator.ValidateAsync(context);
+            var result = await validator.ValidateAsync(comment);
 
             // Assert
             Assert.IsTrue(result.Successed);
