@@ -86,21 +86,25 @@ namespace GhostNetwork.Content.Api
             services.AddScoped<IPublicationsStorage, MongoPublicationStorage>();
             services.AddScoped<IPublicationService>(p =>
             {
+                int? allowSeconds = configuration.GetValue<int>("EDIT_ALLOW_TIME_PUBLICATIONS_IN_SECONDS");
+
                 return new PublicationService(p.GetRequiredService<IValidator<PublicationContext>>(),
                                                 p.GetRequiredService<IPublicationsStorage>(),
                                                 p.GetRequiredService<IHashTagsFetcher>(),
                                                 p.GetRequiredService<IEventBus>(),
-                                                configuration.GetValue<long>("EDIT_ALLOW_TIME_PUBLICATIONS"));
+                                                allowSeconds.HasValue ? TimeSpan.FromSeconds(allowSeconds.Value) : null);
             });
             services.AddScoped(BuildPublicationValidator);
 
             services.AddScoped<CommentReplyValidator>();
             services.AddScoped<ICommentsStorage, MongoCommentsStorage>();
-            services.AddScoped<ICommentsService>(p => 
+            services.AddScoped<ICommentsService>(p =>
             {
-                return new CommentsService(p.GetRequiredService<ICommentsStorage>(), 
-                                            p.GetRequiredService<IValidator<CommentContext>>(), 
-                                            configuration.GetValue<long>("EDIT_ALLOW_TIME_COMMENTS"));
+                int? allowSeconds = configuration.GetValue<int>("EDIT_ALLOW_TIME_COMMENTS_IN_SECONDS");
+
+                return new CommentsService(p.GetRequiredService<ICommentsStorage>(),
+                                            p.GetRequiredService<IValidator<CommentContext>>(),
+                                            allowSeconds.HasValue ? TimeSpan.FromSeconds(allowSeconds.Value) : null);
             });
             services.AddScoped(BuildCommentValidator);
 
