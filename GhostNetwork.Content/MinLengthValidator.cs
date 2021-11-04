@@ -7,8 +7,8 @@ using GhostNetwork.Content.Publications;
 
 namespace GhostNetwork.Content
 {
-    public class MinLengthValidator : IValidator<PublicationContext>,
-        IValidator<CommentContext>
+    public class MinLengthValidator : IValidator<Publication>,
+        IValidator<Comment>
     {
         private readonly int minLength;
 
@@ -22,14 +22,14 @@ namespace GhostNetwork.Content
             this.minLength = minLength;
         }
 
-        public Task<DomainResult> ValidateAsync(PublicationContext context)
+        public Task<DomainResult> ValidateAsync(Publication publication)
         {
-            return Task.FromResult(Validate(context.Content));
+            return Task.FromResult(Validate(publication.Content));
         }
 
-        public Task<DomainResult> ValidateAsync(CommentContext context)
+        public Task<DomainResult> ValidateAsync(Comment comment)
         {
-            return Task.FromResult(Validate(context.Content));
+            return Task.FromResult(Validate(comment.Content));
         }
 
         private DomainResult Validate(string content)

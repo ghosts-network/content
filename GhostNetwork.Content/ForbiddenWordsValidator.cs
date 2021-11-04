@@ -8,8 +8,8 @@ using GhostNetwork.Content.Publications;
 
 namespace GhostNetwork.Content
 {
-    public class ForbiddenWordsValidator : IValidator<PublicationContext>,
-        IValidator<CommentContext>
+    public class ForbiddenWordsValidator : IValidator<Publication>,
+        IValidator<Comment>
     {
         private readonly IEnumerable<string> forbiddenWords;
 
@@ -18,14 +18,14 @@ namespace GhostNetwork.Content
             this.forbiddenWords = forbiddenWords;
         }
 
-        public Task<DomainResult> ValidateAsync(PublicationContext context)
+        public Task<DomainResult> ValidateAsync(Publication publication)
         {
-            return Task.FromResult(Validate(context.Content));
+            return Task.FromResult(Validate(publication.Content));
         }
 
-        public Task<DomainResult> ValidateAsync(CommentContext context)
+        public Task<DomainResult> ValidateAsync(Comment comment)
         {
-            return Task.FromResult(Validate(context.Content));
+            return Task.FromResult(Validate(comment.Content));
         }
 
         private DomainResult Validate(string content)

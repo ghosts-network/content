@@ -14,8 +14,8 @@ namespace GhostNetwork.Content.UnitTest.Comments.Api
     [TestFixture]
     public class UpdateTests
     {
-      [Test]
-      public async Task Update_NoContent()
+        [Test]
+        public async Task Update_NoContent()
         {
             // Setup
             const string commentId = "someId";
@@ -44,8 +44,8 @@ namespace GhostNetwork.Content.UnitTest.Comments.Api
             Assert.AreEqual(response.StatusCode, HttpStatusCode.NoContent);
         }
 
-      [Test]
-      public async Task Update_BadRequest_EmptyContent()
+        [Test]
+        public async Task Update_BadRequest_EmptyContent()
         {
             // Setup
             const string commentId = "someId";
@@ -69,8 +69,8 @@ namespace GhostNetwork.Content.UnitTest.Comments.Api
             Assert.AreEqual(response.StatusCode, HttpStatusCode.BadRequest);
         }
 
-      [Test]
-      public async Task Update_NotFound()
+        [Test]
+        public async Task Update_NotFound()
         {
             // Setup
             const string commentId = "someId";

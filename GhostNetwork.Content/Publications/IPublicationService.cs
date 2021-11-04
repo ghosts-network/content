@@ -24,13 +24,13 @@ namespace GhostNetwork.Content.Publications
 
     public class PublicationService : IPublicationService
     {
-        private readonly IValidator<PublicationContext> validator;
+        private readonly IValidator<Publication> validator;
         private readonly IPublicationsStorage publicationStorage;
         private readonly IHashTagsFetcher hashTagsFetcher;
         private readonly IEventBus eventBus;
 
         public PublicationService(
-            IValidator<PublicationContext> validator,
+            IValidator<Publication> validator,
             IPublicationsStorage publicationStorage,
             IHashTagsFetcher hashTagsFetcher,
             IEventBus eventBus)
@@ -53,16 +53,16 @@ namespace GhostNetwork.Content.Publications
 
         public async Task<(DomainResult, string)> CreateAsync(string text, UserInfo author)
         {
-            var content = new PublicationContext(text);
-            var result = await validator.ValidateAsync(content);
+            var publication = Publication.New(text, author, hashTagsFetcher.Fetch);
+            var result = await validator.ValidateAsync(publication);
 
             if (!result.Successed)
             {
                 return (result, null);
             }
 
-            var publication = Publication.New(text, author, hashTagsFetcher.Fetch);
             var id = await publicationStorage.InsertOneAsync(publication);
+
             await eventBus.PublishAsync(new CreatedEvent(id, publication.Content, author));
 
             return (result, id);
@@ -70,19 +70,18 @@ namespace GhostNetwork.Content.Publications
 
         public async Task<DomainResult> UpdateAsync(string id, string text)
         {
-            var content = new PublicationContext(text);
-            var result = await validator.ValidateAsync(content);
+            var publication = await publicationStorage.FindOneByIdAsync(id);
+            var result = await validator.ValidateAsync(publication);
 
             if (!result.Successed)
             {
                 return result;
             }
 
-            var publication = await publicationStorage.FindOneByIdAsync(id);
-
             publication.Update(text, hashTagsFetcher.Fetch);
 
             await publicationStorage.UpdateOneAsync(publication);
+
             await eventBus.PublishAsync(new UpdatedEvent(publication.Id,
                 publication.Content,
                 publication.Author));
@@ -94,7 +93,7 @@ namespace GhostNetwork.Content.Publications
         {
             var publication = await publicationStorage.FindOneByIdAsync(id);
             await publicationStorage.DeleteOneAsync(id);
-            await eventBus.PublishAsync(new DeletedEvent(publication.Id, publication.Author));
+            await eventBus.PublishAsync(new DeletedEvent(publication.Id, publication.Author));        
         }
 
         public async Task<(IEnumerable<Publication>, long)> SearchByAuthor(int skip, int take, Guid authorId, Ordering order)

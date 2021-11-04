@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Domain;
 using Domain.Validation;
@@ -25,11 +26,11 @@ namespace GhostNetwork.Content.Comments
     public class CommentsService : ICommentsService
     {
         private readonly ICommentsStorage commentStorage;
-        private readonly IValidator<CommentContext> validator;
+        private readonly IValidator<Comment> validator;
 
         public CommentsService(
             ICommentsStorage commentStorage,
-            IValidator<CommentContext> validator)
+            IValidator<Comment> validator)
         {
             this.commentStorage = commentStorage;
             this.validator = validator;
@@ -52,13 +53,14 @@ namespace GhostNetwork.Content.Comments
 
         public async Task<(DomainResult, string)> CreateAsync(string key, string text, string replyId, UserInfo author)
         {
-            var result = await validator.ValidateAsync(new CommentContext(text, replyId));
+            var comment = Comment.New(text, key, replyId, author);
+            var result = await validator.ValidateAsync(comment);
+
             if (!result.Successed)
             {
                 return (result, null);
             }
 
-            var comment = Comment.New(text, key, replyId, author);
             var id = await commentStorage.InsertOneAsync(comment);
 
             return (DomainResult.Success(), id);
@@ -66,7 +68,8 @@ namespace GhostNetwork.Content.Comments
 
         public async Task<DomainResult> UpdateAsync(string commentId, string content)
         {
-            var result = await validator.ValidateAsync(new CommentContext(content));
+            var comment = await GetByIdAsync(commentId);
+            var result = await validator.ValidateAsync(comment);
 
             if (!result.Successed)
             {

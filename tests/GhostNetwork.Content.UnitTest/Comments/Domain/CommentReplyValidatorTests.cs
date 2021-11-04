@@ -16,10 +16,10 @@ namespace GhostNetwork.Content.UnitTest.Comments.Domain
             var commentsStorageMock = new Mock<ICommentsStorage>();
 
             var validator = new CommentReplyValidator(commentsStorageMock.Object);
-            var context = new CommentContext("Hello_Hello");
+            var comment = new Comment(string.Empty, string.Empty, DateTimeOffset.Now, string.Empty, replyCommentId: null, null);
 
             // Act
-            var result = await validator.ValidateAsync(context);
+            var result = await validator.ValidateAsync(comment);
 
             // Assert
             Assert.IsTrue(result.Successed);
@@ -35,10 +35,10 @@ namespace GhostNetwork.Content.UnitTest.Comments.Domain
                 .ReturnsAsync(default(Comment));
 
             var validator = new CommentReplyValidator(commentsStorageMock.Object);
-            var context = new CommentContext("Hello_Hello", "replyId");
+            var comment = new Comment(string.Empty, string.Empty, DateTimeOffset.Now, string.Empty, replyCommentId: "replyId", null);
 
             // Act
-            var result = await validator.ValidateAsync(context);
+            var result = await validator.ValidateAsync(comment);
 
             // Assert
             Assert.IsFalse(result.Successed);
@@ -54,10 +54,10 @@ namespace GhostNetwork.Content.UnitTest.Comments.Domain
                 .ReturnsAsync(new Comment(default, default, DateTimeOffset.Now, default, default, default));
 
             var validator = new CommentReplyValidator(commentsStorageMock.Object);
-            var context = new CommentContext("Hello_Hello", "replyId");
+            var comment = new Comment(string.Empty, string.Empty, DateTimeOffset.Now, string.Empty, replyCommentId: "replyId", null);
 
             // Act
-            var result = await validator.ValidateAsync(context);
+            var result = await validator.ValidateAsync(comment);
 
             // Assert
             Assert.IsTrue(result.Successed);

@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 using GhostNetwork.Content.Publications;
 using NUnit.Framework;
 
@@ -15,11 +17,18 @@ namespace GhostNetwork.Content.UnitTest
             {
                 "duck"
             });
+
             var content = "#test text with forbidden word duck";
-            var context = new PublicationContext(content);
+            var publication = new Publication(
+                string.Empty,
+                content,
+                Enumerable.Empty<string>(),
+                null,
+                DateTimeOffset.Now,
+                DateTimeOffset.Now);
 
             // Act
-            var result = await validation.ValidateAsync(context);
+            var result = await validation.ValidateAsync(publication);
 
             // Assert
             Assert.IsFalse(result.Successed);
@@ -33,11 +42,18 @@ namespace GhostNetwork.Content.UnitTest
             {
                 "duck"
             });
+
             var content = "#test text without forbidden word";
-            var context = new PublicationContext(content);
+            var publication = new Publication(
+                string.Empty,
+                content,
+                Enumerable.Empty<string>(),
+                null,
+                DateTimeOffset.Now,
+                DateTimeOffset.Now);
 
             // Act
-            var result = await validation.ValidateAsync(context);
+            var result = await validation.ValidateAsync(publication);
 
             // Assert
             Assert.IsTrue(result.Successed);

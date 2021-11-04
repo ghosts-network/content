@@ -50,7 +50,7 @@ namespace GhostNetwork.Content.Api.Controllers
         /// Update comment content
         /// </summary>
         /// <param name="commentId">Existing comment ID</param>
-        /// <param name="content">New content</param>
+        /// <param name="model">New content</param>
         /// <returns>Updated comment</returns>
         [HttpPut("{commentId}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -67,7 +67,7 @@ namespace GhostNetwork.Content.Api.Controllers
 
             if (!domainResult.Successed)
             {
-                return BadRequest();
+                return BadRequest(domainResult.ToProblemDetails());
             }
 
             return NoContent();

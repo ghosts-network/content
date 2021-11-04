@@ -9,7 +9,9 @@
         "ASPNETCORE_ENVIRONMENT": "Development",
         "MONGO_CONNECTION": "mongodb://127.0.0.1:27017/gpublications",
         "PROFILES_ADDRESS": "http://localhost:5400",
-        "RABBIT_CONNECTION": "amqp://guest:guest@localhost:5672/"
+        "RABBIT_CONNECTION": "amqp://guest:guest@localhost:5672/",
+        "TIME_LIMIT_TO_UPDATE_PUBLICATIONS": "900",
+        "TIME_LIMIT_TO_UPDATE_COMMENTS": "900"
       }
     }
   }

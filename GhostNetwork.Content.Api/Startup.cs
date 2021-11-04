@@ -131,9 +131,9 @@ namespace GhostNetwork.Content.Api
             });
         }
 
-        private IValidator<PublicationContext> BuildPublicationValidator(IServiceProvider provider)
+        private IValidator<Publication> BuildPublicationValidator(IServiceProvider provider)
         {
-            var validators = new List<IValidator<PublicationContext>>
+            var validators = new List<IValidator<Publication>>
             {
                 provider.GetService<ForbiddenWordsValidator>(),
                 new MaxLengthValidator(configuration.GetValue<int?>("PUBLICATION_CONTENT_MAX_LENGTH") ?? 5000)
@@ -145,12 +145,18 @@ namespace GhostNetwork.Content.Api
                 validators.Add(new MinLengthValidator(minLength.Value));
             }
 
-            return new ValidatorsContainer<PublicationContext>(validators.ToArray());
+            var timeLimit = configuration.GetValue<int?>("TIME_LIMIT_TO_UPDATE_PUBLICATIONS");
+            if (timeLimit.HasValue)
+            {
+                validators.Add(new TimeLimitToUpdateValidator(TimeSpan.FromSeconds(timeLimit.Value)));
+            }
+
+            return new ValidatorsContainer<Publication>(validators.ToArray());
         }
 
-        private IValidator<CommentContext> BuildCommentValidator(IServiceProvider provider)
+        private IValidator<Comment> BuildCommentValidator(IServiceProvider provider)
         {
-            var validators = new List<IValidator<CommentContext>>
+            var validators = new List<IValidator<Comment>>
             {
                 provider.GetService<CommentReplyValidator>(),
                 provider.GetService<ForbiddenWordsValidator>(),
@@ -163,7 +169,13 @@ namespace GhostNetwork.Content.Api
                 validators.Add(new MinLengthValidator(minLength.Value));
             }
 
-            return new ValidatorsContainer<CommentContext>(validators.ToArray());
+            var timeLimit = configuration.GetValue<int?>("TIME_LIMIT_TO_UPDATE_COMMENTS");
+            if (timeLimit.HasValue)
+            {
+                validators.Add(new TimeLimitToUpdateValidator(TimeSpan.FromSeconds(timeLimit.Value)));
+            }
+
+            return new ValidatorsContainer<Comment>(validators.ToArray());
         }
     }
 }
