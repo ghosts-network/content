@@ -71,6 +71,8 @@ namespace GhostNetwork.Content.Publications
         public async Task<DomainResult> UpdateAsync(string id, string text)
         {
             var publication = await publicationStorage.FindOneByIdAsync(id);
+
+            publication.Update(text, hashTagsFetcher.Fetch);
             var result = await validator.ValidateAsync(publication);
 
             if (!result.Successed)
@@ -78,7 +80,6 @@ namespace GhostNetwork.Content.Publications
                 return result;
             }
 
-            publication.Update(text, hashTagsFetcher.Fetch);
 
             await publicationStorage.UpdateOneAsync(publication);
 
