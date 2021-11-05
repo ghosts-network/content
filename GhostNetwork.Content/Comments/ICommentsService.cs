@@ -68,8 +68,15 @@ namespace GhostNetwork.Content.Comments
 
         public async Task<DomainResult> UpdateAsync(string commentId, string content)
         {
-            var comment = await GetByIdAsync(commentId);
-            var result = await validator.ValidateAsync(comment);
+            var actualComment = await GetByIdAsync(commentId);
+            var updatedComment = new Comment(actualComment.Id,
+                content,
+                actualComment.CreatedOn,
+                actualComment.Key,
+                actualComment.ReplyCommentId,
+                actualComment.Author);
+
+            var result = await validator.ValidateAsync(updatedComment);
 
             if (!result.Successed)
             {
