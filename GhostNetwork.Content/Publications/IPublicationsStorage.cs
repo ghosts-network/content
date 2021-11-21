@@ -12,6 +12,8 @@ namespace GhostNetwork.Content.Publications
 
         Task<(IEnumerable<Publication>, long)> FindManyAsync(int skip, int take, IEnumerable<string> tags, Ordering order);
 
+        Task<(IEnumerable<Publication>, long)> FindManyByCursorAsync(long time, int take, IEnumerable<string> tags, Ordering order);
+
         Task UpdateOneAsync(Publication publication);
 
         Task DeleteOneAsync(string id);

@@ -90,6 +90,27 @@ namespace GhostNetwork.Content.Api.Controllers
         }
 
         /// <summary>
+        /// Search publications by cursor
+        /// </summary>
+        /// <param name="timePoint">Skip publications up to a specified position</param>
+        /// <param name="take">Take publications up to a specified position</param>
+        /// <param name="tags">Filters publications by tags</param>
+        /// <param name="order">Order by creation date</param>
+        /// <returns>Filtered sequence of publications</returns>
+        [HttpGet("search")]
+        public async Task<ActionResult<IEnumerable<Publication>>> SearchByCursorAsync(
+            [FromQuery, Required] DateTimeOffset timePoint,
+            [FromQuery, Range(1, 100), Required] int take,
+            [FromQuery] List<string> tags,
+            [FromQuery] Ordering order = Ordering.Asc)
+        {
+            var (publications, totalCount) = await publicationService.SearchByCursorAsync(timePoint.ToUnixTimeMilliseconds(), take, tags, order);
+            Response.Headers.Add("X-TotalCount", totalCount.ToString());
+
+            return Ok(publications);
+        }
+
+        /// <summary>
         /// Create one publication
         /// </summary>
         /// <param name="model">Publication</param>

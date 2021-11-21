@@ -73,6 +73,31 @@ namespace GhostNetwork.Content.MongoDb
             return (entities.Select(ToDomain), totalCount);
         }
 
+        public async Task<(IEnumerable<Publication>, long)> FindManyByCursorAsync(long time, int take, IEnumerable<string> tags, Ordering order)
+        {
+            var filter = Builders<PublicationEntity>.Filter.Gt(x => x.CreateOn, time);
+
+            if (tags.Any())
+            {
+                filter &= Builders<PublicationEntity>.Filter.AnyIn(x => x.Tags, tags);
+            }
+
+            var totalCount = await context.Publications.Find(filter).CountDocumentsAsync();
+
+            var sorting = order switch
+            {
+                Ordering.Desc => Builders<PublicationEntity>.Sort.Descending(x => x.CreateOn),
+                _ => Builders<PublicationEntity>.Sort.Ascending(x => x.CreateOn)
+            };
+
+            var publications = await context.Publications.Find(filter)
+                .Sort(sorting)
+                .Limit(take)
+                .ToListAsync();
+
+            return (publications.Select(ToDomain), totalCount);
+        }
+
         public async Task<(IEnumerable<Publication>, long)> FindManyByAuthorAsync(int skip, int take, Guid authorId, Ordering order)
         {
             var filter = Builders<PublicationEntity>.Filter.Where(x => x.Author.Id == authorId);
