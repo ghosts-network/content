@@ -75,7 +75,7 @@ namespace GhostNetwork.Content.MongoDb
 
         public async Task<(IEnumerable<Publication>, long)> FindManyByCursorAsync(long time, int take, IEnumerable<string> tags, Ordering order)
         {
-            var filter = Builders<PublicationEntity>.Filter.Gt(x => x.CreateOn, time);
+            var filter = Builders<PublicationEntity>.Filter.Lt(x => x.CreateOn, time);
 
             if (tags.Any())
             {
