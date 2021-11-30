@@ -69,7 +69,8 @@ namespace GhostNetwork.Content.Comments
         public async Task<DomainResult> UpdateAsync(string commentId, string content)
         {
             var actualComment = await GetByIdAsync(commentId);
-            var updatedComment = new Comment(actualComment.Id,
+            var updatedComment = new Comment(
+                actualComment.Id,
                 content,
                 actualComment.CreatedOn,
                 actualComment.Key,

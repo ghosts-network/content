@@ -55,10 +55,9 @@ namespace GhostNetwork.Content.Api
 
             if (configuration["EVENTHUB_TYPE"]?.ToLower() == "rabbit")
             {
-                services.AddSingleton<IEventBus>(provider => new RabbitMqEventBus(new ConnectionFactory
-                {
-                    Uri = new Uri(configuration["RABBIT_CONNECTION"])
-                }, new HandlerProvider(provider)));
+                services.AddSingleton<IEventBus>(provider => new RabbitMqEventBus(
+                    new ConnectionFactory { Uri = new Uri(configuration["RABBIT_CONNECTION"]) },
+                    new HandlerProvider(provider)));
             }
             else
             {
@@ -99,9 +98,7 @@ namespace GhostNetwork.Content.Api
                 });
         }
 
-        public void Configure(IApplicationBuilder app,
-            IWebHostEnvironment env,
-            IHostApplicationLifetime hostApplicationLifetime)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime hostApplicationLifetime)
         {
             if (env.IsDevelopment())
             {
@@ -120,15 +117,6 @@ namespace GhostNetwork.Content.Api
             app.UseRouting();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
-
-            hostApplicationLifetime.ApplicationStarted.Register(() =>
-            {
-                using var scope = app.ApplicationServices.CreateScope();
-                ((MongoCommentsStorage)scope.ServiceProvider.GetRequiredService<ICommentsStorage>())
-                    .MigratePublicationIdToKey()
-                    .GetAwaiter()
-                    .GetResult();
-            });
         }
 
         private IValidator<Publication> BuildPublicationValidator(IServiceProvider provider)
