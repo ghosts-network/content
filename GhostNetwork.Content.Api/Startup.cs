@@ -11,6 +11,7 @@ using GhostNetwork.Content.Publications;
 using GhostNetwork.Content.Reactions;
 using GhostNetwork.EventBus;
 using GhostNetwork.EventBus.RabbitMq;
+using GhostNetwork.Profiles;
 using GhostNetwork.Profiles.Api;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -91,6 +92,7 @@ namespace GhostNetwork.Content.Api
             services.AddScoped<ICommentsStorage, MongoCommentsStorage>();
             services.AddScoped<ICommentsService, CommentsService>();
             services.AddScoped(BuildCommentValidator);
+            services.AddScoped<ProfileUpdatedHandler>();
 
             services.AddControllers()
                 .AddJsonOptions(options =>
@@ -128,6 +130,12 @@ namespace GhostNetwork.Content.Api
                     .MigratePublicationIdToKey()
                     .GetAwaiter()
                     .GetResult();
+            });
+
+            hostApplicationLifetime.ApplicationStarted.Register(() =>
+            {
+                var eventBus = app.ApplicationServices.GetRequiredService<IEventBus>();
+                eventBus.Subscribe<Profiles.UpdatedEvent, ProfileUpdatedHandler>();
             });
         }
 
