@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <CodeAnalysisRuleSet>../GhostNetwork.ruleset</CodeAnalysisRuleSet>
         <RootNamespace>GhostNetwork.Content</RootNamespace>
     </PropertyGroup>
@@ -9,7 +9,10 @@
     <ItemGroup>
         <PackageReference Include="Boberneprotiv.Domain" Version="0.0.3" />
         <PackageReference Include="GhostNetwork.EventBus" Version="1.0.0" />
-        <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" />
+        <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.354">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
     </ItemGroup>
 
 </Project>

@@ -1,6 +1,6 @@
-# GhostNetwork - Publications
+# GhostNetwork - Content
 
-Publications is a part of GhostNetwork education project for working with users publications such as publications to news feed
+Content is a part of GhostNetwork education project for working with users publications, comments and reactions
 
 ## Installation
 

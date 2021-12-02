@@ -163,46 +163,13 @@ namespace GhostNetwork.Content.MongoDb
 
         private static Comment ToDomain(CommentEntity entity)
         {
-            return new(
+            return new Comment(
                 entity.Id.ToString(),
                 entity.Content,
                 DateTimeOffset.FromUnixTimeMilliseconds(entity.CreateOn),
                 entity.Key,
                 entity.ReplyCommentId,
                 (UserInfo)entity.Author);
-        }
-
-        // TODO: Remove after first deployment
-        public async Task MigratePublicationIdToKey()
-        {
-            var filter = Builders<BsonDocument>.Filter.Exists("key", false)
-                         & Builders<BsonDocument>.Filter.Exists("publicationId");
-
-            var commentsToMigrate = await context.Comments
-                .Database
-                .GetCollection<BsonDocument>("comments")
-                .Find(filter)
-                .ToListAsync();
-
-            if (!commentsToMigrate.Any())
-            {
-                return;
-            }
-
-            await Task.WhenAll(
-                commentsToMigrate
-                    .Select(comment =>
-                        context.Comments
-                            .Database
-                            .GetCollection<BsonDocument>("comments")
-                            .UpdateOneAsync(
-                                Builders<BsonDocument>.Filter.Eq("_id", comment["_id"].AsObjectId),
-                                Builders<BsonDocument>.Update
-                                    .Set("key", $"publication_{comment["publicationId"].AsString}")
-                                    .Unset("publicationId")
-                            )
-                    )
-            );
         }
     }
 }
