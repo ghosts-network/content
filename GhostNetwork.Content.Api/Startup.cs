@@ -119,6 +119,12 @@ namespace GhostNetwork.Content.Api
             app.UseRouting();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+
+            hostApplicationLifetime.ApplicationStarted.Register(() =>
+            {
+                var eventBus = app.ApplicationServices.GetRequiredService<IEventBus>();
+                eventBus.Subscribe<Profiles.UpdatedEvent, ProfileUpdatedHandler>();
+            });
         }
 
         private IValidator<Publication> BuildPublicationValidator(IServiceProvider provider)

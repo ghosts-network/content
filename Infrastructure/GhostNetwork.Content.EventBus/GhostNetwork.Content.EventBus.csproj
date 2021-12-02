@@ -1,7 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
+        <CodeAnalysisRuleSet>../GhostNetwork.ruleset</CodeAnalysisRuleSet>
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
@@ -10,7 +11,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Remove="ProfileUpdatedEvent.cs" />
+      <ProjectReference Include="..\..\GhostNetwork.Content\GhostNetwork.Content.csproj" />
     </ItemGroup>
 
 </Project>
