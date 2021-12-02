@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace GhostNetwork.Content.Comments
@@ -14,6 +15,8 @@ namespace GhostNetwork.Content.Comments
         Task<string> InsertOneAsync(Comment comment);
 
         Task UpdateOneAsync(string commentId, string content);
+
+        Task UpdateAuthorAsync(Guid authorId, string fullName, string avatarUrl);
 
         Task DeleteByKeyAsync(string key);
 
