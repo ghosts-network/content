@@ -66,14 +66,9 @@ namespace GhostNetwork.Content.MongoDb
                 _ => Builders<PublicationEntity>.Sort.Ascending(x => x.CreateOn)
             };
 
-            var entities = (skip == 0 && cursor == 0) || (skip != 0 && cursor == 0) ?
-                await context.Publications.Find(filter)
+            var entities = await context.Publications.Find(filter)
                     .Sort(sorting)
-                    .Skip(skip)
-                    .Limit(take)
-                    .ToListAsync() :
-                await context.Publications.Find(filter)
-                    .Sort(sorting)
+                    .Skip(cursor == 0 ? skip : 0)
                     .Limit(take)
                     .ToListAsync();
 
