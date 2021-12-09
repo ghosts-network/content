@@ -3,8 +3,6 @@ name: Release image
 on:
   push:
     branches: [ master ]
-env:
-  SERVICE_NAME: content
 
 jobs:
   unit-test:
@@ -14,7 +12,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 5.0.101
+          dotnet-version: 6.0.100
       - name: Install dependencies
         run: dotnet restore
       - name: Build
@@ -29,16 +27,16 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+
       - name: Build image
-        run: docker build . --file Dockerfile --tag $SERVICE_NAME
-
-      - name: Login into github container regestry
-        run: echo "${{ secrets.CR_PAT }}" | docker login https://ghcr.io -u ${{ github.actor }} --password-stdin
-
-      - name: Push image to github container regestry
         run: |
-          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$SERVICE_NAME
-          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
-
-          docker tag $SERVICE_NAME $IMAGE_ID
-          docker push $IMAGE_ID
+          echo "${{ secrets.CR_PAT }}" | docker login https://ghcr.io -u ${{ github.actor }} --password-stdin
+          docker buildx build --push \
+            --platform linux/amd64,linux/arm64 \
+            --tag ghcr.io/ghosts-network/content .

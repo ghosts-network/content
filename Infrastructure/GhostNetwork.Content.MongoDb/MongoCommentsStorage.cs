@@ -65,6 +65,17 @@ namespace GhostNetwork.Content.MongoDb
             return;
         }
 
+        public async Task UpdateAuthorAsync(Guid authorId, string fullName, string avatarUrl)
+        {
+            var filter = Builders<CommentEntity>.Filter.Where(x => x.Author.Id == authorId);
+
+            var update = Builders<CommentEntity>.Update
+                .Set(p => p.Author.FullName, fullName)
+                .Set(p => p.Author.AvatarUrl, avatarUrl);
+
+            await context.Comments.UpdateManyAsync(filter, update);
+        }
+
         public async Task<(IEnumerable<Comment>, long)> FindManyAsync(string key, int skip, int take)
         {
             var filter = Builders<CommentEntity>.Filter.Eq(x => x.Key, key);
@@ -163,46 +174,13 @@ namespace GhostNetwork.Content.MongoDb
 
         private static Comment ToDomain(CommentEntity entity)
         {
-            return new(
+            return new Comment(
                 entity.Id.ToString(),
                 entity.Content,
                 DateTimeOffset.FromUnixTimeMilliseconds(entity.CreateOn),
                 entity.Key,
                 entity.ReplyCommentId,
                 (UserInfo)entity.Author);
-        }
-
-        // TODO: Remove after first deployment
-        public async Task MigratePublicationIdToKey()
-        {
-            var filter = Builders<BsonDocument>.Filter.Exists("key", false)
-                         & Builders<BsonDocument>.Filter.Exists("publicationId");
-
-            var commentsToMigrate = await context.Comments
-                .Database
-                .GetCollection<BsonDocument>("comments")
-                .Find(filter)
-                .ToListAsync();
-
-            if (!commentsToMigrate.Any())
-            {
-                return;
-            }
-
-            await Task.WhenAll(
-                commentsToMigrate
-                    .Select(comment =>
-                        context.Comments
-                            .Database
-                            .GetCollection<BsonDocument>("comments")
-                            .UpdateOneAsync(
-                                Builders<BsonDocument>.Filter.Eq("_id", comment["_id"].AsObjectId),
-                                Builders<BsonDocument>.Update
-                                    .Set("key", $"publication_{comment["publicationId"].AsString}")
-                                    .Unset("publicationId")
-                            )
-                    )
-            );
         }
     }
 }

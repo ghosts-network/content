@@ -122,6 +122,17 @@ namespace GhostNetwork.Content.MongoDb
             return (entities.Select(ToDomain), totalCount);
         }
 
+        public async Task UpdateAuthorAsync(Guid authorId, string fullName, string avatarUrl)
+        {
+            var filter = Builders<PublicationEntity>.Filter.Where(x => x.Author.Id == authorId);
+
+            var update = Builders<PublicationEntity>.Update
+                .Set(p => p.Author.FullName, fullName)
+                .Set(p => p.Author.AvatarUrl, avatarUrl);
+
+            await context.Publications.UpdateManyAsync(filter, update);
+        }
+
         public async Task UpdateOneAsync(Publication publication)
         {
             if (!ObjectId.TryParse(publication.Id, out var oId))

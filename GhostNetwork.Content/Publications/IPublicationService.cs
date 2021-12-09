@@ -87,10 +87,10 @@ namespace GhostNetwork.Content.Publications
                 return result;
             }
 
-
             await publicationStorage.UpdateOneAsync(publication);
 
-            await eventBus.PublishAsync(new UpdatedEvent(publication.Id,
+            await eventBus.PublishAsync(new UpdatedEvent(
+                publication.Id,
                 publication.Content,
                 publication.Author));
 
@@ -101,7 +101,7 @@ namespace GhostNetwork.Content.Publications
         {
             var publication = await publicationStorage.FindOneByIdAsync(id);
             await publicationStorage.DeleteOneAsync(id);
-            await eventBus.PublishAsync(new DeletedEvent(publication.Id, publication.Author));        
+            await eventBus.PublishAsync(new DeletedEvent(publication.Id, publication.Author));
         }
 
         public async Task<(IEnumerable<Publication>, long)> SearchByAuthor(int skip, int take, Guid authorId, Ordering order)
