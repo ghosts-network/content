@@ -48,7 +48,7 @@ namespace GhostNetwork.Content.MongoDb
 
         public async Task<(IEnumerable<Publication>, long)> FindManyAsync(int skip, long cursor, int take, IEnumerable<string> tags, Ordering order)
         {
-            var filter = (skip == 0 && cursor == 0) || (skip != 0 && cursor == 0)
+            var filter = cursor == 0
                 ? Builders<PublicationEntity>.Filter.Empty
                 : Builders<PublicationEntity>.Filter.Lt(x => x.CreateOn, cursor);
 
