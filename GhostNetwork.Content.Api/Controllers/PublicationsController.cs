@@ -70,6 +70,7 @@ namespace GhostNetwork.Content.Api.Controllers
         /// Search publications
         /// </summary>
         /// <param name="skip">Skip publications up to a specified position</param>
+        /// <param name="cursor">Skip publications up to a specified position by cursor</param>
         /// <param name="take">Take publications up to a specified position</param>
         /// <param name="tags">Filters publications by tags</param>
         /// <param name="order">Order by creation date</param>
@@ -79,11 +80,12 @@ namespace GhostNetwork.Content.Api.Controllers
         [SwaggerResponseHeader(StatusCodes.Status200OK, "X-TotalCount", "Number", "Total count of publications with applied filters")]
         public async Task<ActionResult<IEnumerable<Publication>>> SearchAsync(
             [FromQuery, Range(0, int.MaxValue)] int skip,
+            [FromQuery, Range(0, long.MaxValue)] long cursor,
             [FromQuery, Range(1, 100)] int take,
             [FromQuery] List<string> tags,
             [FromQuery] Ordering order = Ordering.Asc)
         {
-            var (list, totalCount) = await publicationService.SearchAsync(skip, take, tags, order);
+            var (list, totalCount) = await publicationService.SearchAsync(skip, cursor, take, tags, order);
             Response.Headers.Add("X-TotalCount", totalCount.ToString());
 
             return Ok(list);

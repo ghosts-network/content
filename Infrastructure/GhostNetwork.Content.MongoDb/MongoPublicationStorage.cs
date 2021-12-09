@@ -46,9 +46,11 @@ namespace GhostNetwork.Content.MongoDb
             return entity.Id.ToString();
         }
 
-        public async Task<(IEnumerable<Publication>, long)> FindManyAsync(int skip, int take, IEnumerable<string> tags, Ordering order)
+        public async Task<(IEnumerable<Publication>, long)> FindManyAsync(int skip, long cursor, int take, IEnumerable<string> tags, Ordering order)
         {
-            var filter = Builders<PublicationEntity>.Filter.Empty;
+            var filter = (skip == 0 && cursor == 0) || (skip != 0 && cursor == 0)
+                ? Builders<PublicationEntity>.Filter.Empty
+                : Builders<PublicationEntity>.Filter.Lt(x => x.CreateOn, cursor);
 
             if (tags.Any())
             {
@@ -64,11 +66,16 @@ namespace GhostNetwork.Content.MongoDb
                 _ => Builders<PublicationEntity>.Sort.Ascending(x => x.CreateOn)
             };
 
-            var entities = await context.Publications.Find(filter)
-                .Sort(sorting)
-                .Skip(skip)
-                .Limit(take)
-                .ToListAsync();
+            var entities = (skip == 0 && cursor == 0) || (skip != 0 && cursor == 0) ?
+                await context.Publications.Find(filter)
+                    .Sort(sorting)
+                    .Skip(skip)
+                    .Limit(take)
+                    .ToListAsync() :
+                await context.Publications.Find(filter)
+                    .Sort(sorting)
+                    .Limit(take)
+                    .ToListAsync();
 
             return (entities.Select(ToDomain), totalCount);
         }
