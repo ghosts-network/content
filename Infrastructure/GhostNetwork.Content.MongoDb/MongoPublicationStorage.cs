@@ -46,25 +46,21 @@ namespace GhostNetwork.Content.MongoDb
             return entity.Id.ToString();
         }
 
-        public async Task<(IEnumerable<Publication>, long)> FindManyAsync(int skip, long cursor, int take, IEnumerable<string> tags, Ordering order)
+        public async Task<(IEnumerable<Publication>, long, string)> FindManyAsync(int skip, string lastPublicationId, int take, IEnumerable<string> tags, Ordering order)
         {
             var filter = Builders<PublicationEntity>.Filter.Empty;
 
-            if (cursor != 0 && order == Ordering.Desc)
+            if (lastPublicationId != null)
             {
-                filter = Builders<PublicationEntity>.Filter.Lt(x => x.CreateOn, cursor);
-            }
-            else if (cursor != 0 && order == Ordering.Asc)
-            {
-                filter = Builders<PublicationEntity>.Filter.Gt(x => x.CreateOn, cursor);
-            }
-
-            if (tags.Any())
-            {
-                filter &= Builders<PublicationEntity>.Filter.AnyIn(e => e.Tags, tags);
+                filter = order switch
+                {
+                    Ordering.Desc => Builders<PublicationEntity>.Filter.Lt(x => x.Id, ObjectId.Parse(lastPublicationId)),
+                    _ => Builders<PublicationEntity>.Filter.Gt(x => x.Id, ObjectId.Parse(lastPublicationId))
+                };
             }
 
-            var totalCount = await context.Publications.Find(filter)
+            var totalCount = await context.Publications
+                .Find(filter)
                 .CountDocumentsAsync();
 
             var sorting = order switch
@@ -75,11 +71,11 @@ namespace GhostNetwork.Content.MongoDb
 
             var entities = await context.Publications.Find(filter)
                 .Sort(sorting)
-                .Skip(cursor == 0 ? skip : 0)
+                .Skip(lastPublicationId == null ? skip : 0)
                 .Limit(take)
                 .ToListAsync();
 
-            return (entities.Select(ToDomain), totalCount);
+            return (entities.Select(ToDomain), totalCount, entities.Select(x => x.Id).LastOrDefault().ToString());
         }
 
         public async Task<(IEnumerable<Publication>, long)> FindManyByAuthorAsync(int skip, int take, Guid authorId, Ordering order)

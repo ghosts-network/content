@@ -11,7 +11,7 @@ namespace GhostNetwork.Content.Publications
     {
         Task<Publication> GetByIdAsync(string id);
 
-        Task<(IEnumerable<Publication>, long)> SearchAsync(int skip, long cursor, int take, IEnumerable<string> tags, Ordering order);
+        Task<(IEnumerable<Publication>, long, string)> SearchAsync(int skip, string lastPublicationId, int take, IEnumerable<string> tags, Ordering order);
 
         Task<(DomainResult, string)> CreateAsync(string text, UserInfo author);
 
@@ -46,9 +46,9 @@ namespace GhostNetwork.Content.Publications
             return await publicationStorage.FindOneByIdAsync(id);
         }
 
-        public async Task<(IEnumerable<Publication>, long)> SearchAsync(int skip, long cursor, int take, IEnumerable<string> tags, Ordering order)
+        public async Task<(IEnumerable<Publication>, long, string)> SearchAsync(int skip, string lastPublicationId, int take, IEnumerable<string> tags, Ordering order)
         {
-            return await publicationStorage.FindManyAsync(skip, cursor, take, tags, order);
+            return await publicationStorage.FindManyAsync(skip, lastPublicationId, take, tags, order);
         }
 
         public async Task<(DomainResult, string)> CreateAsync(string text, UserInfo author)
