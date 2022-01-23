@@ -10,6 +10,8 @@ namespace GhostNetwork.Content.Comments
 
         Task<(IEnumerable<Comment>, long)> FindManyAsync(string key, int skip, int take);
 
+        Task<IEnumerable<Comment>> FindManyByCommentReplyIdAsync(string commentId, int skip, int take);
+
         Task<Dictionary<string, FeaturedInfo>> FindFeaturedAsync(IEnumerable<string> keys);
 
         Task<string> InsertOneAsync(Comment comment);
