@@ -126,6 +126,23 @@ namespace GhostNetwork.Content.Api.Controllers
         }
 
         /// <summary>
+        /// Search comments for key
+        /// </summary>
+        /// <param name="replyId">Parent comment id</param>
+        /// <param name="skip">Skip comments up to a specified position</param>
+        /// <param name="take">Take comments up to a specified position</param>
+        /// <returns>Comments related to parent comments</returns>
+        [HttpGet("byreply/{replyId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<Comment>>> SearchByReplyIdAsync(
+            [FromRoute] string replyId,
+            [FromQuery, Range(0, int.MaxValue)] int skip,
+            [FromQuery, Range(0, 100)] int take = 10)
+        {
+            return Ok(await commentService.SearchByReplyIdAsync(replyId, skip, take));
+        }
+
+        /// <summary>
         /// Delete one comment
         /// </summary>
         /// <param name="id">Comment id</param>
