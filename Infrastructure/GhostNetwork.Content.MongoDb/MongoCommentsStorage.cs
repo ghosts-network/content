@@ -61,8 +61,6 @@ namespace GhostNetwork.Content.MongoDb
 
             var updateResult = await context.Comments
                 .UpdateOneAsync(filter, update);
-
-            return;
         }
 
         public async Task UpdateAuthorAsync(Guid authorId, string fullName, string avatarUrl)
