@@ -76,6 +76,19 @@ namespace GhostNetwork.Content.MongoDb
             await context.Comments.UpdateManyAsync(filter, update);
         }
 
+        public async Task<IEnumerable<Comment>> FindManyByCommentReplyIdAsync(string replyId, int skip, int take)
+        {
+            var filter = Builders<CommentEntity>.Filter.Eq(c => c.ReplyCommentId, replyId);
+
+            var entities = await context.Comments
+                .Find(filter)
+                .Skip(skip)
+                .Limit(take)
+                .ToListAsync();
+
+            return entities.Select(ToDomain);
+        }
+
         public async Task<(IEnumerable<Comment>, long)> FindManyAsync(string key, int skip, int take)
         {
             var filter = Builders<CommentEntity>.Filter.Eq(x => x.Key, key);
