@@ -104,12 +104,21 @@ namespace GhostNetwork.Content.Api
         {
             if (env.IsDevelopment())
             {
-                app
-                    .UseSwagger()
-                    .UseSwaggerUI(config =>
+                bool openApiEnabled = configuration.GetValue<bool>("OPENAPI_JSON_ENABLED");
+                bool swaggerUiEnabled = configuration.GetValue<bool>("SWAGGER_UI_ENABLED");
+
+                if (openApiEnabled)
+                {
+                    app.UseSwagger();
+                }
+
+                if (openApiEnabled && swaggerUiEnabled)
+                {
+                    app.UseSwaggerUI(config =>
                     {
                         config.SwaggerEndpoint("/swagger/v1/swagger.json", "Relations.API V1");
                     });
+                }
 
                 app.UseCors(builder => builder.AllowAnyHeader()
                     .AllowAnyMethod()
