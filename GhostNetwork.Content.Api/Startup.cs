@@ -39,20 +39,24 @@ namespace GhostNetwork.Content.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCors();
-            services.AddSwaggerGen(options =>
+
+            if (configuration.GetValue<bool>("OPENAPI_JSON_ENABLED"))
             {
-                options.SwaggerDoc("v1", new OpenApiInfo
+                services.AddSwaggerGen(options =>
                 {
-                    Title = "GhostNetwork.Content",
-                    Description = "Http client for GhostNetwork.Content",
-                    Version = "1.0.0"
+                    options.SwaggerDoc("v1", new OpenApiInfo
+                    {
+                        Title = "GhostNetwork.Content",
+                        Description = "Http client for GhostNetwork.Content",
+                        Version = "1.0.0"
+                    });
+
+                    options.OperationFilter<OperationIdFilter>();
+                    options.OperationFilter<AddResponseHeadersFilter>();
+
+                    options.IncludeXmlComments(XmlPathProvider.XmlPath);
                 });
-
-                options.OperationFilter<OperationIdFilter>();
-                options.OperationFilter<AddResponseHeadersFilter>();
-
-                options.IncludeXmlComments(XmlPathProvider.XmlPath);
-            });
+            }
 
             if (configuration["EVENTHUB_TYPE"]?.ToLower() == "rabbit")
             {
