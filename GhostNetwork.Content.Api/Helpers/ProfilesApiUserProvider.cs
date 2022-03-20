@@ -27,7 +27,7 @@ namespace GhostNetwork.Content.Api.Helpers
                 var result = await profilesApi.GetByIdAsync(guid);
                 return result == null
                     ? null
-                    : new UserInfo(result.Id, $"{result.FirstName} {result.LastName}", null);
+                    : new UserInfo(result.Id, $"{result.FirstName} {result.LastName}", result.ProfilePicture);
             }
             catch (ApiException ex) when (ex.ErrorCode == (int)HttpStatusCode.NotFound)
             {
