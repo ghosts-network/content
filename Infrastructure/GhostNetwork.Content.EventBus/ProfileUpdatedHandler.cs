@@ -1,30 +1,25 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using GhostNetwork.Content.Comments;
 using GhostNetwork.Content.Publications;
 using GhostNetwork.EventBus;
 
-// ReSharper disable once CheckNamespace
-namespace GhostNetwork.Profiles
+namespace GhostNetwork.Content;
+
+public class ProfileUpdatedHandler : IEventHandler<GhostNetwork.Profiles.UpdatedEvent>
 {
-    public record UpdatedEvent(Guid Id, string FullName, string ProfilePicture) : TrackableEvent;
+    private readonly IPublicationsStorage publicationsStorage;
+    private readonly ICommentsStorage commentsStorage;
 
-    public class ProfileUpdatedHandler : IEventHandler<UpdatedEvent>
+    public ProfileUpdatedHandler(IPublicationsStorage publicationsStorage,
+        ICommentsStorage commentsStorage)
     {
-        private readonly IPublicationsStorage publicationsStorage;
-        private readonly ICommentsStorage commentsStorage;
+        this.publicationsStorage = publicationsStorage;
+        this.commentsStorage = commentsStorage;
+    }
 
-        public ProfileUpdatedHandler(IPublicationsStorage publicationsStorage,
-            ICommentsStorage commentsStorage)
-        {
-            this.publicationsStorage = publicationsStorage;
-            this.commentsStorage = commentsStorage;
-        }
-
-        public async Task ProcessAsync(UpdatedEvent @event)
-        {
-            await publicationsStorage.UpdateAuthorAsync(@event.Id, @event.FullName, @event.ProfilePicture);
-            await commentsStorage.UpdateAuthorAsync(@event.Id, @event.FullName, @event.ProfilePicture);
-        }
+    public async Task ProcessAsync(GhostNetwork.Profiles.UpdatedEvent @event)
+    {
+        await publicationsStorage.UpdateAuthorAsync(@event.Id, @event.FullName, @event.ProfilePicture);
+        await commentsStorage.UpdateAuthorAsync(@event.Id, @event.FullName, @event.ProfilePicture);
     }
 }
