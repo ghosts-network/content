@@ -93,7 +93,7 @@ namespace GhostNetwork.Content.MongoDb
 
             var searchedIds = entities.Select(x => x.Id.ToString());
 
-            var repliesDict = await GetRepliesByManyCommentIds(searchedIds, take);
+            var repliesDict = await GetRepliesByManyCommentIdsAsync(searchedIds, take);
 
             var result = entities.Select(entity =>
             {
