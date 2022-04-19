@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using NUnit.Framework;
 using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -39,7 +40,7 @@ namespace GhostNetwork.Content.UnitTest.Comments.Api
 
             commentServiceMock
                 .Setup(s => s.GetByIdAsync(commentId))
-                .ReturnsAsync(new Comment(commentId, content, DateTimeOffset.Now, publicationId, null, author));
+                .ReturnsAsync(new Comment(commentId, content, DateTimeOffset.Now, publicationId, null, author, Enumerable.Empty<Comment>()));
 
             var userProvideMock = new Mock<IUserProvider>();
             userProvideMock

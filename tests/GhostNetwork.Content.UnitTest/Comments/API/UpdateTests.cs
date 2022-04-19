@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -26,7 +27,7 @@ namespace GhostNetwork.Content.UnitTest.Comments.Api
 
             DomainResult domainResult = DomainResult.Success();
 
-            Comment comment = new Comment(commentId, model.Content, DateTimeOffset.Now, null, null, null);
+            Comment comment = new Comment(commentId, model.Content, DateTimeOffset.Now, null, null, null, Enumerable.Empty<Comment>());
 
             var serviceMock = new Mock<ICommentsService>();
             serviceMock.Setup(s => s.UpdateAsync(commentId, model.Content)).ReturnsAsync(domainResult);
@@ -53,7 +54,7 @@ namespace GhostNetwork.Content.UnitTest.Comments.Api
 
             DomainResult domainResult = DomainResult.Success();
 
-            Comment comment = new Comment(commentId, model.Content, DateTimeOffset.Now, null, null, null);
+            Comment comment = new Comment(commentId, model.Content, DateTimeOffset.Now, null, null, null, Enumerable.Empty<Comment>());
 
             var serviceMock = new Mock<ICommentsService>();
             serviceMock.Setup(s => s.UpdateAsync(commentId, model.Content)).ReturnsAsync(domainResult);

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using GhostNetwork.Content.Comments;
@@ -25,7 +26,8 @@ namespace GhostNetwork.Content.UnitTest.Comments.Api
                 DateTimeOffset.Now,
                 publicationId,
                 null,
-                new UserInfo(Guid.Empty, author, null));
+                new UserInfo(Guid.Empty, author, null),
+                Enumerable.Empty<Comment>());
 
             var serviceMock = new Mock<ICommentsService>();
             serviceMock.Setup(s => s.GetByIdAsync(commentId)).ReturnsAsync(comment);

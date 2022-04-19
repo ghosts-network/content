@@ -83,7 +83,7 @@ namespace GhostNetwork.Content.UnitTest
             var validator = new MaxLengthValidator(5);
             var content = "Hello_Hello";
 
-            var comment = new Comment(string.Empty, content, DateTimeOffset.Now, string.Empty, null, null);
+            var comment = new Comment(string.Empty, content, DateTimeOffset.Now, string.Empty, null, null, Enumerable.Empty<Comment>());
 
             // Act
             var result = await validator.ValidateAsync(comment);
@@ -99,7 +99,7 @@ namespace GhostNetwork.Content.UnitTest
             var validator = new MaxLengthValidator(5);
             var content = "Hi";
 
-            var comment = new Comment(string.Empty, content, DateTimeOffset.Now, string.Empty, null, null);
+            var comment = new Comment(string.Empty, content, DateTimeOffset.Now, string.Empty, null, null, Enumerable.Empty<Comment>());
 
             // Act
             var result = await validator.ValidateAsync(comment);
@@ -115,7 +115,7 @@ namespace GhostNetwork.Content.UnitTest
             var validator = new MaxLengthValidator(5);
             var content = "Hello";
 
-            var comment = new Comment(string.Empty, content, DateTimeOffset.Now, string.Empty, null, null);
+            var comment = new Comment(string.Empty, content, DateTimeOffset.Now, string.Empty, null, null, Enumerable.Empty<Comment>());
 
             // Act
             var result = await validator.ValidateAsync(comment);

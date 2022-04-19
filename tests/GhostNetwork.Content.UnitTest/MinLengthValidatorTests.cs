@@ -90,7 +90,7 @@ namespace GhostNetwork.Content.UnitTest
             var validator = new MinLengthValidator(5);
             var content = "Hello_Hello";
 
-            var comment = new Comment(string.Empty, content, DateTimeOffset.Now, string.Empty, replyCommentId: null, null);
+            var comment = new Comment(string.Empty, content, DateTimeOffset.Now, string.Empty, replyCommentId: null, null, Enumerable.Empty<Comment>());
 
             // Act
             var result = await validator.ValidateAsync(comment);
@@ -106,7 +106,7 @@ namespace GhostNetwork.Content.UnitTest
             var validator = new MinLengthValidator(5);
             var content = "Hi";
 
-            var comment = new Comment(string.Empty, content, DateTimeOffset.Now, string.Empty, replyCommentId: null, null);
+            var comment = new Comment(string.Empty, content, DateTimeOffset.Now, string.Empty, replyCommentId: null, null, Enumerable.Empty<Comment>());
 
             // Act
             var result = await validator.ValidateAsync(comment);
@@ -122,7 +122,7 @@ namespace GhostNetwork.Content.UnitTest
             var validator = new MinLengthValidator(5);
             var content = "Hello";
 
-            var comment = new Comment(string.Empty, content, DateTimeOffset.Now, string.Empty, replyCommentId: null, null);
+            var comment = new Comment(string.Empty, content, DateTimeOffset.Now, string.Empty, replyCommentId: null, null, Enumerable.Empty<Comment>());
 
             // Act
             var result = await validator.ValidateAsync(comment);
