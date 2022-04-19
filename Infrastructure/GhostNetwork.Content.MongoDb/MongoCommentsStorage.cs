@@ -1,10 +1,11 @@
-﻿using System;
+﻿using GhostNetwork.Content.Comments;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Driver;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using GhostNetwork.Content.Comments;
-using MongoDB.Bson;
-using MongoDB.Driver;
 
 namespace GhostNetwork.Content.MongoDb
 {
@@ -17,7 +18,7 @@ namespace GhostNetwork.Content.MongoDb
             this.context = context;
         }
 
-        public async Task<Comment> FindOneByIdAsync(string id)
+        public async Task<Comment?> FindOneByIdAsync(string id)
         {
             if (!ObjectId.TryParse(id, out var oId))
             {
@@ -78,7 +79,7 @@ namespace GhostNetwork.Content.MongoDb
 
         public async Task<(IEnumerable<Comment>, long)> FindManyAsync(string key, int skip, int take)
         {
-            var filter = Builders<CommentEntity>.Filter.Eq(x => x.Key, key);
+            var filter = Builders<CommentEntity>.Filter.Eq(x => x.Key, key) & Builders<CommentEntity>.Filter.Eq(x => x.ReplyCommentId, null);
 
             var totalCount = await context.Comments
                 .Find(filter)
@@ -90,9 +91,20 @@ namespace GhostNetwork.Content.MongoDb
                 .Limit(take)
                 .ToListAsync();
 
-            return (entities
-                .Select(ToDomain)
-                .ToList(), totalCount);
+            var searchedIds = entities.Select(x => x.Id.ToString());
+
+            var repliesDict = await GetRepliesByManyCommentIds(searchedIds, take);
+
+            var result = entities.Select(entity =>
+            {
+                var replies = searchedIds.Contains(entity.Id.ToString())
+                    ? repliesDict[entity.Id.ToString()]
+                    : Enumerable.Empty<CommentEntity>();
+
+                return ToDomain(entity, replies);
+            }).Where(c => string.IsNullOrEmpty(c.ReplyCommentId));
+
+            return (result, totalCount);
         }
 
         public async Task DeleteOneAsync(string commentId)
@@ -149,7 +161,7 @@ namespace GhostNetwork.Content.MongoDb
 
             var listComments = await context.Comments
                 .Aggregate()
-                .Match(Builders<CommentEntity>.Filter.In(x => x.Key, keys))
+                .Match(Builders<CommentEntity>.Filter.In(x => x.ReplyCommentId, keys))
                 .Sort(Builders<CommentEntity>.Sort.Ascending(x => x.CreateOn))
                 .Group<FeaturedInfoEntity>(group)
                 .Project<FeaturedInfoEntity>(slice.ToBsonDocument())
@@ -162,8 +174,7 @@ namespace GhostNetwork.Content.MongoDb
                         r.Comments.Select(ToDomain),
                         r.TotalCount));
 
-            return keys
-                .ToDictionary(
+            return keys.ToDictionary(
                     key => key,
                     key => dict.ContainsKey(key)
                         ? dict[key]

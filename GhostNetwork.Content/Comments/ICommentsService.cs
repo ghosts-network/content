@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Domain;
 using Domain.Validation;
@@ -56,6 +57,13 @@ namespace GhostNetwork.Content.Comments
             var comment = Comment.New(text, key, replyId, author);
             var result = await validator.ValidateAsync(comment);
 
+            var existedComment = await commentStorage.FindOneByIdAsync(replyId);
+
+            if (existedComment != null && string.IsNullOrEmpty(existedComment.ReplyCommentId))
+            {
+                return (DomainResult.Error("Cannot create reply on reply"), null);
+            }
+
             if (!result.Successed)
             {
                 return (result, null);
@@ -75,7 +83,8 @@ namespace GhostNetwork.Content.Comments
                 actualComment.CreatedOn,
                 actualComment.Key,
                 actualComment.ReplyCommentId,
-                actualComment.Author);
+                actualComment.Author,
+                Enumerable.Empty<Comment>());
 
             var result = await validator.ValidateAsync(updatedComment);
 
