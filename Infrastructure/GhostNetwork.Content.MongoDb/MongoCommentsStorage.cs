@@ -172,7 +172,7 @@ namespace GhostNetwork.Content.MongoDb
                             0));
         }
 
-        private static Comment ToDomain(CommentEntity entity)
+        private static Comment ToDomain(CommentEntity entity, IEnumerable<CommentEntity> replies = null)
         {
             return new Comment(
                 entity.Id.ToString(),
@@ -180,7 +180,8 @@ namespace GhostNetwork.Content.MongoDb
                 DateTimeOffset.FromUnixTimeMilliseconds(entity.CreateOn),
                 entity.Key,
                 entity.ReplyCommentId,
-                (UserInfo)entity.Author);
+                (UserInfo)entity.Author,
+                replies != null ? replies.Select(r => ToDomain(r)) : Enumerable.Empty<Comment>());
         }
     }
 }
