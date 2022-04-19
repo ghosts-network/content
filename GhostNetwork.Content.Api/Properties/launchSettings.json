@@ -14,8 +14,7 @@
         "PROFILES_ADDRESS": "http://localhost:5400",
         "SWAGGER_UI_ENABLED": "true",
         "TIME_LIMIT_TO_UPDATE_COMMENTS": "900",
-        "RABBIT_CONNECTION": "amqp://guest:guest@localhost:5672/",
-        "AZURE_BUS_CONNTECTION": "Endpoint=sb://bod9i-azure.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=+ElXa0az19RbZf94dzKJc6Mk6jAgq3n4y7Fpf/es40U="
+        "RABBIT_CONNECTION": "amqp://guest:guest@localhost:5672/"
       }
     }
   }
