@@ -171,7 +171,7 @@ namespace GhostNetwork.Content.MongoDb
                 .ToDictionary(
                     r => r.Id,
                     r => new FeaturedInfo(
-                        r.Comments.Select(ToDomain),
+                        r.Comments.Select(x => ToDomain(x)),
                         r.TotalCount));
 
             return keys.ToDictionary(
