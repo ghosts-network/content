@@ -59,7 +59,7 @@ namespace GhostNetwork.Content.Comments
 
             var existedComment = await commentStorage.FindOneByIdAsync(replyId);
 
-            if (existedComment != null && string.IsNullOrEmpty(existedComment.ReplyCommentId))
+            if (existedComment != null && !string.IsNullOrEmpty(existedComment.ReplyCommentId))
             {
                 return (DomainResult.Error("Cannot create reply on reply"), null);
             }
