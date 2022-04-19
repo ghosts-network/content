@@ -161,7 +161,7 @@ namespace GhostNetwork.Content.MongoDb
 
             var listComments = await context.Comments
                 .Aggregate()
-                .Match(Builders<CommentEntity>.Filter.In(x => x.ReplyCommentId, keys))
+                .Match(Builders<CommentEntity>.Filter.In(x => x.Key, keys))
                 .Sort(Builders<CommentEntity>.Sort.Ascending(x => x.CreateOn))
                 .Group<FeaturedInfoEntity>(group)
                 .Project<FeaturedInfoEntity>(slice.ToBsonDocument())
