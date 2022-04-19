@@ -172,6 +172,25 @@ namespace GhostNetwork.Content.MongoDb
                             0));
         }
 
+        private async Task<Dictionary<string, IEnumerable<CommentEntity>>> GetRepliesByManyCommentIdsAsync(IEnumerable<string> keys, int take)
+        {
+            var filter = Builders<CommentEntity>.Filter.Ne(x => x.ReplyCommentId, null) & Builders<CommentEntity>.Filter.In(x => x.ReplyCommentId, keys);
+            var sorting = Builders<CommentEntity>.Sort.Ascending(x => x.CreateOn);
+
+            var replies = await context.Comments
+                .Find(filter)
+                .Sort(sorting)
+                .Limit(take)
+                .ToListAsync();
+
+            var groupingReplies = replies.GroupBy(r => r.ReplyCommentId);
+
+            return keys.ToDictionary(
+                key => key,
+                key => groupingReplies.FirstOrDefault(x => x.Key == key) ?? Enumerable.Empty<CommentEntity>()
+            );
+        }
+
         private static Comment ToDomain(CommentEntity entity, IEnumerable<CommentEntity> replies = null)
         {
             return new Comment(
