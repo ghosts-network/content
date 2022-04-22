@@ -28,9 +28,9 @@ namespace GhostNetwork.Content.UnitTest.Comments.Api
 
             var comments = new Comment[]
             {
-                new Comment((commentId++).ToString(), "someContent1", DateTimeOffset.Now, publicationId, null, author, Enumerable.Empty<Comment>()),
-                new Comment((commentId++).ToString(), "someContent2", DateTimeOffset.Now, publicationId, null, author, Enumerable.Empty<Comment>()),
-                new Comment((commentId++).ToString(), "someContent3", DateTimeOffset.Now, publicationId, null, author, Enumerable.Empty<Comment>())
+                new Comment((commentId++).ToString(), "someContent1", DateTimeOffset.Now, publicationId, null, author),
+                new Comment((commentId++).ToString(), "someContent2", DateTimeOffset.Now, publicationId, null, author),
+                new Comment((commentId++).ToString(), "someContent3", DateTimeOffset.Now, publicationId, null, author)
             };
 
             var serviceMock = new Mock<ICommentsService>();
@@ -67,16 +67,16 @@ namespace GhostNetwork.Content.UnitTest.Comments.Api
                     firstPublicationId, new FeaturedInfo(
                         new Comment[]
                         {
-                            new Comment((commentId++).ToString(), "someContent1", DateTimeOffset.Now, firstPublicationId, null, author, Enumerable.Empty<Comment>()),
-                            new Comment((commentId++).ToString(), "someContent2", DateTimeOffset.Now, firstPublicationId, null, author, Enumerable.Empty<Comment>()),
+                            new Comment((commentId++).ToString(), "someContent1", DateTimeOffset.Now, firstPublicationId, null, author),
+                            new Comment((commentId++).ToString(), "someContent2", DateTimeOffset.Now, firstPublicationId, null, author),
                         }, 2)
                 },
                 {
                     secondPublicationId, new FeaturedInfo(
                         new Comment[]
                         {
-                            new Comment((commentId++).ToString(), "someContent1", DateTimeOffset.Now, secondPublicationId, null, author, Enumerable.Empty<Comment>()),
-                            new Comment((commentId++).ToString(), "someContent2", DateTimeOffset.Now, secondPublicationId, null, author, Enumerable.Empty<Comment>()),
+                            new Comment((commentId++).ToString(), "someContent1", DateTimeOffset.Now, secondPublicationId, null, author),
+                            new Comment((commentId++).ToString(), "someContent2", DateTimeOffset.Now, secondPublicationId, null, author),
                         }, 2)
                 }
             };

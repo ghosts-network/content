@@ -17,7 +17,7 @@ namespace GhostNetwork.Content.UnitTest.Comments.Domain
             var commentsStorageMock = new Mock<ICommentsStorage>();
 
             var validator = new CommentReplyValidator(commentsStorageMock.Object);
-            var comment = new Comment(string.Empty, string.Empty, DateTimeOffset.Now, string.Empty, replyCommentId: null, null, Enumerable.Empty<Comment>());
+            var comment = new Comment(string.Empty, string.Empty, DateTimeOffset.Now, string.Empty, replyCommentId: null, null);
 
             // Act
             var result = await validator.ValidateAsync(comment);
@@ -36,7 +36,7 @@ namespace GhostNetwork.Content.UnitTest.Comments.Domain
                 .ReturnsAsync(default(Comment));
 
             var validator = new CommentReplyValidator(commentsStorageMock.Object);
-            var comment = new Comment(string.Empty, string.Empty, DateTimeOffset.Now, string.Empty, replyCommentId: "replyId", null, Enumerable.Empty<Comment>());
+            var comment = new Comment(string.Empty, string.Empty, DateTimeOffset.Now, string.Empty, replyCommentId: "replyId", null);
 
             // Act
             var result = await validator.ValidateAsync(comment);
@@ -52,10 +52,10 @@ namespace GhostNetwork.Content.UnitTest.Comments.Domain
             var commentsStorageMock = new Mock<ICommentsStorage>();
             commentsStorageMock
                 .Setup(s => s.FindOneByIdAsync("replyId"))
-                .ReturnsAsync(new Comment(default, default, DateTimeOffset.Now, default, default, default, Enumerable.Empty<Comment>()));
+                .ReturnsAsync(new Comment(default, default, DateTimeOffset.Now, default, default, default));
 
             var validator = new CommentReplyValidator(commentsStorageMock.Object);
-            var comment = new Comment(string.Empty, string.Empty, DateTimeOffset.Now, string.Empty, replyCommentId: "replyId", null, Enumerable.Empty<Comment>());
+            var comment = new Comment(string.Empty, string.Empty, DateTimeOffset.Now, string.Empty, replyCommentId: "replyId", null);
 
             // Act
             var result = await validator.ValidateAsync(comment);

@@ -40,7 +40,7 @@ namespace GhostNetwork.Content.UnitTest.Comments.Api
 
             commentServiceMock
                 .Setup(s => s.GetByIdAsync(commentId))
-                .ReturnsAsync(new Comment(commentId, content, DateTimeOffset.Now, publicationId, null, author, Enumerable.Empty<Comment>()));
+                .ReturnsAsync(new Comment(commentId, content, DateTimeOffset.Now, publicationId, null, author));
 
             var userProvideMock = new Mock<IUserProvider>();
             userProvideMock

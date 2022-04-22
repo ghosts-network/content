@@ -26,8 +26,7 @@ namespace GhostNetwork.Content.UnitTest.Comments.Api
                 DateTimeOffset.Now,
                 publicationId,
                 null,
-                new UserInfo(Guid.Empty, author, null), 
-                Enumerable.Empty<Comment>());
+                new UserInfo(Guid.Empty, author, null));
 
             var serviceMock = new Mock<ICommentsService>();
             serviceMock.Setup(s => s.GetByIdAsync(commentId)).ReturnsAsync(comment);
