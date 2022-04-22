@@ -83,8 +83,7 @@ namespace GhostNetwork.Content.Comments
                 actualComment.CreatedOn,
                 actualComment.Key,
                 actualComment.ReplyCommentId,
-                actualComment.Author,
-                Enumerable.Empty<Comment>());
+                actualComment.Author);
 
             var result = await validator.ValidateAsync(updatedComment);
 
