@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,7 +6,7 @@ namespace GhostNetwork.Content.Comments
 {
     public class Comment
     {
-        public Comment(string id, string content, DateTimeOffset createdOn, string key, string replyCommentId, UserInfo author, IEnumerable<Comment> replies)
+        public Comment(string id, string content, DateTimeOffset createdOn, string key, string replyCommentId, UserInfo author, CommentsShort replies = null)
         {
             Id = id;
             Content = content;
@@ -15,7 +14,7 @@ namespace GhostNetwork.Content.Comments
             Key = key;
             ReplyCommentId = replyCommentId;
             Author = author;
-            Replies = replies ?? Enumerable.Empty<Comment>();
+            Replies = replies;
         }
 
         public string Id { get; }
@@ -30,11 +29,24 @@ namespace GhostNetwork.Content.Comments
 
         public string? ReplyCommentId { get; }
 
-        public IEnumerable<Comment> Replies { get; }
+        public CommentsShort Replies { get; }
 
         public static Comment New(string text, string key, string replyId, UserInfo author)
         {
-            return new Comment(default, text, DateTimeOffset.UtcNow, key, replyId, author, Enumerable.Empty<Comment>());
+            return new Comment(default, text, DateTimeOffset.UtcNow, key, replyId, author);
         }
+    }
+
+    public class CommentsShort
+    {
+        public CommentsShort(IEnumerable<Comment> topComments, long totalCount)
+        {
+            TopComments = topComments;
+            TotalCount = totalCount;
+        }
+
+        public IEnumerable<Comment> TopComments { get; }
+
+        public long TotalCount { get; }
     }
 }
