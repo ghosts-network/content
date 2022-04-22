@@ -91,15 +91,11 @@ namespace GhostNetwork.Content.MongoDb
                 .Limit(take)
                 .ToListAsync();
 
-            var searchedIds = entities.Select(x => x.Id.ToString());
-
-            var repliesDict = await GetRepliesByManyCommentIdsAsync(searchedIds, take);
+            var repliesDict = await FindFeaturedAsync(entities.Select(x => x.Id.ToString()), 3);
 
             var result = entities.Select(entity =>
             {
-                var replies = searchedIds.Contains(entity.Id.ToString())
-                    ? repliesDict[entity.Id.ToString()]
-                    : Enumerable.Empty<CommentEntity>();
+                repliesDict.TryGetValue(entity.Id.ToString(), out var replies);
 
                 return ToDomain(entity, replies);
             }).Where(c => string.IsNullOrEmpty(c.ReplyCommentId));
@@ -183,26 +179,53 @@ namespace GhostNetwork.Content.MongoDb
                             0));
         }
 
-        private async Task<Dictionary<string, IEnumerable<CommentEntity>>> GetRepliesByManyCommentIdsAsync(IEnumerable<string> keys, int take)
+        public async Task<Dictionary<string, CommentsShort>> FindFeaturedAsync(IEnumerable<string> ids, int take)
         {
-            var filter = Builders<CommentEntity>.Filter.Ne(x => x.ReplyCommentId, null) & Builders<CommentEntity>.Filter.In(x => x.ReplyCommentId, keys);
-            var sorting = Builders<CommentEntity>.Sort.Ascending(x => x.CreateOn);
+            var group = new BsonDocument
+            {
+                {
+                    "_id", "$replyId"
+                },
+                {
+                    "comments", new BsonDocument
+                    {
+                        { "$push", "$$ROOT" }
+                    }
+                },
+                {
+                    "count", new BsonDocument("$sum", 1)
+                }
+            };
 
-            var replies = await context.Comments
-                .Find(filter)
-                .Sort(sorting)
-                .Limit(take)
+            var slice = new BsonDocument
+            {
+                {
+                    "comments", new BsonDocument
+                    {
+                        {
+                            "$slice", new BsonArray(new BsonValue[]
+                            {
+                                "$comments",
+                                take
+                            })
+                        }
+                    }
+                },
+                { "count", "$count" }
+            };
+
+            var listComments = await context.Comments
+                .Aggregate()
+                .Match(Builders<CommentEntity>.Filter.In(x => x.ReplyCommentId, ids))
+                .Sort(Builders<CommentEntity>.Sort.Ascending(x => x.CreateOn))
+                .Group<FeaturedInfoEntity>(group)
+                .Project<FeaturedInfoEntity>(slice.ToBsonDocument())
                 .ToListAsync();
 
-            var groupingReplies = replies.GroupBy(r => r.ReplyCommentId);
-
-            return keys.ToDictionary(
-                key => key,
-                key => groupingReplies.FirstOrDefault(x => x.Key == key) ?? Enumerable.Empty<CommentEntity>()
-            );
+            return listComments.ToDictionary(key => key.Id, value => new CommentsShort(value.Comments.Select(c => ToDomain(c)), value.TotalCount));
         }
 
-        private static Comment ToDomain(CommentEntity entity, IEnumerable<CommentEntity> replies = null)
+        private static Comment ToDomain(CommentEntity entity, CommentsShort replies = null)
         {
             return new Comment(
                 entity.Id.ToString(),
@@ -211,7 +234,7 @@ namespace GhostNetwork.Content.MongoDb
                 entity.Key,
                 entity.ReplyCommentId,
                 (UserInfo)entity.Author,
-                replies != null ? replies.Select(r => ToDomain(r)) : Enumerable.Empty<Comment>());
+                replies);
         }
     }
 }
