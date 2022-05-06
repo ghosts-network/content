@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace GhostNetwork.Content.Api.Models
 {
@@ -6,5 +7,7 @@ namespace GhostNetwork.Content.Api.Models
     {
         [Required]
         public string Content { get; set; }
+
+        public IEnumerable<Media> Media { get; set; }
     }
 }

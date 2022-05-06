@@ -100,14 +100,14 @@ namespace GhostNetwork.Content.Api.Controllers
         public async Task<ActionResult<Publication>> CreateAsync([FromBody] CreatePublicationModel model)
         {
             var author = await userProvider.GetByIdAsync(model.AuthorId);
-            var (result, id) = await publicationService.CreateAsync(model.Content, author);
+            var (result, id) = await publicationService.CreateAsync(model.Content, author, model.Media);
 
             if (!result.Successed)
             {
                 return BadRequest(result.ToProblemDetails());
             }
 
-            return Created(Url.Action("GetById", new { id }), await publicationService.GetByIdAsync(id));
+            return Created(Url.Action("GetById", new { id }) ?? string.Empty, await publicationService.GetByIdAsync(id));
         }
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace GhostNetwork.Content.Api.Controllers
                 return NotFound();
             }
 
-            var result = await publicationService.UpdateAsync(id, model.Content);
+            var result = await publicationService.UpdateAsync(id, model.Content, model.Media);
 
             if (!result.Successed)
             {

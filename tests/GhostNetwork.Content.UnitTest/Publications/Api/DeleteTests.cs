@@ -15,10 +15,10 @@ namespace GhostNetwork.Content.UnitTest.Publications.Api
         [Test]
         public async Task Delete_NoContent()
         {
-            // Setup
+            // Assert
             var id = "some_id";
 
-            var publication = new Publication(id, It.IsAny<string>(), Enumerable.Empty<string>(), null, DateTimeOffset.Now, DateTimeOffset.Now);
+            var publication = new Publication(id, It.IsAny<string>(), Enumerable.Empty<string>(), null, DateTimeOffset.Now, DateTimeOffset.Now, Enumerable.Empty<Media>());
 
             var serviceMock = new Mock<IPublicationService>();
 
@@ -28,7 +28,7 @@ namespace GhostNetwork.Content.UnitTest.Publications.Api
 
             var client = TestServerHelper.New(collection =>
             {
-                collection.AddScoped(provider => serviceMock.Object);
+                collection.AddScoped(_ => serviceMock.Object);
             });
 
             // Act
@@ -41,7 +41,7 @@ namespace GhostNetwork.Content.UnitTest.Publications.Api
         [Test]
         public async Task Delete_NotFound()
         {
-            // Setup
+            // Assert
             var id = "some_id";
 
             var serviceMock = new Mock<IPublicationService>();
@@ -52,7 +52,7 @@ namespace GhostNetwork.Content.UnitTest.Publications.Api
 
             var client = TestServerHelper.New(collection =>
             {
-                collection.AddScoped(provider => serviceMock.Object);
+                collection.AddScoped(_ => serviceMock.Object);
             });
 
             // Act

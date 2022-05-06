@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -17,18 +18,19 @@ namespace GhostNetwork.Content.UnitTest.Publications.Api
         [Test]
         public async Task Update_NoContent()
         {
-            // Setup
+            // Assert
             var id = "some_id";
             var input = new UpdatePublicationModel
             {
-                Content = "some content"
+                Content = "some content",
+                Media = Enumerable.Empty<Media>()
             };
 
-            var publication = new Publication(id, input.Content, Enumerable.Empty<string>(), null, DateTimeOffset.Now, DateTimeOffset.Now);
+            var publication = new Publication(id, input.Content, Enumerable.Empty<string>(), new UserInfo(Guid.NewGuid(), "Name", null), DateTimeOffset.Now, DateTimeOffset.Now, input.Media);
 
             var serviceMock = new Mock<IPublicationService>();
             serviceMock
-                .Setup(s => s.UpdateAsync(id, input.Content))
+                .Setup(s => s.UpdateAsync(id, input.Content, input.Media))
                 .ReturnsAsync(DomainResult.Success());
 
             serviceMock
@@ -37,7 +39,7 @@ namespace GhostNetwork.Content.UnitTest.Publications.Api
 
             var client = TestServerHelper.New(collection =>
             {
-                collection.AddScoped(provider => serviceMock.Object);
+                collection.AddScoped(_ => serviceMock.Object);
             });
 
             // Act
@@ -50,7 +52,7 @@ namespace GhostNetwork.Content.UnitTest.Publications.Api
         [Test]
         public async Task Update_NotFound()
         {
-            // Setup
+            // Assert
             var id = "some_id";
             var input = new UpdatePublicationModel
             {
@@ -65,7 +67,7 @@ namespace GhostNetwork.Content.UnitTest.Publications.Api
 
             var client = TestServerHelper.New(collection =>
             {
-                collection.AddScoped(provider => serviceMock.Object);
+                collection.AddScoped(_ => serviceMock.Object);
             });
 
             // Act
@@ -78,7 +80,7 @@ namespace GhostNetwork.Content.UnitTest.Publications.Api
         [Test]
         public async Task Update_EmptyContent_BadRequest()
         {
-            // Setup
+            // Assert
             var id = "some_id";
             var input = new UpdatePublicationModel
             {
@@ -89,7 +91,7 @@ namespace GhostNetwork.Content.UnitTest.Publications.Api
 
             var client = TestServerHelper.New(collection =>
             {
-                collection.AddScoped(provider => serviceMock.Object);
+                collection.AddScoped(_ => serviceMock.Object);
             });
 
             // Act
@@ -102,18 +104,18 @@ namespace GhostNetwork.Content.UnitTest.Publications.Api
         [Test]
         public async Task Create_ServiceError_BadRequest()
         {
-            // Setup
+            // Assert
             var id = "some_id";
             var input = new CreatePublicationModel
             {
                 Content = "some content"
             };
 
-            var publication = new Publication(id, input.Content, Enumerable.Empty<string>(), null, DateTimeOffset.Now, DateTimeOffset.Now);
+            var publication = new Publication(id, input.Content, Enumerable.Empty<string>(), null, DateTimeOffset.Now, DateTimeOffset.Now, Enumerable.Empty<Media>());
 
             var serviceMock = new Mock<IPublicationService>();
             serviceMock
-                .Setup(s => s.UpdateAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .Setup(s => s.UpdateAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<Media>>()))
                 .ReturnsAsync(DomainResult.Error("Some error"));
 
             serviceMock
@@ -122,7 +124,7 @@ namespace GhostNetwork.Content.UnitTest.Publications.Api
 
             var client = TestServerHelper.New(collection =>
             {
-                collection.AddScoped(provider => serviceMock.Object);
+                collection.AddScoped(_ => serviceMock.Object);
             });
 
             // Act

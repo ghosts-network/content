@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -17,18 +18,19 @@ namespace GhostNetwork.Content.UnitTest.Publications.Api
         [Test]
         public async Task Create_Created()
         {
-            // Setup
+            // Assert
             var input = new CreatePublicationModel
             {
-                Content = "some content"
+                Content = "some content",
+                Media = Enumerable.Empty<Media>()
             };
 
             var id = "some_id";
-            var publication = new Publication(id, input.Content, Enumerable.Empty<string>(), null, DateTimeOffset.Now, DateTimeOffset.Now);
+            var publication = new Publication(id, input.Content, Enumerable.Empty<string>(), null, DateTimeOffset.Now, DateTimeOffset.Now, input.Media);
 
             var serviceMock = new Mock<IPublicationService>();
             serviceMock
-                .Setup(s => s.CreateAsync(It.IsAny<string>(), It.IsAny<UserInfo>()))
+                .Setup(s => s.CreateAsync(It.IsAny<string>(), It.IsAny<UserInfo>(), publication.Media))
                 .ReturnsAsync((DomainResult.Success(), id));
 
             serviceMock
@@ -37,7 +39,7 @@ namespace GhostNetwork.Content.UnitTest.Publications.Api
 
             var client = TestServerHelper.New(collection =>
             {
-                collection.AddScoped(provider => serviceMock.Object);
+                collection.AddScoped(_ => serviceMock.Object);
             });
 
             // Act
@@ -50,7 +52,7 @@ namespace GhostNetwork.Content.UnitTest.Publications.Api
         [Test]
         public async Task Create_EmptyContent_BadRequest()
         {
-            // Setup
+            // Assert
             var input = new CreatePublicationModel
             {
                 Content = null
@@ -60,7 +62,7 @@ namespace GhostNetwork.Content.UnitTest.Publications.Api
 
             var client = TestServerHelper.New(collection =>
             {
-                collection.AddScoped(provider => serviceMock.Object);
+                collection.AddScoped(_ => serviceMock.Object);
             });
 
             // Act
@@ -73,20 +75,24 @@ namespace GhostNetwork.Content.UnitTest.Publications.Api
         [Test]
         public async Task Create_ServiceError_BadRequest()
         {
-            // Setup
+            // Assert
             var input = new CreatePublicationModel
             {
-                Content = "some content"
+                Content = "some content",
+                Media = new List<Media>
+                {
+                    new (Guid.NewGuid(), "Link")
+                }
             };
 
             var serviceMock = new Mock<IPublicationService>();
             serviceMock
-                .Setup(s => s.CreateAsync(It.IsAny<string>(), It.IsAny<UserInfo>()))
+                .Setup(s => s.CreateAsync(It.IsAny<string>(), It.IsAny<UserInfo>(), It.IsAny<IEnumerable<Media>>()))
                 .ReturnsAsync((DomainResult.Error("Some error"), default));
 
             var client = TestServerHelper.New(collection =>
             {
-                collection.AddScoped(provider => serviceMock.Object);
+                collection.AddScoped(_ => serviceMock.Object);
             });
 
             // Act
