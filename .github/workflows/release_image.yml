@@ -14,11 +14,13 @@ jobs:
         with:
           dotnet-version: 6.0.100
       - name: Install dependencies
-        run: dotnet restore
+        run: dotnet restore --nologo
       - name: Build
-        run: dotnet build --configuration Release --no-restore
+        run: |
+          dotnet build --configuration Release --no-restore --nologo | tee ./log.txt
+          grep '0 Warning(s)' ./log.txt
       - name: Test
-        run: dotnet test --no-restore --verbosity normal
+        run: dotnet test --no-restore --nologo
 
   push-image:
     needs: unit-test
