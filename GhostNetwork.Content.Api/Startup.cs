@@ -10,6 +10,7 @@ using GhostNetwork.Content.MongoDb;
 using GhostNetwork.Content.Publications;
 using GhostNetwork.Content.Reactions;
 using GhostNetwork.EventBus;
+using GhostNetwork.EventBus.AzureServiceBus;
 using GhostNetwork.EventBus.RabbitMq;
 using GhostNetwork.Profiles;
 using GhostNetwork.Profiles.Api;
@@ -39,30 +40,40 @@ namespace GhostNetwork.Content.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCors();
-            services.AddSwaggerGen(options =>
+
+            if (configuration.GetValue<bool>("OPENAPI_JSON_ENABLED"))
             {
-                options.SwaggerDoc("v1", new OpenApiInfo
+                services.AddSwaggerGen(options =>
                 {
-                    Title = "GhostNetwork.Content",
-                    Description = "Http client for GhostNetwork.Content",
-                    Version = "1.0.0"
+                    options.SwaggerDoc("v1", new OpenApiInfo
+                    {
+                        Title = "GhostNetwork.Content",
+                        Description = "Http client for GhostNetwork.Content",
+                        Version = "1.0.0"
+                    });
+
+                    options.OperationFilter<OperationIdFilter>();
+                    options.OperationFilter<AddResponseHeadersFilter>();
+
+                    options.IncludeXmlComments(XmlPathProvider.XmlPath);
                 });
-
-                options.OperationFilter<OperationIdFilter>();
-                options.OperationFilter<AddResponseHeadersFilter>();
-
-                options.IncludeXmlComments(XmlPathProvider.XmlPath);
-            });
-
-            if (configuration["EVENTHUB_TYPE"]?.ToLower() == "rabbit")
-            {
-                services.AddSingleton<IEventBus>(provider => new RabbitMqEventBus(
-                    new ConnectionFactory { Uri = new Uri(configuration["RABBIT_CONNECTION"]) },
-                    new HandlerProvider(provider)));
             }
-            else
+
+            switch (configuration["EVENTHUB_TYPE"]?.ToLower())
             {
-                services.AddSingleton<IEventBus, NullEventBus>();
+                case "rabbit":
+                    services.AddSingleton<IEventBus>(provider => new RabbitMqEventBus(
+                        new ConnectionFactory { Uri = new Uri(configuration["RABBIT_CONNECTION"]) },
+                        new EventBus.RabbitMq.HandlerProvider(provider)));
+                    break;
+                case "servicebus":
+                    services.AddSingleton<IEventBus>(provider => new AzureServiceEventBus(
+                        configuration["SERVICEBUS_CONNECTION"],
+                        new EventBus.AzureServiceBus.HandlerProvider(provider)));
+                    break;
+                default:
+                    services.AddSingleton<IEventBus, NullEventBus>();
+                    break;
             }
 
             services.AddScoped(_ =>
@@ -104,12 +115,21 @@ namespace GhostNetwork.Content.Api
         {
             if (env.IsDevelopment())
             {
-                app
-                    .UseSwagger()
-                    .UseSwaggerUI(config =>
+                bool openApiEnabled = configuration.GetValue<bool>("OPENAPI_JSON_ENABLED");
+                bool swaggerUiEnabled = configuration.GetValue<bool>("SWAGGER_UI_ENABLED");
+
+                if (openApiEnabled)
+                {
+                    app.UseSwagger();
+                }
+
+                if (openApiEnabled && swaggerUiEnabled)
+                {
+                    app.UseSwaggerUI(config =>
                     {
                         config.SwaggerEndpoint("/swagger/v1/swagger.json", "Relations.API V1");
                     });
+                }
 
                 app.UseCors(builder => builder.AllowAnyHeader()
                     .AllowAnyMethod()
