@@ -79,7 +79,7 @@ namespace GhostNetwork.Content.Api.Controllers
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [SwaggerResponseHeader(StatusCodes.Status200OK, "X-TotalCount", "Number", "Total count of publications with applied filters")]
-        [SwaggerResponseHeader(StatusCodes.Status200OK, "LastId", "String", "The latest publication id in sequence")]
+        [SwaggerResponseHeader(StatusCodes.Status200OK, "X-Cursor", "String", "Cursor for next page")]
         public async Task<ActionResult<IEnumerable<Publication>>> SearchAsync(
             [FromQuery, Range(0, int.MaxValue)] int skip,
             [FromQuery] string cursor,
