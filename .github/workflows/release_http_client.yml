@@ -20,6 +20,8 @@ jobs:
         run: npm install @openapitools/openapi-generator-cli
       - name: Run service instance
         run: docker-compose up -d
+        env:
+          OPENAPI_JSON_ENABLED: "true"
       - name: generate-package
         run: |
           npx @openapitools/openapi-generator-cli generate -i http://localhost:5300/swagger/v1/swagger.json \
