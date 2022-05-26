@@ -70,7 +70,7 @@ namespace GhostNetwork.Content.Api.Controllers
         /// Search publications
         /// </summary>
         /// <param name="skip">Skip publications up to a specified position</param>
-        /// <param name="lastPublicationId">Skip publications up to a specified position by latest publication id</param>
+        /// <param name="cursor">Skip publications up to a specified position</param>
         /// <param name="take">Take publications up to a specified position</param>
         /// <param name="tags">Filters publications by tags</param>
         /// <param name="order">Order by creation date</param>
@@ -81,12 +81,13 @@ namespace GhostNetwork.Content.Api.Controllers
         [SwaggerResponseHeader(StatusCodes.Status200OK, "LastId", "String", "The latest publication id in sequence")]
         public async Task<ActionResult<IEnumerable<Publication>>> SearchAsync(
             [FromQuery, Range(0, int.MaxValue)] int skip,
-            [FromQuery] string lastPublicationId,
+            [FromQuery] string cursor,
             [FromQuery, Range(1, 100)] int take,
             [FromQuery] List<string> tags,
             [FromQuery] Ordering order = Ordering.Asc)
         {
-            var (list, totalCount, lastId) = await publicationService.SearchAsync(skip, lastPublicationId, take, tags, order);
+            var pagination = new Pagination(cursor, take, skip);
+            var (list, totalCount, lastId) = await publicationService.SearchAsync(tags, order, pagination);
             Response.Headers.Add("X-TotalCount", totalCount.ToString());
             Response.Headers.Add("LastId", lastId);
 

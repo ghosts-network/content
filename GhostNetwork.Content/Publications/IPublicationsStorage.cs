@@ -10,7 +10,7 @@ namespace GhostNetwork.Content.Publications
 
         Task<string> InsertOneAsync(Publication publication);
 
-        Task<(IEnumerable<Publication>, long, string)> FindManyAsync(int skip, string lastPublicationId, int take, IEnumerable<string> tags, Ordering order);
+        Task<(IEnumerable<Publication>, long, string)> FindManyAsync(IEnumerable<string> tags, Ordering order, Pagination pagination);
 
         Task UpdateOneAsync(Publication publication);
 

@@ -46,16 +46,16 @@ namespace GhostNetwork.Content.MongoDb
             return entity.Id.ToString();
         }
 
-        public async Task<(IEnumerable<Publication>, long, string)> FindManyAsync(int skip, string lastPublicationId, int take, IEnumerable<string> tags, Ordering order)
+        public async Task<(IEnumerable<Publication>, long, string)> FindManyAsync(IEnumerable<string> tags, Ordering order, Pagination pagination)
         {
             var filter = Builders<PublicationEntity>.Filter.Empty;
 
-            if (lastPublicationId != null)
+            if (pagination.Cursor != null)
             {
                 filter = order switch
                 {
-                    Ordering.Desc => Builders<PublicationEntity>.Filter.Lt(x => x.Id, ObjectId.Parse(lastPublicationId)),
-                    _ => Builders<PublicationEntity>.Filter.Gt(x => x.Id, ObjectId.Parse(lastPublicationId))
+                    Ordering.Desc => Builders<PublicationEntity>.Filter.Lt(x => x.Id, ObjectId.Parse(pagination.Cursor)),
+                    _ => Builders<PublicationEntity>.Filter.Gt(x => x.Id, ObjectId.Parse(pagination.Cursor))
                 };
             }
 
@@ -71,8 +71,8 @@ namespace GhostNetwork.Content.MongoDb
 
             var entities = await context.Publications.Find(filter)
                 .Sort(sorting)
-                .Skip(lastPublicationId == null ? skip : 0)
-                .Limit(take)
+                .Skip(pagination.Cursor == null ? pagination.Skip : 0)
+                .Limit(pagination.Limit)
                 .ToListAsync();
 
             return (entities.Select(ToDomain), totalCount, entities.Select(x => x.Id).LastOrDefault().ToString());
