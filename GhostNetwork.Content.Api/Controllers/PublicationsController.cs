@@ -70,7 +70,7 @@ namespace GhostNetwork.Content.Api.Controllers
         /// Search publications
         /// </summary>
         /// <param name="skip">Skip publications up to a specified position</param>
-        /// <param name="cursor">Skip publications up to a specified position</param>
+        /// <param name="cursor">Skip publications up to a specified id</param>
         /// <param name="take">Take publications up to a specified position</param>
         /// <param name="tags">Filters publications by tags</param>
         /// <param name="order">Order by creation date</param>
