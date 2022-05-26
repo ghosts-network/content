@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 using GhostNetwork.Content.Api.Helpers;
 using GhostNetwork.Content.Api.Models;
@@ -87,9 +88,13 @@ namespace GhostNetwork.Content.Api.Controllers
             [FromQuery] Ordering order = Ordering.Asc)
         {
             var pagination = new Pagination(cursor, take, skip);
-            var (list, totalCount, lastId) = await publicationService.SearchAsync(tags, order, pagination);
+            var (list, totalCount) = await publicationService.SearchAsync(tags, order, pagination);
             Response.Headers.Add("X-TotalCount", totalCount.ToString());
-            Response.Headers.Add("LastId", lastId);
+
+            if (list.Any())
+            {
+                Response.Headers.Add("X-Cursor", list.Last().Id);
+            }
 
             return Ok(list);
         }

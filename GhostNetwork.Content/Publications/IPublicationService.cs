@@ -11,7 +11,7 @@ namespace GhostNetwork.Content.Publications
     {
         Task<Publication> GetByIdAsync(string id);
 
-        Task<(IEnumerable<Publication>, long, string)> SearchAsync(IEnumerable<string> tags, Ordering order, Pagination pagination);
+        Task<(IReadOnlyCollection<Publication>, long)> SearchAsync(IEnumerable<string> tags, Ordering order, Pagination pagination);
 
         Task<(DomainResult, string)> CreateAsync(string text, UserInfo author);
 
@@ -46,7 +46,7 @@ namespace GhostNetwork.Content.Publications
             return await publicationStorage.FindOneByIdAsync(id);
         }
 
-        public async Task<(IEnumerable<Publication>, long, string)> SearchAsync(IEnumerable<string> tags, Ordering order, Pagination pagination)
+        public async Task<(IReadOnlyCollection<Publication>, long)> SearchAsync(IEnumerable<string> tags, Ordering order, Pagination pagination)
         {
             return await publicationStorage.FindManyAsync(tags, order, pagination);
         }

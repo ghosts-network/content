@@ -46,7 +46,7 @@ namespace GhostNetwork.Content.MongoDb
             return entity.Id.ToString();
         }
 
-        public async Task<(IEnumerable<Publication>, long, string)> FindManyAsync(IEnumerable<string> tags, Ordering order, Pagination pagination)
+        public async Task<(IReadOnlyCollection<Publication>, long)> FindManyAsync(IEnumerable<string> tags, Ordering order, Pagination pagination)
         {
             var filter = Builders<PublicationEntity>.Filter.Empty;
 
@@ -75,7 +75,7 @@ namespace GhostNetwork.Content.MongoDb
                 .Limit(pagination.Limit)
                 .ToListAsync();
 
-            return (entities.Select(ToDomain), totalCount, entities.Select(x => x.Id).LastOrDefault().ToString());
+            return (entities.Select(ToDomain).ToList(), totalCount);
         }
 
         public async Task<(IEnumerable<Publication>, long)> FindManyByAuthorAsync(int skip, int take, Guid authorId, Ordering order)
