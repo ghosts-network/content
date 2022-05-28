@@ -47,7 +47,6 @@ namespace GhostNetwork.Content.Api.Controllers
         /// <summary>
         /// Search publication by authorId
         /// </summary>
-        /// <param name="skip">Skip publications up to a specified position</param>
         /// <param name="cursor">Skip publications up to a specified id</param>
         /// <param name="take">Take publications up to a specified position</param>
         /// <param name="authorId">Filters publications by authorId</param>
@@ -55,18 +54,15 @@ namespace GhostNetwork.Content.Api.Controllers
         /// <returns>Filtered sequence of publications</returns>
         [HttpGet("publications/{authorId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [SwaggerResponseHeader(StatusCodes.Status200OK, "X-TotalCount", "Number", "Total number of author publications")]
         [SwaggerResponseHeader(StatusCodes.Status200OK, "X-Cursor", "String", "Cursor for next page")]
         public async Task<ActionResult<IEnumerable<Publication>>> SearchByAuthorAsync(
-            [FromQuery, Range(0, int.MaxValue)] int skip,
             [FromQuery] string cursor,
             [FromQuery, Range(1, 100)]int take,
             [FromRoute] Guid authorId,
             [FromQuery] Ordering order = Ordering.Asc)
         {
-            var pagination = new Pagination(cursor, take, skip);
-            var (publications, totalCount) = await publicationService.SearchByAuthorAsync(authorId, order, pagination);
-            Response.Headers.Add("X-TotalCount", totalCount.ToString());
+            var pagination = new Pagination(cursor, take);
+            var publications = await publicationService.SearchByAuthorAsync(authorId, order, pagination);
 
             if (publications.Any())
             {
@@ -79,7 +75,6 @@ namespace GhostNetwork.Content.Api.Controllers
         /// <summary>
         /// Search publications
         /// </summary>
-        /// <param name="skip">Skip publications up to a specified position</param>
         /// <param name="cursor">Skip publications up to a specified id</param>
         /// <param name="take">Take publications up to a specified position</param>
         /// <param name="tags">Filters publications by tags</param>
@@ -87,18 +82,15 @@ namespace GhostNetwork.Content.Api.Controllers
         /// <returns>Filtered sequence of publications</returns>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [SwaggerResponseHeader(StatusCodes.Status200OK, "X-TotalCount", "Number", "Total count of publications with applied filters")]
         [SwaggerResponseHeader(StatusCodes.Status200OK, "X-Cursor", "String", "Cursor for next page")]
         public async Task<ActionResult<IEnumerable<Publication>>> SearchAsync(
-            [FromQuery, Range(0, int.MaxValue)] int skip,
             [FromQuery] string cursor,
             [FromQuery, Range(1, 100)] int take,
             [FromQuery] List<string> tags,
             [FromQuery] Ordering order = Ordering.Asc)
         {
-            var pagination = new Pagination(cursor, take, skip);
-            var (list, totalCount) = await publicationService.SearchAsync(tags, order, pagination);
-            Response.Headers.Add("X-TotalCount", totalCount.ToString());
+            var pagination = new Pagination(cursor, take);
+            var list = await publicationService.SearchAsync(tags, order, pagination);
 
             if (list.Any())
             {

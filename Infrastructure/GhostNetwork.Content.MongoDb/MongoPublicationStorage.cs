@@ -46,7 +46,7 @@ namespace GhostNetwork.Content.MongoDb
             return entity.Id.ToString();
         }
 
-        public async Task<(IReadOnlyCollection<Publication>, long)> FindManyAsync(IEnumerable<string> tags, Ordering order, Pagination pagination)
+        public async Task<IReadOnlyCollection<Publication>> FindManyAsync(IEnumerable<string> tags, Ordering order, Pagination pagination)
         {
             var filter = Builders<PublicationEntity>.Filter.Empty;
 
@@ -59,10 +59,6 @@ namespace GhostNetwork.Content.MongoDb
                 };
             }
 
-            var totalCount = await context.Publications
-                .Find(filter)
-                .CountDocumentsAsync();
-
             var sorting = order switch
             {
                 Ordering.Desc => Builders<PublicationEntity>.Sort.Descending(x => x.CreateOn),
@@ -71,14 +67,13 @@ namespace GhostNetwork.Content.MongoDb
 
             var entities = await context.Publications.Find(filter)
                 .Sort(sorting)
-                .Skip(pagination.Cursor == null ? pagination.Skip : 0)
                 .Limit(pagination.Limit)
                 .ToListAsync();
 
-            return (entities.Select(ToDomain).ToList(), totalCount);
+            return entities.Select(ToDomain).ToList();
         }
 
-        public async Task<(IReadOnlyCollection<Publication>, long)> FindManyByAuthorAsync(
+        public async Task<IReadOnlyCollection<Publication>> FindManyByAuthorAsync(
             Guid authorId,
             Ordering order,
             Pagination pagination)
@@ -96,10 +91,6 @@ namespace GhostNetwork.Content.MongoDb
 
             filter &= Builders<PublicationEntity>.Filter.Where(x => x.Author.Id == authorId);
 
-            var totalCount = await context.Publications
-                .Find(filter)
-                .CountDocumentsAsync();
-
             var sorting = order switch
             {
                 Ordering.Desc => Builders<PublicationEntity>.Sort.Descending(x => x.CreateOn),
@@ -109,11 +100,10 @@ namespace GhostNetwork.Content.MongoDb
             var entities = await context.Publications
                 .Find(filter)
                 .Sort(sorting)
-                .Skip(pagination.Cursor == null ? pagination.Skip : 0)
                 .Limit(pagination.Limit)
                 .ToListAsync();
 
-            return (entities.Select(ToDomain).ToList(), totalCount);
+            return entities.Select(ToDomain).ToList();
         }
 
         public async Task UpdateAuthorAsync(Guid authorId, string fullName, string avatarUrl)
