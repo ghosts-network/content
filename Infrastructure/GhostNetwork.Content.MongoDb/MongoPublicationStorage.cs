@@ -78,9 +78,23 @@ namespace GhostNetwork.Content.MongoDb
             return (entities.Select(ToDomain).ToList(), totalCount);
         }
 
-        public async Task<(IEnumerable<Publication>, long)> FindManyByAuthorAsync(int skip, int take, Guid authorId, Ordering order)
+        public async Task<(IReadOnlyCollection<Publication>, long)> FindManyByAuthorAsync(
+            Guid authorId,
+            Ordering order,
+            Pagination pagination)
         {
-            var filter = Builders<PublicationEntity>.Filter.Where(x => x.Author.Id == authorId);
+            var filter = Builders<PublicationEntity>.Filter.Empty;
+
+            if (pagination.Cursor != null)
+            {
+                filter = order switch
+                {
+                    Ordering.Desc => Builders<PublicationEntity>.Filter.Lt(x => x.Id, ObjectId.Parse(pagination.Cursor)),
+                    _ => Builders<PublicationEntity>.Filter.Gt(x => x.Id, ObjectId.Parse(pagination.Cursor))
+                };
+            }
+
+            filter &= Builders<PublicationEntity>.Filter.Where(x => x.Author.Id == authorId);
 
             var totalCount = await context.Publications
                 .Find(filter)
@@ -95,11 +109,11 @@ namespace GhostNetwork.Content.MongoDb
             var entities = await context.Publications
                 .Find(filter)
                 .Sort(sorting)
-                .Skip(skip)
-                .Limit(take)
+                .Skip(pagination.Cursor == null ? pagination.Skip : 0)
+                .Limit(pagination.Limit)
                 .ToListAsync();
 
-            return (entities.Select(ToDomain), totalCount);
+            return (entities.Select(ToDomain).ToList(), totalCount);
         }
 
         public async Task UpdateAuthorAsync(Guid authorId, string fullName, string avatarUrl)

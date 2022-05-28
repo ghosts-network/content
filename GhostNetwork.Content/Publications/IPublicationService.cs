@@ -19,7 +19,7 @@ namespace GhostNetwork.Content.Publications
 
         Task DeleteAsync(string id);
 
-        Task<(IEnumerable<Publication>, long)> SearchByAuthor(int skip, int take, Guid authorId, Ordering order);
+        Task<(IReadOnlyCollection<Publication>, long)> SearchByAuthorAsync(Guid authorId, Ordering order, Pagination pagination);
     }
 
     public class PublicationService : IPublicationService
@@ -97,9 +97,12 @@ namespace GhostNetwork.Content.Publications
             await eventBus.PublishAsync(new DeletedEvent(publication.Id, publication.Author));
         }
 
-        public async Task<(IEnumerable<Publication>, long)> SearchByAuthor(int skip, int take, Guid authorId, Ordering order)
+        public Task<(IReadOnlyCollection<Publication>, long)> SearchByAuthorAsync(
+            Guid authorId,
+            Ordering order,
+            Pagination pagination)
         {
-            return await publicationStorage.FindManyByAuthorAsync(skip, take, authorId, order);
+            return publicationStorage.FindManyByAuthorAsync(authorId, order, pagination);
         }
     }
 }

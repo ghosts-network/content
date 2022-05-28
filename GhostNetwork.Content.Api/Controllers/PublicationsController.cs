@@ -48,6 +48,7 @@ namespace GhostNetwork.Content.Api.Controllers
         /// Search publication by authorId
         /// </summary>
         /// <param name="skip">Skip publications up to a specified position</param>
+        /// <param name="cursor">Skip publications up to a specified id</param>
         /// <param name="take">Take publications up to a specified position</param>
         /// <param name="authorId">Filters publications by authorId</param>
         /// <param name="order">Order by creation date</param>
@@ -55,14 +56,22 @@ namespace GhostNetwork.Content.Api.Controllers
         [HttpGet("publications/{authorId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [SwaggerResponseHeader(StatusCodes.Status200OK, "X-TotalCount", "Number", "Total number of author publications")]
+        [SwaggerResponseHeader(StatusCodes.Status200OK, "X-Cursor", "String", "Cursor for next page")]
         public async Task<ActionResult<IEnumerable<Publication>>> SearchByAuthorAsync(
             [FromQuery, Range(0, int.MaxValue)] int skip,
+            [FromQuery] string cursor,
             [FromQuery, Range(1, 100)]int take,
             [FromRoute] Guid authorId,
             [FromQuery] Ordering order = Ordering.Asc)
         {
-            var (publications, totalCount) = await publicationService.SearchByAuthor(skip, take, authorId, order);
+            var pagination = new Pagination(cursor, take, skip);
+            var (publications, totalCount) = await publicationService.SearchByAuthorAsync(authorId, order, pagination);
             Response.Headers.Add("X-TotalCount", totalCount.ToString());
+
+            if (publications.Any())
+            {
+                Response.Headers.Add("X-Cursor", publications.Last().Id);
+            }
 
             return Ok(publications);
         }
@@ -117,7 +126,7 @@ namespace GhostNetwork.Content.Api.Controllers
                 return BadRequest(result.ToProblemDetails());
             }
 
-            return Created(Url.Action("GetById", new { id }), await publicationService.GetByIdAsync(id));
+            return Created(Url.Action("GetById", new { id })!, await publicationService.GetByIdAsync(id));
         }
 
         /// <summary>
