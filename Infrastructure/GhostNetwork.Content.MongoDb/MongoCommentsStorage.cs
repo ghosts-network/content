@@ -78,15 +78,6 @@ namespace GhostNetwork.Content.MongoDb
         {
             var filter = Builders<CommentEntity>.Filter.Eq(x => x.Key, key);
 
-            if (cursor != null)
-            {
-                filter &= order switch
-                {
-                    Ordering.Desc => Builders<CommentEntity>.Filter.Lt(x => x.Id, ObjectId.Parse(cursor)),
-                    _ => Builders<CommentEntity>.Filter.Gt(x => x.Id, ObjectId.Parse(cursor))
-                };
-            }
-
             var sorting = order switch
             {
                 Ordering.Desc => Builders<CommentEntity>.Sort.Descending(x => x.CreateOn),
@@ -96,6 +87,15 @@ namespace GhostNetwork.Content.MongoDb
             var totalCount = await context.Comments
                 .Find(filter)
                 .CountDocumentsAsync();
+
+            if (cursor != null)
+            {
+                filter &= order switch
+                {
+                    Ordering.Desc => Builders<CommentEntity>.Filter.Lt(x => x.Id, ObjectId.Parse(cursor)),
+                    _ => Builders<CommentEntity>.Filter.Gt(x => x.Id, ObjectId.Parse(cursor))
+                };
+            }
 
             var entities = await context.Comments
                 .Find(filter)
