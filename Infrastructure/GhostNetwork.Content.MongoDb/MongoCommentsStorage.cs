@@ -80,7 +80,7 @@ namespace GhostNetwork.Content.MongoDb
 
             if (cursor != null)
             {
-                filter = order switch
+                filter &= order switch
                 {
                     Ordering.Desc => Builders<CommentEntity>.Filter.Lt(x => x.Id, ObjectId.Parse(cursor)),
                     _ => Builders<CommentEntity>.Filter.Gt(x => x.Id, ObjectId.Parse(cursor))
