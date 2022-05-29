@@ -75,7 +75,7 @@ namespace GhostNetwork.Content.Api.Controllers
             [FromQuery, Range(0, 100)] int take = 10,
             [FromQuery] Ordering order = Ordering.Asc)
         {
-            var (comments, totalCount) = await commentService.SearchAsync(key, skip, take, cursor, Ordering.Desc);
+            var (comments, totalCount) = await commentService.SearchAsync(key, skip, take, cursor, order);
             Response.Headers.Add("X-TotalCount", totalCount.ToString());
 
             if (comments.Any())
