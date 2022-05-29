@@ -21,8 +21,10 @@ namespace GhostNetwork.Content.UnitTest.Comments.Api
             const string publicationId = "someId";
             const int skip = 0;
             const int take = 5;
+            const string cursor = null;
+            const Ordering order = Ordering.Asc;
 
-            int commentId = 1;
+            var commentId = 1;
 
             var author = new UserInfo(Guid.NewGuid(), "SomeName", null);
 
@@ -34,7 +36,7 @@ namespace GhostNetwork.Content.UnitTest.Comments.Api
             };
 
             var serviceMock = new Mock<ICommentsService>();
-            serviceMock.Setup(s => s.SearchAsync(publicationId, skip, take)).ReturnsAsync((comments, comments.Count()));
+            serviceMock.Setup(s => s.SearchAsync(publicationId, skip, take, cursor, order)).ReturnsAsync((comments, comments.Count()));
 
             var client = TestServerHelper.New(collection =>
             {

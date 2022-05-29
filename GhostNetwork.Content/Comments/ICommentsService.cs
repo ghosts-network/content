@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Domain;
 using Domain.Validation;
@@ -10,13 +9,13 @@ namespace GhostNetwork.Content.Comments
     {
         Task<Comment> GetByIdAsync(string id);
 
-        Task<(IEnumerable<Comment>, long)> SearchAsync(string key, int skip, int take);
+        Task<(IReadOnlyCollection<Comment>, long)> SearchAsync(string key, int skip, int take, string cursor, Ordering order);
 
         Task<(DomainResult, string)> CreateAsync(string key, string text, string replyCommentId, UserInfo author);
 
         Task<DomainResult> UpdateAsync(string commentId, string content);
 
-        Task<Dictionary<string, FeaturedInfo>> SearchFeaturedAsync(IEnumerable<string> keys);
+        Task<Dictionary<string, FeaturedInfo>> SearchFeaturedAsync(IReadOnlyCollection<string> keys);
 
         Task DeleteAsync(string id);
 
@@ -41,12 +40,12 @@ namespace GhostNetwork.Content.Comments
             return commentStorage.FindOneByIdAsync(id);
         }
 
-        public Task<(IEnumerable<Comment>, long)> SearchAsync(string key, int skip, int take)
+        public Task<(IReadOnlyCollection<Comment>, long)> SearchAsync(string key, int skip, int take, string cursor, Ordering order)
         {
-            return commentStorage.FindManyAsync(key, skip, take);
+            return commentStorage.FindManyAsync(key, skip, take, cursor, order);
         }
 
-        public Task<Dictionary<string, FeaturedInfo>> SearchFeaturedAsync(IEnumerable<string> keys)
+        public Task<Dictionary<string, FeaturedInfo>> SearchFeaturedAsync(IReadOnlyCollection<string> keys)
         {
             return commentStorage.FindFeaturedAsync(keys);
         }
