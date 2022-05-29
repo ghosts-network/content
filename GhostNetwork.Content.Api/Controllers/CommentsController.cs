@@ -61,7 +61,7 @@ namespace GhostNetwork.Content.Api.Controllers
         /// </summary>
         /// <param name="key">Comment key</param>
         /// <param name="skip">Skip comments up to a specified position</param>
-        /// <param name="cursor">Skip comments up to a specified position</param>
+        /// <param name="cursor">Skip comments up to a specified id</param>
         /// <param name="take">Take comments up to a specified position</param>
         /// <param name="order">Order by creation date</param>
         /// <returns>Comments related to key</returns>
