@@ -9,7 +9,7 @@ namespace GhostNetwork.Content.Reactions
 
         Task<Reaction> GetReactionByAuthorAsync(string key, string author);
 
-        Task<IEnumerable<Reaction>> GetReactionsByAuthorAsync(string author, IEnumerable<string> keys);
+        Task<IEnumerable<Reaction>> GetReactionsByAuthorAsync(string author, IReadOnlyCollection<string> keys);
 
         Task<IDictionary<string, Dictionary<string, int>>> GetGroupedReactionsAsync(IEnumerable<string> keys);
 

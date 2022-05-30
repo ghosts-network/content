@@ -145,6 +145,12 @@ namespace GhostNetwork.Content.Api
                 var eventBus = app.ApplicationServices.GetRequiredService<IEventBus>();
                 eventBus.Subscribe<Profiles.UpdatedEvent, ProfileUpdatedHandler>();
             });
+
+            hostApplicationLifetime.ApplicationStarted.Register(() =>
+            {
+                var mongoDb = app.ApplicationServices.GetRequiredService<MongoDbContext>();
+                mongoDb.ConfigureAsync().GetAwaiter().GetResult();
+            });
         }
 
         private IValidator<Publication> BuildPublicationValidator(IServiceProvider provider)
