@@ -12,7 +12,6 @@ using GhostNetwork.Content.Reactions;
 using GhostNetwork.EventBus;
 using GhostNetwork.EventBus.AzureServiceBus;
 using GhostNetwork.EventBus.RabbitMq;
-using GhostNetwork.Profiles;
 using GhostNetwork.Profiles.Api;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -148,7 +147,8 @@ namespace GhostNetwork.Content.Api
 
             hostApplicationLifetime.ApplicationStarted.Register(() =>
             {
-                var mongoDb = app.ApplicationServices.GetRequiredService<MongoDbContext>();
+                var scope = app.ApplicationServices.CreateScope();
+                var mongoDb = scope.ServiceProvider.GetRequiredService<MongoDbContext>();
                 mongoDb.ConfigureAsync().GetAwaiter().GetResult();
             });
         }
