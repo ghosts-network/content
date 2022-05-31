@@ -11,7 +11,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="GhostNetwork.EventBus.AzureServiceBus" Version="1.0.2" />
+      <PackageReference Include="GhostNetwork.EventBus.AzureServiceBus" Version="1.0.3" />
       <PackageReference Include="GhostNetwork.EventBus.RabbitMq" Version="1.1.0" />
       <PackageReference Include="GhostNetwork.Profiles" Version="1.2.1" />
       <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.354">
