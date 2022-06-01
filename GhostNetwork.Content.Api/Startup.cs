@@ -77,9 +77,7 @@ namespace GhostNetwork.Content.Api
 
             services.AddScoped(_ =>
             {
-                // TODO: Remove MONGO_ADDRESS usage after update of all compose files
-                var connectionString = configuration["MONGO_CONNECTION"] ??
-                                       $"mongodb://{configuration["MONGO_ADDRESS"]}/gpublications";
+                var connectionString = configuration["MONGO_CONNECTION"];
                 var mongoUrl = MongoUrl.Create(connectionString);
                 var client = new MongoClient(mongoUrl);
                 return new MongoDbContext(client.GetDatabase(mongoUrl.DatabaseName ?? DefaultDbName));
@@ -167,7 +165,7 @@ namespace GhostNetwork.Content.Api
                 validators.Add(new MinLengthValidator(minLength.Value));
             }
 
-            var timeLimit = configuration.GetValue<int?>("TIME_LIMIT_TO_UPDATE_PUBLICATIONS");
+            var timeLimit = configuration.GetValue<int?>("PUBLICATION_UPDATE_TIME_LIMIT");
             if (timeLimit.HasValue)
             {
                 validators.Add(new TimeLimitToUpdateValidator(TimeSpan.FromSeconds(timeLimit.Value)));
@@ -191,7 +189,7 @@ namespace GhostNetwork.Content.Api
                 validators.Add(new MinLengthValidator(minLength.Value));
             }
 
-            var timeLimit = configuration.GetValue<int?>("TIME_LIMIT_TO_UPDATE_COMMENTS");
+            var timeLimit = configuration.GetValue<int?>("COMMENT_UPDATE_TIME_LIMIT");
             if (timeLimit.HasValue)
             {
                 validators.Add(new TimeLimitToUpdateValidator(TimeSpan.FromSeconds(timeLimit.Value)));
