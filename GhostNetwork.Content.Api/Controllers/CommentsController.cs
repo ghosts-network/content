@@ -96,7 +96,9 @@ namespace GhostNetwork.Content.Api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Comment>> CreateAsync([FromBody] CreateCommentModel model)
         {
-            var author = await userProvider.GetByIdAsync(model.AuthorId);
+#pragma warning disable CS0612
+            var author = model.Author ?? await userProvider.GetByIdAsync(model.AuthorId);
+#pragma warning restore CS0612
 
             var (domainResult, id) = await commentService
                 .CreateAsync(model.Key, model.Content, model.ReplyCommentId, author);
