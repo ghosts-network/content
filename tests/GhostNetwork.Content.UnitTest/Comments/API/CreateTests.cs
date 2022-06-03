@@ -29,27 +29,21 @@ namespace GhostNetwork.Content.UnitTest.Comments.Api
                 Key = publicationId,
                 Content = content,
                 ReplyCommentId = null,
-                AuthorId = authorId
+                Author = author
             };
 
             var commentServiceMock = new Mock<ICommentsService>();
             commentServiceMock
-                .Setup(s => s.CreateAsync(publicationId, content, null, author))
+                .Setup(s => s.CreateAsync(publicationId, content, null, It.IsAny<UserInfo>()))
                 .ReturnsAsync((DomainResult.Success(), "commentId"));
 
             commentServiceMock
                 .Setup(s => s.GetByIdAsync(commentId))
                 .ReturnsAsync(new Comment(commentId, content, DateTimeOffset.Now, publicationId, null, author));
 
-            var userProvideMock = new Mock<IUserProvider>();
-            userProvideMock
-                .Setup(s => s.GetByIdAsync(model.AuthorId))
-                .ReturnsAsync(author);
-
             var client = TestServerHelper.New(collection =>
             {
                 collection.AddScoped(_ => commentServiceMock.Object);
-                collection.AddScoped(_ => userProvideMock.Object);
             });
 
             // Act
@@ -74,23 +68,17 @@ namespace GhostNetwork.Content.UnitTest.Comments.Api
                 Key = publicationId,
                 Content = content,
                 ReplyCommentId = null,
-                AuthorId = authorId
+                Author = author
             };
 
             var serviceMock = new Mock<ICommentsService>();
             serviceMock
-                .Setup(s => s.CreateAsync(publicationId, content, null, author))
+                .Setup(s => s.CreateAsync(publicationId, content, null, It.IsAny<UserInfo>()))
                 .ReturnsAsync((DomainResult.Error("somethig went wrong"), null));
-
-            var userProvideMock = new Mock<IUserProvider>();
-            userProvideMock
-                .Setup(s => s.GetByIdAsync(model.AuthorId))
-                .ReturnsAsync(author);
 
             var client = TestServerHelper.New(collection =>
             {
                 collection.AddScoped(_ => serviceMock.Object);
-                collection.AddScoped(_ => userProvideMock.Object);
             });
 
             // Act

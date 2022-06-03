@@ -12,6 +12,9 @@ namespace GhostNetwork.Content.Api.Models
 
         public string ReplyCommentId { get; set; }
 
+        [Obsolete]
         public string AuthorId { get; set; }
+
+        public UserInfo Author { get; set; }
     }
 }

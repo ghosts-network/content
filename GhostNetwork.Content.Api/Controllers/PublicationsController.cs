@@ -110,7 +110,9 @@ namespace GhostNetwork.Content.Api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Publication>> CreateAsync([FromBody] CreatePublicationModel model)
         {
-            var author = await userProvider.GetByIdAsync(model.AuthorId);
+#pragma warning disable CS0612
+            var author = model.Author ?? await userProvider.GetByIdAsync(model.AuthorId);
+#pragma warning restore CS0612
             var (result, id) = await publicationService.CreateAsync(model.Content, author);
 
             if (!result.Successed)
