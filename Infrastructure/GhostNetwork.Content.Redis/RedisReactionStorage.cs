@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -26,27 +25,31 @@ public class RedisReactionStorage : IReactionStorage
 
     public async Task<Reaction?> GetReactionByAuthorAsync(string key, string author)
     {
-        var result = await db.HashGetAsync("u:" + key, author);
+        var result = await db.HashGetAsync($"u:{key}", author);
         return result.HasValue ? new Reaction(key, (string) result) : null;
     }
 
-    public Task<IEnumerable<Reaction>> GetReactionsByAuthorAsync(string author, IReadOnlyCollection<string> keys)
+    public async Task<IEnumerable<Reaction>> GetReactionsByAuthorAsync(string author, IReadOnlyCollection<string> keys)
     {
+        var result = new List<Reaction>(keys.Count);
         foreach (var key in keys)
         {
-            db.HashGetAsync("u:" + key, author);
+            var reaction = await GetReactionByAuthorAsync(key, author);
+            result.Add(new Reaction(key, reaction?.Type));
         }
-        throw new NotImplementedException();
+
+        return result;
     }
 
-    public Task<IDictionary<string, Dictionary<string, int>>> GetGroupedReactionsAsync(IEnumerable<string> keys)
+    public async Task<IDictionary<string, Dictionary<string, int>>> GetGroupedReactionsAsync(IEnumerable<string> keys)
     {
-        throw new NotImplementedException();
-        // var result = await db.StringGetAsync(keys.Select(k => new RedisKey(k)).ToArray());
-        //
-        // return new Dictionary<string, Dictionary<string, int>>();
-        // return result?.ToDictionary(x => (string)x.Name, x => (int)x.Value)
-        //        ?? new Dictionary<string, int>();
+        var dict = new Dictionary<string, Dictionary<string, int>>(keys.Count());
+        foreach (var key in keys)
+        {
+            dict[key] = (Dictionary<string, int>) await GetStats(key);
+        }
+
+        return dict;
     }
 
     public async Task UpsertAsync(string key, string author, string type)
@@ -81,6 +84,6 @@ public class RedisReactionStorage : IReactionStorage
     public async Task DeleteAsync(string key)
     {
         await db.KeyDeleteAsync(key);
-        await db.KeyDeleteAsync("u:" + key);
+        await db.KeyDeleteAsync($"u:{key}");
     }
 }
