@@ -85,7 +85,7 @@ namespace GhostNetwork.Content.Api
                 return new MongoDbContext(client.GetDatabase(mongoUrl.DatabaseName ?? DefaultDbName));
             });
 
-            services.AddSingleton(ConnectionMultiplexer.Connect("localhost"));
+            services.AddSingleton(ConnectionMultiplexer.Connect(configuration["REDIS_CONNECTION"]));
             services.AddScoped(provider =>
             {
                 var redisConnection = provider.GetRequiredService<ConnectionMultiplexer>();
@@ -99,8 +99,15 @@ namespace GhostNetwork.Content.Api
             services.AddScoped<IHashTagsFetcher, DefaultHashTagsFetcher>();
             services.AddScoped(_ => new ForbiddenWordsValidator(Enumerable.Empty<string>()));
 
-            // services.AddScoped<IReactionStorage, MongoReactionStorage>();
-            services.AddScoped<IReactionStorage, RedisReactionStorage>();
+            switch (configuration["REACTION_STORAGE_TYPE"])
+            {
+                case "redis":
+                    services.AddScoped<IReactionStorage, RedisReactionStorage>();
+                    break;
+                default:
+                    services.AddScoped<IReactionStorage, MongoReactionStorage>();
+                    break;
+            }
 
             services.AddScoped<IPublicationsStorage, MongoPublicationStorage>();
             services.AddScoped<IPublicationService, PublicationService>();
