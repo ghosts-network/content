@@ -11,7 +11,7 @@ namespace GhostNetwork.Content.Publications
     {
         Task<Publication> GetByIdAsync(string id);
 
-        Task<(IEnumerable<Publication>, long)> SearchAsync(int skip, int take, IEnumerable<string> tags, Ordering order);
+        Task<IReadOnlyCollection<Publication>> SearchAsync(IEnumerable<string> tags, Ordering order, Pagination pagination);
 
         Task<(DomainResult, string)> CreateAsync(string text, UserInfo author, IEnumerable<Media> media);
 
@@ -19,7 +19,7 @@ namespace GhostNetwork.Content.Publications
 
         Task DeleteAsync(string id);
 
-        Task<(IEnumerable<Publication>, long)> SearchByAuthor(int skip, int take, Guid authorId, Ordering order);
+        Task<IReadOnlyCollection<Publication>> SearchByAuthorAsync(Guid authorId, Ordering order, Pagination pagination);
     }
 
     public class PublicationService : IPublicationService
@@ -41,14 +41,14 @@ namespace GhostNetwork.Content.Publications
             this.eventBus = eventBus;
         }
 
-        public async Task<Publication> GetByIdAsync(string id)
+        public Task<Publication> GetByIdAsync(string id)
         {
-            return await publicationStorage.FindOneByIdAsync(id);
+            return publicationStorage.FindOneByIdAsync(id);
         }
 
-        public async Task<(IEnumerable<Publication>, long)> SearchAsync(int skip, int take, IEnumerable<string> tags, Ordering order)
+        public Task<IReadOnlyCollection<Publication>> SearchAsync(IEnumerable<string> tags, Ordering order, Pagination pagination)
         {
-            return await publicationStorage.FindManyAsync(skip, take, tags, order);
+            return publicationStorage.FindManyAsync(tags, order, pagination);
         }
 
         public async Task<(DomainResult, string)> CreateAsync(string text, UserInfo author, IEnumerable<Media> media)
@@ -97,9 +97,12 @@ namespace GhostNetwork.Content.Publications
             await eventBus.PublishAsync(new DeletedEvent(publication.Id, publication.Author));
         }
 
-        public async Task<(IEnumerable<Publication>, long)> SearchByAuthor(int skip, int take, Guid authorId, Ordering order)
+        public Task<IReadOnlyCollection<Publication>> SearchByAuthorAsync(
+            Guid authorId,
+            Ordering order,
+            Pagination pagination)
         {
-            return await publicationStorage.FindManyByAuthorAsync(skip, take, authorId, order);
+            return publicationStorage.FindManyByAuthorAsync(authorId, order, pagination);
         }
     }
 }

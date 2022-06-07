@@ -12,7 +12,6 @@ using GhostNetwork.Content.Reactions;
 using GhostNetwork.EventBus;
 using GhostNetwork.EventBus.AzureServiceBus;
 using GhostNetwork.EventBus.RabbitMq;
-using GhostNetwork.Profiles;
 using GhostNetwork.Profiles.Api;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -78,9 +77,7 @@ namespace GhostNetwork.Content.Api
 
             services.AddScoped(_ =>
             {
-                // TODO: Remove MONGO_ADDRESS usage after update of all compose files
-                var connectionString = configuration["MONGO_CONNECTION"] ??
-                                       $"mongodb://{configuration["MONGO_ADDRESS"]}/gpublications";
+                var connectionString = configuration["MONGO_CONNECTION"];
                 var mongoUrl = MongoUrl.Create(connectionString);
                 var client = new MongoClient(mongoUrl);
                 return new MongoDbContext(client.GetDatabase(mongoUrl.DatabaseName ?? DefaultDbName));
@@ -145,6 +142,13 @@ namespace GhostNetwork.Content.Api
                 var eventBus = app.ApplicationServices.GetRequiredService<IEventBus>();
                 eventBus.Subscribe<Profiles.UpdatedEvent, ProfileUpdatedHandler>();
             });
+
+            hostApplicationLifetime.ApplicationStarted.Register(() =>
+            {
+                var scope = app.ApplicationServices.CreateScope();
+                var mongoDb = scope.ServiceProvider.GetRequiredService<MongoDbContext>();
+                mongoDb.ConfigureAsync().GetAwaiter().GetResult();
+            });
         }
 
         private IValidator<Publication> BuildPublicationValidator(IServiceProvider provider)
@@ -161,7 +165,7 @@ namespace GhostNetwork.Content.Api
                 validators.Add(new MinLengthValidator(minLength.Value));
             }
 
-            var timeLimit = configuration.GetValue<int?>("TIME_LIMIT_TO_UPDATE_PUBLICATIONS");
+            var timeLimit = configuration.GetValue<int?>("PUBLICATION_UPDATE_TIME_LIMIT");
             if (timeLimit.HasValue)
             {
                 validators.Add(new TimeLimitToUpdateValidator(TimeSpan.FromSeconds(timeLimit.Value)));
@@ -185,7 +189,7 @@ namespace GhostNetwork.Content.Api
                 validators.Add(new MinLengthValidator(minLength.Value));
             }
 
-            var timeLimit = configuration.GetValue<int?>("TIME_LIMIT_TO_UPDATE_COMMENTS");
+            var timeLimit = configuration.GetValue<int?>("COMMENT_UPDATE_TIME_LIMIT");
             if (timeLimit.HasValue)
             {
                 validators.Add(new TimeLimitToUpdateValidator(TimeSpan.FromSeconds(timeLimit.Value)));

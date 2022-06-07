@@ -4,6 +4,6 @@ namespace GhostNetwork.Content.Api.Models
 {
     public class ReactionsQuery
     {
-        public IEnumerable<string> Keys { get; set; }
+        public IReadOnlyCollection<string> Keys { get; set; }
     }
 }

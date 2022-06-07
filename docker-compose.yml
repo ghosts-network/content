@@ -13,6 +13,7 @@ services:
     environment:
       - MONGO_CONNECTION=mongodb://db:27017/gpublications
       - ASPNETCORE_ENVIRONMENT=Development
+      - OPENAPI_JSON_ENABLED=true
 
   profiles:
     image: ghcr.io/ghosts-network/profiles:latest
