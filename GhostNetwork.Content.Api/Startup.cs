@@ -9,6 +9,7 @@ using GhostNetwork.Content.Comments;
 using GhostNetwork.Content.MongoDb;
 using GhostNetwork.Content.Publications;
 using GhostNetwork.Content.Reactions;
+using GhostNetwork.Content.Redis;
 using GhostNetwork.EventBus;
 using GhostNetwork.EventBus.AzureServiceBus;
 using GhostNetwork.EventBus.RabbitMq;
@@ -21,6 +22,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using RabbitMQ.Client;
+using StackExchange.Redis;
 using Swashbuckle.AspNetCore.Filters;
 
 namespace GhostNetwork.Content.Api
@@ -83,13 +85,29 @@ namespace GhostNetwork.Content.Api
                 return new MongoDbContext(client.GetDatabase(mongoUrl.DatabaseName ?? DefaultDbName));
             });
 
+            services.AddSingleton(ConnectionMultiplexer.Connect(configuration["REDIS_CONNECTION"]));
+            services.AddScoped(provider =>
+            {
+                var redisConnection = provider.GetRequiredService<ConnectionMultiplexer>();
+
+                return redisConnection.GetDatabase();
+            });
+
             services.AddScoped<IProfilesApi>(_ => new ProfilesApi(configuration["PROFILES_ADDRESS"]));
             services.AddScoped<IUserProvider, ProfilesApiUserProvider>();
 
             services.AddScoped<IHashTagsFetcher, DefaultHashTagsFetcher>();
             services.AddScoped(_ => new ForbiddenWordsValidator(Enumerable.Empty<string>()));
 
-            services.AddScoped<IReactionStorage, MongoReactionStorage>();
+            switch (configuration["REACTION_STORAGE_TYPE"])
+            {
+                case "redis":
+                    services.AddScoped<IReactionStorage, RedisReactionStorage>();
+                    break;
+                default:
+                    services.AddScoped<IReactionStorage, MongoReactionStorage>();
+                    break;
+            }
 
             services.AddScoped<IPublicationsStorage, MongoPublicationStorage>();
             services.AddScoped<IPublicationService, PublicationService>();
