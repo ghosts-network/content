@@ -85,7 +85,7 @@ namespace GhostNetwork.Content.Api
                 return new MongoDbContext(client.GetDatabase(mongoUrl.DatabaseName ?? DefaultDbName));
             });
 
-            services.AddSingleton(ConnectionMultiplexer.Connect(configuration["REDIS_CONNECTION"]));
+            services.AddSingleton(() => ConnectionMultiplexer.Connect(configuration["REDIS_CONNECTION"]));
             services.AddScoped(provider =>
             {
                 var redisConnection = provider.GetRequiredService<ConnectionMultiplexer>();
