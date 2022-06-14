@@ -22,9 +22,14 @@ namespace GhostNetwork.Content.UnitTest.Comments.Api
             const string content = "asd";
             const string authorId = "3fa85f64-5717-4562-b3fc-2c963f66afa7";
 
-            var author = new UserInfo(new Guid(authorId), "FName LName", null);
+            var author = new UserInfoModel
+            {
+                Id = new Guid(authorId),
+                FullName = "FName LName",
+                AvatarUrl = null
+            };
 
-            var model = new CreateCommentModel()
+            var model = new CreateCommentModel
             {
                 Key = publicationId,
                 Content = content,
@@ -39,7 +44,7 @@ namespace GhostNetwork.Content.UnitTest.Comments.Api
 
             commentServiceMock
                 .Setup(s => s.GetByIdAsync(commentId))
-                .ReturnsAsync(new Comment(commentId, content, DateTimeOffset.Now, publicationId, null, author));
+                .ReturnsAsync(new Comment(commentId, content, DateTimeOffset.Now, publicationId, null, (UserInfo)author));
 
             var client = TestServerHelper.New(collection =>
             {
@@ -61,9 +66,14 @@ namespace GhostNetwork.Content.UnitTest.Comments.Api
             const string content = "asd";
             const string authorId = "3fa85f64-5717-4562-b3fc-2c963f66afa7";
 
-            var author = new UserInfo(new Guid(authorId), "FName LName", null);
+            var author = new UserInfoModel
+            {
+                Id = new Guid(authorId),
+                FullName = "FName LName",
+                AvatarUrl = null
+            };
 
-            var model = new CreateCommentModel()
+            var model = new CreateCommentModel
             {
                 Key = publicationId,
                 Content = content,

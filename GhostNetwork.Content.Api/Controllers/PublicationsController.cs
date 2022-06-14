@@ -111,7 +111,7 @@ namespace GhostNetwork.Content.Api.Controllers
         public async Task<ActionResult<Publication>> CreateAsync([FromBody] CreatePublicationModel model)
         {
 #pragma warning disable CS0612
-            var author = model.Author ?? await userProvider.GetByIdAsync(model.AuthorId);
+            var author = (UserInfo)model.Author ?? await userProvider.GetByIdAsync(model.AuthorId);
 #pragma warning restore CS0612
             var (result, id) = await publicationService.CreateAsync(model.Content, author);
 

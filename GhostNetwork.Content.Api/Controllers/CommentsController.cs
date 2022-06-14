@@ -97,7 +97,7 @@ namespace GhostNetwork.Content.Api.Controllers
         public async Task<ActionResult<Comment>> CreateAsync([FromBody] CreateCommentModel model)
         {
 #pragma warning disable CS0612
-            var author = model.Author ?? await userProvider.GetByIdAsync(model.AuthorId);
+            var author = (UserInfo)model.Author ?? await userProvider.GetByIdAsync(model.AuthorId);
 #pragma warning restore CS0612
 
             var (domainResult, id) = await commentService
