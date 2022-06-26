@@ -16,12 +16,10 @@ namespace GhostNetwork.Content.Api.Controllers
     public class CommentsController : ControllerBase
     {
         private readonly ICommentsService commentService;
-        private readonly IUserProvider userProvider;
 
-        public CommentsController(ICommentsService commentService, IUserProvider userProvider)
+        public CommentsController(ICommentsService commentService)
         {
             this.commentService = commentService;
-            this.userProvider = userProvider;
         }
 
         /// <summary>
@@ -96,9 +94,7 @@ namespace GhostNetwork.Content.Api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Comment>> CreateAsync([FromBody] CreateCommentModel model)
         {
-#pragma warning disable CS0612
-            var author = (UserInfo)model.Author ?? await userProvider.GetByIdAsync(model.AuthorId);
-#pragma warning restore CS0612
+            var author = (UserInfo)model.Author;
 
             var (domainResult, id) = await commentService
                 .CreateAsync(model.Key, model.Content, model.ReplyCommentId, author);
