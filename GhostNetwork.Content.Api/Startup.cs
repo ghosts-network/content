@@ -27,7 +27,7 @@ namespace GhostNetwork.Content.Api
 {
     public class Startup
     {
-        private const string DefaultDbName = "profiles";
+        private const string DefaultDbName = "content";
 
         private readonly IConfiguration configuration;
 
