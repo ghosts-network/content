@@ -23,14 +23,16 @@ namespace GhostNetwork.Content.UnitTest.Publications.Api
             var input = new UpdatePublicationModel
             {
                 Content = "some content",
-                Media = Enumerable.Empty<Media>()
+                Media = Array.Empty<UpdateMediaModel>()
             };
 
-            var publication = new Publication(id, input.Content, Enumerable.Empty<string>(), new UserInfo(Guid.NewGuid(), "Name", null), DateTimeOffset.Now, DateTimeOffset.Now, input.Media);
+            var media = input.Media.Select(x => new Media(x.Id, x.Link)).ToList();
+            
+            var publication = new Publication(id, input.Content, Enumerable.Empty<string>(), new UserInfo(Guid.NewGuid(), "Name", null), DateTimeOffset.Now, DateTimeOffset.Now, media);
 
             var serviceMock = new Mock<IPublicationService>();
             serviceMock
-                .Setup(s => s.UpdateAsync(id, input.Content, input.Media))
+                .Setup(s => s.UpdateAsync(id, input.Content, media))
                 .ReturnsAsync(DomainResult.Success());
 
             serviceMock

@@ -22,11 +22,12 @@ namespace GhostNetwork.Content.UnitTest.Publications.Api
             var input = new CreatePublicationModel
             {
                 Content = "some content",
-                Media = Enumerable.Empty<Media>()
+                Media = Array.Empty<CreateMediaModel>()
             };
 
             var id = "some_id";
-            var publication = new Publication(id, input.Content, Enumerable.Empty<string>(), null, DateTimeOffset.Now, DateTimeOffset.Now, input.Media);
+            var media = input.Media.Select(x => new Media(default, x.Link));
+            var publication = new Publication(id, input.Content, Enumerable.Empty<string>(), null, DateTimeOffset.Now, DateTimeOffset.Now, media);
 
             var serviceMock = new Mock<IPublicationService>();
             serviceMock
@@ -79,9 +80,12 @@ namespace GhostNetwork.Content.UnitTest.Publications.Api
             var input = new CreatePublicationModel
             {
                 Content = "some content",
-                Media = new List<Media>
+                Media = new List<CreateMediaModel>
                 {
-                    new (Guid.NewGuid(), "Link")
+                    new()
+                    {
+                        Link = "Link"
+                    }
                 }
             };
 

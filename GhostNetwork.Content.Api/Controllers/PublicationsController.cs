@@ -113,7 +113,9 @@ namespace GhostNetwork.Content.Api.Controllers
 #pragma warning disable CS0612
             var author = model.Author ?? await userProvider.GetByIdAsync(model.AuthorId);
 #pragma warning restore CS0612
-            var (result, id) = await publicationService.CreateAsync(model.Content, author, model.Media);
+
+            var media = model.Media.Select(x => new Media(Guid.NewGuid(), x.Link));
+            var (result, id) = await publicationService.CreateAsync(model.Content, author, media);
 
             if (!result.Successed)
             {
@@ -139,7 +141,8 @@ namespace GhostNetwork.Content.Api.Controllers
                 return NotFound();
             }
 
-            var result = await publicationService.UpdateAsync(id, model.Content, model.Media);
+            var media = model.Media.Select(x => new Media(x.Id, x.Link));
+            var result = await publicationService.UpdateAsync(id, model.Content, media);
 
             if (!result.Successed)
             {

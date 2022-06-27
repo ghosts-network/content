@@ -9,11 +9,11 @@ namespace GhostNetwork.Content.Api.Models
         [Required]
         public string Content { get; set; }
 
-        [Obsolete]
+        [Obsolete("Use Author instead")]
         public string AuthorId { get; set; }
 
-        public IEnumerable<Media> Media { get; set; }
-
         public UserInfo Author { get; set; }
+
+        public IEnumerable<CreateMediaModel> Media { get; set; } = new List<CreateMediaModel>();
     }
 }
