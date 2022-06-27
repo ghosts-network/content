@@ -6,15 +6,7 @@ services:
     ports:
       - "27017:27017"
 
-  profiles:
-    image: ghcr.io/ghosts-network/profiles:latest
+  redis:
+    image: redis
     ports:
-      - "5400:80"
-    depends_on:
-      - db
-      - rabbit
-    environment:
-      - MONGO_CONNECTION=mongodb://db:27017/gprofiles
-      - EVENTHUB_TYPE=rabbit
-      - RABBIT_CONNECTION=amqp://guest:guest@rabbit:5672/
-      - ASPNETCORE_ENVIRONMENT=Development
+      - "6379:6379"

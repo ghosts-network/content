@@ -9,10 +9,8 @@ namespace GhostNetwork.Content.Api.Models
         [Required]
         public string Content { get; set; }
 
-        [Obsolete("Use Author instead")]
-        public string AuthorId { get; set; }
-
-        public UserInfo Author { get; set; }
+        [Required]
+        public UserInfoModel Author { get; set; }
 
         public IEnumerable<CreateMediaModel> Media { get; set; } = new List<CreateMediaModel>();
     }

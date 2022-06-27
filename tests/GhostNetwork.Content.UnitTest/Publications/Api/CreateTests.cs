@@ -22,7 +22,13 @@ namespace GhostNetwork.Content.UnitTest.Publications.Api
             var input = new CreatePublicationModel
             {
                 Content = "some content",
-                Media = Array.Empty<CreateMediaModel>()
+
+                Media = Array.Empty<CreateMediaModel>(),
+                Author = new UserInfoModel
+                {
+                    Id = Guid.NewGuid(),
+                    FullName = "John Doe"
+                }
             };
 
             var id = "some_id";

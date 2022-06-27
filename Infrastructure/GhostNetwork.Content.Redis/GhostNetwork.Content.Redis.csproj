@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <CodeAnalysisRuleSet>../../GhostNetwork.ruleset</CodeAnalysisRuleSet>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="StackExchange.Redis" Version="2.5.61" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\GhostNetwork.Content\GhostNetwork.Content.csproj" />
+    </ItemGroup>
+
+</Project>
