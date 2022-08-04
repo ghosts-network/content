@@ -11,7 +11,7 @@ asdasd
 | PUBLICATION_CONTENT_MAX_LENGTH | Maximum length of publication text. 5000 chars by default                                           |
 | PUBLICATION_UPDATE_TIME_LIMIT  | Maximum time in second update action will be available. Unlimited by default                        |
 | COMMENT_CONTENT_MIN_LENGTH     | Minimum length of comment sffsd                                                                          |
-| COMMENT_CONTENT_MAX_LENGTH     | Maximum length of comment. 5000 chars by default                                                    |
+| COMMENT_CONTENT_MAX_LENGTH     | Maximum lesfdsfngth of comment. 5000 chars by default                                                    |
 | COMMENT_UPDATE_TIME_LIMIT      | Maximum time in second update action will be available. Unlimited by default                        |
 | EVENTHUB_TYPE                  | Represent type of service for event bus. Options: rabbit, servicebus. By default all events ignored |
 | RABBIT_CONNECTION              | Connection string to rabbitmq. Required for EVENTHUB_TYPE=rabbit                                    |
