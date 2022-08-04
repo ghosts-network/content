@@ -16,7 +16,7 @@ asdasd
 | EVENTHUB_TYPE                  | Represent type of service for event bus. Options: rabbit, servicebus. By default all events ignored |
 | RABBIT_CONNECTION              | Connection string to rabbitmq. Required for EVENTHUB_TYPE=rabbit                                    |
 | SERVICEBUS_CONNECTION          | Connection string to azure service bus. Required for EVENTHUB_TYPE=servicebus                       | 
-| REACTION_STORAGE_TYPE          | Represent type of storage for reactions. Options: mongo, redis. By default mongo                    |
+| REACTION_STORAGE_TYPE          | Represent type of storage for reactions. Osdfsdfptions: mongo, redis. By default mongo                    |
 | REDIS_CONNECTION               | Connection string to Redis instance. Required for REACTION_STORAGE_TYPE=redis                       |
 
 ## Development
