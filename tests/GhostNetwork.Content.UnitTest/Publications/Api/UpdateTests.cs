@@ -15,15 +15,21 @@ namespace GhostNetwork.Content.UnitTest.Publications.Api
     [TestFixture]
     public class UpdateTests
     {
-        [Test]
-        public async Task Update_NoContent()
+        private static IEnumerable<TestCaseData> positiveCases = new[]
+        {
+            new TestCaseData(Enumerable.Empty<UpdateMediaModel>()),
+            new TestCaseData(null),
+        };
+
+        [TestCaseSource(nameof(positiveCases))]
+        public async Task Update_NoContent(IEnumerable<UpdateMediaModel> mediaCase)
         {
             // Assert
             var id = "some_id";
             var input = new UpdatePublicationModel
             {
                 Content = "some content",
-                Media = Array.Empty<UpdateMediaModel>()
+                Media = mediaCase
             };
 
             var media = input.Media.Select(x => new Media(x.Id, x.Link)).ToList();
