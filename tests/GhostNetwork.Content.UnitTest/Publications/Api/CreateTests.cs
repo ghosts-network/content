@@ -15,15 +15,21 @@ namespace GhostNetwork.Content.UnitTest.Publications.Api
     [TestFixture]
     public class CreateTests
     {
-        [Test]
-        public async Task Create_Created()
+        private static IEnumerable<TestCaseData> positiveCases = new[]
+        {
+            new TestCaseData(Enumerable.Empty<CreateMediaModel>()),
+            new TestCaseData(null),
+        };
+
+        [TestCaseSource(nameof(positiveCases))]
+        public async Task Create_Created(IEnumerable<CreateMediaModel> mediaCase)
         {
             // Assert
             var input = new CreatePublicationModel
             {
                 Content = "some content",
 
-                Media = Array.Empty<CreateMediaModel>(),
+                Media = mediaCase,
                 Author = new UserInfoModel
                 {
                     Id = Guid.NewGuid(),
