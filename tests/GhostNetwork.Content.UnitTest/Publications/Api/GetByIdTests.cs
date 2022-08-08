@@ -18,7 +18,7 @@ namespace GhostNetwork.Content.UnitTest.Publications.Api
             // Assert
             var id = "some_id";
 
-            var publication = new Publication(id, It.IsAny<string>(), Enumerable.Empty<string>(), null, DateTimeOffset.Now, DateTimeOffset.Now, Enumerable.Empty<Media>());
+            var publication = new Publication(id, It.IsAny<string>(), Enumerable.Empty<string>(), null, DateTimeOffset.Now, DateTimeOffset.Now);
 
             var serviceMock = new Mock<IPublicationService>();
 

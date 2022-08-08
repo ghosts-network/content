@@ -21,6 +21,9 @@ namespace GhostNetwork.Content.MongoDb
         public IMongoCollection<ReactionEntity> Reactions =>
             database.GetCollection<ReactionEntity>("reactions");
 
+        public IMongoCollection<MediaEntity> Media =>
+            database.GetCollection<MediaEntity>("media");
+
         public async Task ConfigureAsync()
         {
             var publicationAuthorIndex = Builders<PublicationEntity>.IndexKeys.Ascending(publication => publication.Author.Id);
@@ -36,6 +39,9 @@ namespace GhostNetwork.Content.MongoDb
                 Builders<ReactionEntity>.IndexKeys.Ascending(reaction => reaction.Key),
                 Builders<ReactionEntity>.IndexKeys.Ascending(reaction => reaction.Author));
             await Reactions.Indexes.CreateOneAsync(new CreateIndexModel<ReactionEntity>(reactionKeyAuthorIndex));
+
+            var mediaKeyIndex = Builders<MediaEntity>.IndexKeys.Ascending(media => media.Key);
+            await Media.Indexes.CreateOneAsync(new CreateIndexModel<MediaEntity>(mediaKeyIndex));
         }
     }
 }

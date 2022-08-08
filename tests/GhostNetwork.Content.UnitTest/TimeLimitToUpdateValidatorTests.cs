@@ -22,8 +22,7 @@ namespace GhostNetwork.Content.UnitTest
                 Enumerable.Empty<string>(),
                 author: null,
                 DateTimeOffset.UtcNow.AddSeconds(-timeLimit),
-                DateTimeOffset.UtcNow.AddSeconds(-timeLimit),
-                Enumerable.Empty<Media>());
+                DateTimeOffset.UtcNow.AddSeconds(-timeLimit));
 
             var validator = new TimeLimitToUpdateValidator(TimeSpan.FromSeconds(timeLimit));
 
@@ -41,7 +40,7 @@ namespace GhostNetwork.Content.UnitTest
             const string content = "some content";
             const int timeLimit = 900;
 
-            var publication = Publication.New(content, null, f => Enumerable.Empty<string>(), Enumerable.Empty<Media>());
+            var publication = Publication.New(content, null, f => Enumerable.Empty<string>());
 
             var validator = new TimeLimitToUpdateValidator(TimeSpan.FromSeconds(timeLimit));
 

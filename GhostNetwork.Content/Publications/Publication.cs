@@ -5,7 +5,7 @@ namespace GhostNetwork.Content.Publications
 {
     public class Publication
     {
-        public Publication(string id, string content, IEnumerable<string> tags, UserInfo author, DateTimeOffset createdOn, DateTimeOffset updatedOn, IEnumerable<Media> media)
+        public Publication(string id, string content, IEnumerable<string> tags, UserInfo author, DateTimeOffset createdOn, DateTimeOffset updatedOn)
         {
             Id = id;
             Content = content;
@@ -13,7 +13,6 @@ namespace GhostNetwork.Content.Publications
             Author = author;
             CreatedOn = createdOn;
             UpdatedOn = updatedOn;
-            Media = media;
         }
 
         public string Id { get; }
@@ -30,21 +29,18 @@ namespace GhostNetwork.Content.Publications
 
         public bool IsUpdated => CreatedOn != UpdatedOn;
 
-        public IEnumerable<Media> Media { get; private set; }
-
-        public static Publication New(string content, UserInfo author, Func<string, IEnumerable<string>> tagsFetcher, IEnumerable<Media> media)
+        public static Publication New(string content, UserInfo author, Func<string, IEnumerable<string>> tagsFetcher)
         {
             var now = DateTimeOffset.UtcNow;
 
-            return new Publication(default, content, tagsFetcher(content), author, now, now, media);
+            return new Publication(default, content, tagsFetcher(content), author, now, now);
         }
 
-        public Publication Update(string content, Func<string, IEnumerable<string>> tagsFetcher, IEnumerable<Media> media)
+        public Publication Update(string content, Func<string, IEnumerable<string>> tagsFetcher)
         {
             Content = content;
             UpdatedOn = DateTimeOffset.UtcNow;
             Tags = tagsFetcher(content);
-            Media = media;
 
             return this;
         }
