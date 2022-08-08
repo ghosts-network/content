@@ -46,7 +46,6 @@ public class MediaController : ControllerBase
     /// <returns>Media content</returns>
     [HttpGet("bykey/{key}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<IReadOnlyCollection<Media>>> SearchByKeyAsync(
         [FromRoute] string key)
     {
@@ -96,6 +95,7 @@ public class MediaController : ControllerBase
     /// <param name="id">Media id</param>
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> DeleteAsync([FromRoute] string id)
     {
         var media = await mediaService.GetByIdAsync(id);
@@ -119,6 +119,7 @@ public class MediaController : ControllerBase
     public async Task<ActionResult> DeleteByKeyAsync([FromRoute] string key)
     {
         await mediaService.DeleteByKeyAsync(key);
+
         return NoContent();
     }
 }
