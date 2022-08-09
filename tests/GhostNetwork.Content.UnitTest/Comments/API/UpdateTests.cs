@@ -1,14 +1,12 @@
-﻿using System;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Domain;
+﻿using Domain;
 using GhostNetwork.Content.Api.Models;
 using GhostNetwork.Content.Comments;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using NUnit.Framework;
+using System;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace GhostNetwork.Content.UnitTest.Comments.Api
 {

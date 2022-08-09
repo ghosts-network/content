@@ -6,7 +6,7 @@ namespace GhostNetwork.Content.Comments
 {
     public interface ICommentsStorage
     {
-        Task<Comment?> FindOneByIdAsync(string id);
+        Task<Comment> FindOneByIdAsync(string id);
 
         Task<(IEnumerable<Comment>, long)> FindManyAsync(string key, int skip, int take);
 

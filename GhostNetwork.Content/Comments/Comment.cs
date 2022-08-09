@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace GhostNetwork.Content.Comments
 {
@@ -27,7 +26,7 @@ namespace GhostNetwork.Content.Comments
 
         public DateTimeOffset CreatedOn { get; }
 
-        public string? ReplyCommentId { get; }
+        public string ReplyCommentId { get; }
 
         public CommentsShort Replies { get; }
 
@@ -35,18 +34,5 @@ namespace GhostNetwork.Content.Comments
         {
             return new Comment(default, text, DateTimeOffset.UtcNow, key, replyId, author);
         }
-    }
-
-    public class CommentsShort
-    {
-        public CommentsShort(IEnumerable<Comment> topComments, long totalCount)
-        {
-            TopComments = topComments;
-            TotalCount = totalCount;
-        }
-
-        public IEnumerable<Comment> TopComments { get; }
-
-        public long TotalCount { get; }
     }
 }

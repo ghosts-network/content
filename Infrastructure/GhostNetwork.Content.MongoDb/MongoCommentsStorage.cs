@@ -1,11 +1,10 @@
-﻿using GhostNetwork.Content.Comments;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
-using MongoDB.Driver;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GhostNetwork.Content.Comments;
+using MongoDB.Bson;
+using MongoDB.Driver;
 
 namespace GhostNetwork.Content.MongoDb
 {
@@ -18,7 +17,7 @@ namespace GhostNetwork.Content.MongoDb
             this.context = context;
         }
 
-        public async Task<Comment?> FindOneByIdAsync(string id)
+        public async Task<Comment> FindOneByIdAsync(string id)
         {
             if (!ObjectId.TryParse(id, out var oId))
             {
