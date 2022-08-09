@@ -1,9 +1,8 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using GhostNetwork.Content.Comments;
 using Moq;
 using NUnit.Framework;
+using System;
+using System.Threading.Tasks;
 
 namespace GhostNetwork.Content.UnitTest.Comments.Domain
 {
