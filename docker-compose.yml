@@ -13,12 +13,4 @@ services:
     environment:
       - MONGO_CONNECTION=mongodb://db:27017/gpublications
       - ASPNETCORE_ENVIRONMENT=Development
-
-  profiles:
-    image: ghcr.io/ghosts-network/profiles:latest
-    ports:
-      - "5400:80"
-    depends_on:
-      - db
-    environment:
-      - MONGO_CONNECTION=mongodb://db:27017/gprofiles
+      - OPENAPI_JSON_ENABLED=true

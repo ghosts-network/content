@@ -20,7 +20,12 @@ namespace GhostNetwork.Content.UnitTest.Publications.Api
             // Setup
             var input = new CreatePublicationModel
             {
-                Content = "some content"
+                Content = "some content",
+                Author = new UserInfoModel
+                {
+                    Id = Guid.NewGuid(),
+                    FullName = "John Doe"
+                }
             };
 
             var id = "some_id";

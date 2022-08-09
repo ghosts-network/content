@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace GhostNetwork.Content.Api.Models
 {
@@ -12,6 +11,7 @@ namespace GhostNetwork.Content.Api.Models
 
         public string ReplyCommentId { get; set; }
 
-        public string AuthorId { get; set; }
+        [Required]
+        public UserInfoModel Author { get; set; }
     }
 }

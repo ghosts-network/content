@@ -22,34 +22,33 @@ namespace GhostNetwork.Content.UnitTest.Comments.Api
             const string content = "asd";
             const string authorId = "3fa85f64-5717-4562-b3fc-2c963f66afa7";
 
-            var author = new UserInfo(new Guid(authorId), "FName LName", null);
+            var author = new UserInfoModel
+            {
+                Id = new Guid(authorId),
+                FullName = "FName LName",
+                AvatarUrl = null
+            };
 
-            var model = new CreateCommentModel()
+            var model = new CreateCommentModel
             {
                 Key = publicationId,
                 Content = content,
                 ReplyCommentId = null,
-                AuthorId = authorId
+                Author = author
             };
 
             var commentServiceMock = new Mock<ICommentsService>();
             commentServiceMock
-                .Setup(s => s.CreateAsync(publicationId, content, null, author))
+                .Setup(s => s.CreateAsync(publicationId, content, null, It.IsAny<UserInfo>()))
                 .ReturnsAsync((DomainResult.Success(), "commentId"));
 
             commentServiceMock
                 .Setup(s => s.GetByIdAsync(commentId))
-                .ReturnsAsync(new Comment(commentId, content, DateTimeOffset.Now, publicationId, null, author));
-
-            var userProvideMock = new Mock<IUserProvider>();
-            userProvideMock
-                .Setup(s => s.GetByIdAsync(model.AuthorId))
-                .ReturnsAsync(author);
+                .ReturnsAsync(new Comment(commentId, content, DateTimeOffset.Now, publicationId, null, (UserInfo)author));
 
             var client = TestServerHelper.New(collection =>
             {
                 collection.AddScoped(_ => commentServiceMock.Object);
-                collection.AddScoped(_ => userProvideMock.Object);
             });
 
             // Act
@@ -67,30 +66,29 @@ namespace GhostNetwork.Content.UnitTest.Comments.Api
             const string content = "asd";
             const string authorId = "3fa85f64-5717-4562-b3fc-2c963f66afa7";
 
-            var author = new UserInfo(new Guid(authorId), "FName LName", null);
+            var author = new UserInfoModel
+            {
+                Id = new Guid(authorId),
+                FullName = "FName LName",
+                AvatarUrl = null
+            };
 
-            var model = new CreateCommentModel()
+            var model = new CreateCommentModel
             {
                 Key = publicationId,
                 Content = content,
                 ReplyCommentId = null,
-                AuthorId = authorId
+                Author = author
             };
 
             var serviceMock = new Mock<ICommentsService>();
             serviceMock
-                .Setup(s => s.CreateAsync(publicationId, content, null, author))
+                .Setup(s => s.CreateAsync(publicationId, content, null, It.IsAny<UserInfo>()))
                 .ReturnsAsync((DomainResult.Error("somethig went wrong"), null));
-
-            var userProvideMock = new Mock<IUserProvider>();
-            userProvideMock
-                .Setup(s => s.GetByIdAsync(model.AuthorId))
-                .ReturnsAsync(author);
 
             var client = TestServerHelper.New(collection =>
             {
                 collection.AddScoped(_ => serviceMock.Object);
-                collection.AddScoped(_ => userProvideMock.Object);
             });
 
             // Act

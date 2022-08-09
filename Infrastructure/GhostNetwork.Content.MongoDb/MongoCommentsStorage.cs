@@ -59,10 +59,8 @@ namespace GhostNetwork.Content.MongoDb
             var filter = Builders<CommentEntity>.Filter.Eq(x => x.Id, oId);
             var update = Builders<CommentEntity>.Update.Set(x => x.Content, content);
 
-            var updateResult = await context.Comments
+            await context.Comments
                 .UpdateOneAsync(filter, update);
-
-            return;
         }
 
         public async Task UpdateAuthorAsync(Guid authorId, string fullName, string avatarUrl)
@@ -76,16 +74,32 @@ namespace GhostNetwork.Content.MongoDb
             await context.Comments.UpdateManyAsync(filter, update);
         }
 
-        public async Task<(IEnumerable<Comment>, long)> FindManyAsync(string key, int skip, int take)
+        public async Task<(IReadOnlyCollection<Comment>, long)> FindManyAsync(string key, int skip, int take, string cursor, Ordering order)
         {
             var filter = Builders<CommentEntity>.Filter.Eq(x => x.Key, key) & Builders<CommentEntity>.Filter.Eq(x => x.ReplyCommentId, null);
+
+            var sorting = order switch
+            {
+                Ordering.Desc => Builders<CommentEntity>.Sort.Descending(x => x.CreateOn),
+                _ => Builders<CommentEntity>.Sort.Ascending(x => x.CreateOn)
+            };
 
             var totalCount = await context.Comments
                 .Find(filter)
                 .CountDocumentsAsync();
 
+            if (cursor != null)
+            {
+                filter &= order switch
+                {
+                    Ordering.Desc => Builders<CommentEntity>.Filter.Lt(x => x.Id, ObjectId.Parse(cursor)),
+                    _ => Builders<CommentEntity>.Filter.Gt(x => x.Id, ObjectId.Parse(cursor))
+                };
+            }
+
             var entities = await context.Comments
                 .Find(filter)
+                .Sort(sorting)
                 .Skip(skip)
                 .Limit(take)
                 .ToListAsync();
@@ -121,7 +135,7 @@ namespace GhostNetwork.Content.MongoDb
             await context.Comments.DeleteManyAsync(filter);
         }
 
-        public async Task<Dictionary<string, FeaturedInfo>> FindFeaturedAsync(IEnumerable<string> keys)
+        public async Task<Dictionary<string, FeaturedInfo>> FindFeaturedAsync(IReadOnlyCollection<string> keys)
         {
             var group = new BsonDocument
             {

@@ -22,7 +22,7 @@ namespace GhostNetwork.Content.UnitTest.Reactions.Api
                 { "Post_Test1", new Dictionary<string, int> { ["like"] = 1, ["wow"] = 2 } },
                 { "Post_Test2", new Dictionary<string, int> { ["like"] = 1 } }
             };
-            var keys = data.Select(d => d.Key);
+            var keys = data.Select(d => d.Key).ToList();
 
             var storageMock = new Mock<IReactionStorage>();
             storageMock

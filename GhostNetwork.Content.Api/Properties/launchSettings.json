@@ -6,15 +6,11 @@
       "launchBrowser": true,
       "launchUrl": "http://localhost:5000/swagger",
       "environmentVariables": {
-        "MONGO_CONNECTION": "mongodb://127.0.0.1:27017/gpublications",
         "ASPNETCORE_ENVIRONMENT": "Development",
+        "MONGO_CONNECTION": "mongodb://127.0.0.1:27017/gpublications",
+        "RABBIT_CONNECTION": "amqp://guest:guest@localhost:5672/",
         "OPENAPI_JSON_ENABLED": "true",
-        "EVENTHUB_TYPE": "rabbit",
-        "TIME_LIMIT_TO_UPDATE_PUBLICATIONS": "900",
-        "PROFILES_ADDRESS": "http://localhost:5400",
-        "SWAGGER_UI_ENABLED": "true",
-        "TIME_LIMIT_TO_UPDATE_COMMENTS": "900",
-        "RABBIT_CONNECTION": "amqp://guest:guest@localhost:5672/"
+        "SWAGGER_UI_ENABLED": "true"
       }
     }
   }

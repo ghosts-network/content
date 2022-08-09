@@ -40,12 +40,12 @@ namespace GhostNetwork.Content.MongoDb
             return reaction == null ? null : ToDomain(reaction);
         }
 
-        public async Task<IEnumerable<Reaction>> GetReactionsByAuthorAsync(string author, IEnumerable<string> keys)
+        public async Task<IEnumerable<Reaction>> GetReactionsByAuthorAsync(string author, IReadOnlyCollection<string> keys)
         {
-            var authorFilter = Builders<ReactionEntity>.Filter.Eq(p => p.Author, author);
-            var keysFilter = keys.Any() ? Builders<ReactionEntity>.Filter.In(p => p.Key, keys) : FilterDefinition<ReactionEntity>.Empty;
+            var filter = keys.Any() ? Builders<ReactionEntity>.Filter.In(p => p.Key, keys) : FilterDefinition<ReactionEntity>.Empty
+                & Builders<ReactionEntity>.Filter.Eq(p => p.Author, author);
 
-            var reactions = await context.Reactions.Find(authorFilter & keysFilter).ToListAsync();
+            var reactions = await context.Reactions.Find(filter).ToListAsync();
 
             return ToDomain(reactions);
         }

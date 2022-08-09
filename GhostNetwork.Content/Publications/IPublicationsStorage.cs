@@ -10,13 +10,13 @@ namespace GhostNetwork.Content.Publications
 
         Task<string> InsertOneAsync(Publication publication);
 
-        Task<(IEnumerable<Publication>, long)> FindManyAsync(int skip, int take, IEnumerable<string> tags, Ordering order);
+        Task<IReadOnlyCollection<Publication>> FindManyAsync(IEnumerable<string> tags, Ordering order, Pagination pagination);
 
         Task UpdateOneAsync(Publication publication);
 
         Task DeleteOneAsync(string id);
 
-        Task<(IEnumerable<Publication>, long)> FindManyByAuthorAsync(int skip, int take, Guid authorId, Ordering order);
+        Task<IReadOnlyCollection<Publication>> FindManyByAuthorAsync(Guid authorId, Ordering order, Pagination pagination);
 
         Task UpdateAuthorAsync(Guid authorId, string fullName, string avatarUrl);
     }
