@@ -111,7 +111,9 @@ namespace GhostNetwork.Content.MongoDb
                 repliesDict.TryGetValue(entity.Id.ToString(), out var replies);
 
                 return ToDomain(entity, replies);
-            }).Where(c => string.IsNullOrEmpty(c.ReplyCommentId));
+            })
+            .Where(c => string.IsNullOrEmpty(c.ReplyCommentId))
+            .ToList();
 
             return (result, totalCount);
         }
