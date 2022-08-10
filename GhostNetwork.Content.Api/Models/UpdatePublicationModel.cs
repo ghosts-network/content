@@ -7,5 +7,7 @@ namespace GhostNetwork.Content.Api.Models
     {
         [Required]
         public string Content { get; set; }
+
+        public IEnumerable<UpdateMediaModel> Media { get; set; }
     }
 }

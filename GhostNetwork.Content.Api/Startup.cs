@@ -5,7 +5,6 @@ using System.Text.Json.Serialization;
 using Domain.Validation;
 using GhostNetwork.Content.Api.Helpers.OpenApi;
 using GhostNetwork.Content.Comments;
-using GhostNetwork.Content.MediaContent;
 using GhostNetwork.Content.MongoDb;
 using GhostNetwork.Content.Publications;
 using GhostNetwork.Content.Reactions;
@@ -114,9 +113,6 @@ namespace GhostNetwork.Content.Api
             services.AddScoped<ICommentsService, CommentsService>();
             services.AddScoped(BuildCommentValidator);
             services.AddScoped<ProfileUpdatedHandler>();
-
-            services.AddScoped<IMediaStorage, MediaStorage>();
-            services.AddScoped<IMediaService, MediaService>();
 
             services.AddControllers()
                 .AddJsonOptions(options =>

@@ -11,7 +11,7 @@ namespace GhostNetwork.Content.UnitTest.Publications.Domain
         public void Publication_Not_Updated_Just_After_Creation()
         {
             // Setup
-            var publication = Publication.New("text1", new UserInfo(Guid.Empty, string.Empty, null), content => Array.Empty<string>());
+            var publication = Publication.New("text1", new UserInfo(Guid.Empty, string.Empty, null), content => Array.Empty<string>(), Array.Empty<Media>());
 
             // Assert
             Assert.IsFalse(publication.IsUpdated);
@@ -22,8 +22,8 @@ namespace GhostNetwork.Content.UnitTest.Publications.Domain
         {
             // Setup
             var publication = Publication
-                .New("text1", new UserInfo(Guid.Empty, string.Empty, null), content => Array.Empty<string>())
-                .Update("text2", content => Array.Empty<string>());
+                .New("text1", new UserInfo(Guid.Empty, string.Empty, null), content => Array.Empty<string>(), Array.Empty<Media>())
+                .Update("text2", content => Array.Empty<string>(), Array.Empty<Media>());
 
             // Assert
             Assert.IsTrue(publication.IsUpdated);
