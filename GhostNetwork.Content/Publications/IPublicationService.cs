@@ -13,9 +13,9 @@ namespace GhostNetwork.Content.Publications
 
         Task<IReadOnlyCollection<Publication>> SearchAsync(IEnumerable<string> tags, Ordering order, Pagination pagination);
 
-        Task<(DomainResult, string)> CreateAsync(string text, UserInfo author);
+        Task<(DomainResult, string)> CreateAsync(string text, UserInfo author, IEnumerable<Media> media);
 
-        Task<DomainResult> UpdateAsync(string id, string text);
+        Task<DomainResult> UpdateAsync(string id, string text, IEnumerable<Media> media);
 
         Task DeleteAsync(string id);
 
@@ -51,9 +51,9 @@ namespace GhostNetwork.Content.Publications
             return publicationStorage.FindManyAsync(tags, order, pagination);
         }
 
-        public async Task<(DomainResult, string)> CreateAsync(string text, UserInfo author)
+        public async Task<(DomainResult, string)> CreateAsync(string text, UserInfo author, IEnumerable<Media> media)
         {
-            var publication = Publication.New(text, author, hashTagsFetcher.Fetch);
+            var publication = Publication.New(text, author, hashTagsFetcher.Fetch, media);
             var result = await validator.ValidateAsync(publication);
 
             if (!result.Successed)
@@ -68,11 +68,11 @@ namespace GhostNetwork.Content.Publications
             return (result, id);
         }
 
-        public async Task<DomainResult> UpdateAsync(string id, string text)
+        public async Task<DomainResult> UpdateAsync(string id, string text, IEnumerable<Media> media)
         {
             var publication = await publicationStorage.FindOneByIdAsync(id);
 
-            publication.Update(text, hashTagsFetcher.Fetch);
+            publication.Update(text, hashTagsFetcher.Fetch, media);
             var result = await validator.ValidateAsync(publication);
 
             if (!result.Successed)

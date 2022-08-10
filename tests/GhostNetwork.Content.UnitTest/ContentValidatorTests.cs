@@ -25,7 +25,8 @@ namespace GhostNetwork.Content.UnitTest
                 Enumerable.Empty<string>(),
                 null,
                 DateTimeOffset.Now,
-                DateTimeOffset.Now);
+                DateTimeOffset.Now,
+                Enumerable.Empty<Media>());
 
             // Act
             var result = await validation.ValidateAsync(publication);
@@ -50,7 +51,8 @@ namespace GhostNetwork.Content.UnitTest
                 Enumerable.Empty<string>(),
                 null,
                 DateTimeOffset.Now,
-                DateTimeOffset.Now);
+                DateTimeOffset.Now,
+                Enumerable.Empty<Media>());
 
             // Act
             var result = await validation.ValidateAsync(publication);

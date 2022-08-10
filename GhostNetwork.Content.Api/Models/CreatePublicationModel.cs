@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace GhostNetwork.Content.Api.Models
@@ -9,5 +11,7 @@ namespace GhostNetwork.Content.Api.Models
 
         [Required]
         public UserInfoModel Author { get; set; }
+
+        public IEnumerable<CreateMediaModel> Media { get; set; } = new List<CreateMediaModel>();
     }
 }

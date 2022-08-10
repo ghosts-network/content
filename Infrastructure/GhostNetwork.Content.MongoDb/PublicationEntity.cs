@@ -22,5 +22,8 @@ namespace GhostNetwork.Content.MongoDb
 
         [BsonElement("updateOn")]
         public long UpdateOn { get; set; }
+
+        [BsonElement("media")]
+        public IEnumerable<MediaEntity> Media { get; set; }
     }
 }

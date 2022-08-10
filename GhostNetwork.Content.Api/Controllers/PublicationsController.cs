@@ -109,7 +109,10 @@ namespace GhostNetwork.Content.Api.Controllers
         public async Task<ActionResult<Publication>> CreateAsync([FromBody] CreatePublicationModel model)
         {
             var author = (UserInfo)model.Author;
-            var (result, id) = await publicationService.CreateAsync(model.Content, author);
+
+            var media = model.Media?.Select(x => (Media)x).ToList() ?? Enumerable.Empty<Media>();
+
+            var (result, id) = await publicationService.CreateAsync(model.Content, author, media);
 
             if (!result.Successed)
             {
@@ -135,7 +138,9 @@ namespace GhostNetwork.Content.Api.Controllers
                 return NotFound();
             }
 
-            var result = await publicationService.UpdateAsync(id, model.Content);
+            var media = model.Media?.Select(x => (Media)x).ToList() ?? Enumerable.Empty<Media>();
+
+            var result = await publicationService.UpdateAsync(id, model.Content, media);
 
             if (!result.Successed)
             {
