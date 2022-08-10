@@ -32,9 +32,17 @@ namespace GhostNetwork.Content.UnitTest.Publications.Api
                 Media = mediaCase
             };
 
-            var media = input.Media.Select(x => new Media(x.Id, x.Link)).ToList();
+            var media = input.Media?.Select(x => (Media)x).ToList() ?? new List<Media>();
             
-            var publication = new Publication(id, input.Content, Enumerable.Empty<string>(), new UserInfo(Guid.NewGuid(), "Name", null), DateTimeOffset.Now, DateTimeOffset.Now, media);
+            var publication = 
+                new Publication(
+                    id,
+                    input.Content,
+                    Enumerable.Empty<string>(),
+                    new UserInfo(Guid.NewGuid(), "Name", null),
+                    DateTimeOffset.Now,
+                    DateTimeOffset.Now,
+                    media);
 
             var serviceMock = new Mock<IPublicationService>();
             serviceMock

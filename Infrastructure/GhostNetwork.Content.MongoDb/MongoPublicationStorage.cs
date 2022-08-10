@@ -134,7 +134,7 @@ namespace GhostNetwork.Content.MongoDb
             var update = Builders<PublicationEntity>.Update.Set(s => s.Content, publication.Content)
                 .Set(s => s.Tags, publication.Tags.ToList())
                 .Set(s => s.UpdateOn, publication.UpdatedOn.ToUnixTimeMilliseconds())
-                .Set(s => s.Media, publication.Media.Select(x => new MediaEntity { Id = x.Id, Link = x.Link }).ToList());
+                .Set(s => s.Media, publication.Media.Select(x => (MediaEntity)x).ToList());
 
             await context.Publications.UpdateOneAsync(filter, update);
         }
@@ -160,14 +160,7 @@ namespace GhostNetwork.Content.MongoDb
                 (UserInfo)entity.Author,
                 DateTimeOffset.FromUnixTimeMilliseconds(entity.CreateOn),
                 DateTimeOffset.FromUnixTimeMilliseconds(entity.UpdateOn),
-                entity.Media.Select(ToDomainMedia));
-        }
-
-        private static Media ToDomainMedia(MediaEntity entity)
-        {
-            return new Media(
-                entity.Id,
-                entity.Link);
+                entity.Media is null ? Enumerable.Empty<Media>() : entity.Media.Select(x => (Media)x));
         }
     }
 }

@@ -38,7 +38,7 @@ namespace GhostNetwork.Content.UnitTest.Publications.Api
             };
 
             var id = "some_id";
-            var media = input.Media.Select(x => new Media(default, x.Link));
+            var media = input.Media is null ? ArraySegment<Media>.Empty : input.Media.Select(x => new Media(default, x.Link));
             var publication = new Publication(id, input.Content, Enumerable.Empty<string>(), null, DateTimeOffset.Now, DateTimeOffset.Now, media);
 
             var serviceMock = new Mock<IPublicationService>();
