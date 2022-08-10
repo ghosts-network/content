@@ -55,4 +55,10 @@ public class DeleteTests
 		// Assert
 		Assert.AreEqual(response.StatusCode, HttpStatusCode.NotFound);
 	}
+
+	[Test]
+	public async Task DeleteByKey_NoContent()
+	{
+		
+	}
 }
