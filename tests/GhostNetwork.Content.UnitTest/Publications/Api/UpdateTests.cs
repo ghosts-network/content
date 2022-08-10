@@ -24,7 +24,7 @@ namespace GhostNetwork.Content.UnitTest.Publications.Api
         [TestCaseSource(nameof(positiveCases))]
         public async Task Update_NoContent(IEnumerable<UpdateMediaModel> mediaCase)
         {
-            // Assert
+            // Arrange
             var id = "some_id";
             var input = new UpdatePublicationModel
             {
@@ -68,7 +68,7 @@ namespace GhostNetwork.Content.UnitTest.Publications.Api
         [Test]
         public async Task Update_NotFound()
         {
-            // Assert
+            // Arrange
             var id = "some_id";
             var input = new UpdatePublicationModel
             {
@@ -96,7 +96,7 @@ namespace GhostNetwork.Content.UnitTest.Publications.Api
         [Test]
         public async Task Update_EmptyContent_BadRequest()
         {
-            // Assert
+            // Arrange
             var id = "some_id";
             var input = new UpdatePublicationModel
             {
@@ -120,7 +120,7 @@ namespace GhostNetwork.Content.UnitTest.Publications.Api
         [Test]
         public async Task Create_ServiceError_BadRequest()
         {
-            // Assert
+            // Arrange
             var id = "some_id";
             var input = new CreatePublicationModel
             {

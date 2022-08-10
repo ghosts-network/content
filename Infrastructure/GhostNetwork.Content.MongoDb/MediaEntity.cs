@@ -5,9 +5,6 @@ namespace GhostNetwork.Content.MongoDb;
 
 public class MediaEntity
 {
-    [BsonId]
-    public Guid Id { get; init; }
-
     [BsonElement("link")]
     public string Link { get; init; }
 
@@ -15,7 +12,7 @@ public class MediaEntity
     {
         return entity == null
             ? null
-            : new Media(entity.Id, entity.Link);
+            : new Media(entity.Link);
     }
 
     public static explicit operator MediaEntity(Media media)
@@ -24,7 +21,6 @@ public class MediaEntity
             ? null
             : new MediaEntity()
             {
-                Id = media.Id,
                 Link = media.Link
             };
     }

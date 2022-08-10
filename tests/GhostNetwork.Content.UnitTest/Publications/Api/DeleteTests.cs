@@ -15,7 +15,7 @@ namespace GhostNetwork.Content.UnitTest.Publications.Api
         [Test]
         public async Task Delete_NoContent()
         {
-            // Assert
+            // Arrange
             var id = "some_id";
 
             var publication = new Publication(id, It.IsAny<string>(), Enumerable.Empty<string>(), null, DateTimeOffset.Now, DateTimeOffset.Now, Enumerable.Empty<Media>());
@@ -41,7 +41,7 @@ namespace GhostNetwork.Content.UnitTest.Publications.Api
         [Test]
         public async Task Delete_NotFound()
         {
-            // Assert
+            // Arrange
             var id = "some_id";
 
             var serviceMock = new Mock<IPublicationService>();

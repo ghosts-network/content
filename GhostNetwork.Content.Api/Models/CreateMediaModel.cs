@@ -10,6 +10,6 @@ public class CreateMediaModel
     {
         return model == null
             ? null
-            : new Media(Guid.NewGuid(), model.Link);
+            : new Media(model.Link);
     }
 }

@@ -24,7 +24,7 @@ namespace GhostNetwork.Content.UnitTest.Publications.Api
         [TestCaseSource(nameof(positiveCases))]
         public async Task Create_Created(IEnumerable<CreateMediaModel> mediaCase)
         {
-            // Assert
+            // Arrange
             var input = new CreatePublicationModel
             {
                 Content = "some content",
@@ -38,7 +38,7 @@ namespace GhostNetwork.Content.UnitTest.Publications.Api
             };
 
             var id = "some_id";
-            var media = input.Media is null ? ArraySegment<Media>.Empty : input.Media.Select(x => new Media(default, x.Link));
+            var media = input.Media is null ? ArraySegment<Media>.Empty : input.Media.Select(x => new Media(x.Link));
             var publication = new Publication(id, input.Content, Enumerable.Empty<string>(), null, DateTimeOffset.Now, DateTimeOffset.Now, media);
 
             var serviceMock = new Mock<IPublicationService>();
@@ -65,7 +65,7 @@ namespace GhostNetwork.Content.UnitTest.Publications.Api
         [Test]
         public async Task Create_EmptyContent_BadRequest()
         {
-            // Assert
+            // Arrange
             var input = new CreatePublicationModel
             {
                 Content = null
@@ -88,7 +88,7 @@ namespace GhostNetwork.Content.UnitTest.Publications.Api
         [Test]
         public async Task Create_ServiceError_BadRequest()
         {
-            // Assert
+            // Arrange
             var input = new CreatePublicationModel
             {
                 Content = "some content",

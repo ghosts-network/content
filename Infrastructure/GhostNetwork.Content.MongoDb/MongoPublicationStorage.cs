@@ -41,7 +41,6 @@ namespace GhostNetwork.Content.MongoDb
                 UpdateOn = publication.UpdatedOn.ToUnixTimeMilliseconds(),
                 Media = publication.Media.Select(x => new MediaEntity()
                 {
-                    Id = x.Id,
                     Link = x.Link
                 })
             };
