@@ -44,3 +44,10 @@ jobs:
           total=$(grep -o 'CoveragePercent="[^"]*"' -m 1 dotCover.Output.xml | cut -c 18-19)
           echo "Code Coverage: $total%"
           if [ $total -lt $MIN_COVERAGE ]; then exit 1; fi
+          
+  teeest:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: TTTESSSST
+        run: echo "${{ env.API_VERSION }}"
