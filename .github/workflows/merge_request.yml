@@ -26,7 +26,7 @@ jobs:
         run: |
           dotnet new tool-manifest
           dotnet tool install Swashbuckle.AspNetCore.Cli --version 6.4.0
-          dotnet swagger tofile --output api.json ./GhostNetwork.Content.Api/bin/Debug/net6.0/GhostNetwork.Content.Api.dll api
+          dotnet swagger tofile --output api.json ./GhostNetwork.Content.Api/bin/Release/net6.0/GhostNetwork.Content.Api.dll api
           echo grep -o '"version": "[^"]*' api.json | grep -o '[^"]*$'
       - name: Test
         run: dotnet test --no-restore --nologo
