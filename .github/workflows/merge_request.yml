@@ -24,14 +24,15 @@ jobs:
           grep '0 Warning(s)' ./log.txt
 
       - name: Generate version
+        id: version_generator
         run: |
           dotnet new tool-manifest --force
           dotnet tool install Swashbuckle.AspNetCore.Cli --version 6.4.0
           dotnet swagger tofile --output api.json ./GhostNetwork.Content.Api/bin/Release/net6.0/GhostNetwork.Content.Api.dll api
-          echo "API_VERSION=$(grep -o '"version": "[^"]*' api.json | grep -o '[^"]*$')" >> $GITHUB_ENV
+          echo "::set-output name=version::$(grep -o '"version": "[^"]*' api.json | grep -o '[^"]*$')\n"
 
       - name: TTTESSSST
-        run: echo "${{ env.API_VERSION }}"
+        run: echo "${{ steps.version_generator.outputs.version }}"
 
       - name: Test
         run: dotnet test --no-restore --nologo
@@ -51,4 +52,4 @@ jobs:
 
     steps:
       - name: TTTESSSST
-        run: echo "${{ env.API_VERSION }}"
+        run: echo "${{ needs.unit-test.outputs.version }}"
