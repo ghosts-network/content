@@ -8,9 +8,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "MONGO_CONNECTION": "mongodb://127.0.0.1:27017/gpublications",
-        "RABBIT_CONNECTION": "amqp://guest:guest@localhost:5672/",
-        "OPENAPI_JSON_ENABLED": "true",
-        "SWAGGER_UI_ENABLED": "true"
+        "RABBIT_CONNECTION": "amqp://guest:guest@localhost:5672/"
       }
     }
   }
