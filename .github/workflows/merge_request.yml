@@ -28,7 +28,8 @@ jobs:
           dotnet tool install Swashbuckle.AspNetCore.Cli --version 6.4.0
           dotnet swagger tofile --output api.json ./GhostNetwork.Content.Api/bin/Release/net6.0/GhostNetwork.Content.Api.dll api
           echo "API_VERSION=$(grep -o '"version": "[^"]*' api.json | grep -o '[^"]*$')" >> $GITHUB_ENV
-      - run: echo $API_VERSION
+      - name: TTTEEESSSTTT
+        run: echo ${{ env.API_VERSION }}
       - name: Test
         run: dotnet test --no-restore --nologo
       - name: Install dotCover
