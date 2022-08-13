@@ -29,6 +29,23 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 6.0.100
+
+      - name: Install dependencies
+        run: dotnet restore --nologo
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore --nologo
+
+      - name: Generate version
+        run: |
+          dotnet new --force tool-manifest
+          dotnet tool install Swashbuckle.AspNetCore.Cli --version 6.4.0
+          dotnet swagger tofile --output api.json ./GhostNetwork.Content.Api/bin/Release/net6.0/GhostNetwork.Content.Api.dll api
+          echo "API_VERSION=$(grep -o '"version": "[^"]*' api.json | grep -o '[^"]*$')" >> $GITHUB_ENV
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
 
