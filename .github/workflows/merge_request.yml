@@ -47,6 +47,7 @@ jobs:
           
   teeest:
     runs-on: ubuntu-20.04
+    needs: unit-test
 
     steps:
       - name: TTTESSSST
