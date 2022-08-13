@@ -40,23 +40,19 @@ namespace GhostNetwork.Content.Api
         {
             services.AddCors();
 
-            if (configuration.GetValue<bool>("OPENAPI_JSON_ENABLED"))
+            services.AddSwaggerGen(options =>
             {
-                services.AddSwaggerGen(options =>
+                options.SwaggerDoc("api", new OpenApiInfo
                 {
-                    options.SwaggerDoc("v1", new OpenApiInfo
-                    {
-                        Title = "GhostNetwork.Content",
-                        Description = "Http client for GhostNetwork.Content",
-                        Version = "1.0.0"
-                    });
-
-                    options.OperationFilter<OperationIdFilter>();
-                    options.OperationFilter<AddResponseHeadersFilter>();
-
-                    options.IncludeXmlComments(XmlPathProvider.XmlPath);
+                    Title = "GhostNetwork.Content",
+                    Version = "2.7.0"
                 });
-            }
+
+                options.OperationFilter<OperationIdFilter>();
+                options.OperationFilter<AddResponseHeadersFilter>();
+
+                options.IncludeXmlComments(XmlPathProvider.XmlPath);
+            });
 
             switch (configuration["EVENTHUB_TYPE"]?.ToLower())
             {
@@ -125,21 +121,12 @@ namespace GhostNetwork.Content.Api
         {
             if (env.IsDevelopment())
             {
-                bool openApiEnabled = configuration.GetValue<bool>("OPENAPI_JSON_ENABLED");
-                bool swaggerUiEnabled = configuration.GetValue<bool>("SWAGGER_UI_ENABLED");
-
-                if (openApiEnabled)
-                {
-                    app.UseSwagger();
-                }
-
-                if (openApiEnabled && swaggerUiEnabled)
-                {
-                    app.UseSwaggerUI(config =>
+                app
+                    .UseSwagger()
+                    .UseSwaggerUI(config =>
                     {
                         config.SwaggerEndpoint("/swagger/v1/swagger.json", "Relations.API V1");
                     });
-                }
 
                 app.UseCors(builder => builder.AllowAnyHeader()
                     .AllowAnyMethod()

@@ -13,4 +13,3 @@ services:
     environment:
       - MONGO_CONNECTION=mongodb://db:27017/gpublications
       - ASPNETCORE_ENVIRONMENT=Development
-      - OPENAPI_JSON_ENABLED=true
