@@ -29,7 +29,7 @@ jobs:
           dotnet new tool-manifest --force
           dotnet tool install Swashbuckle.AspNetCore.Cli --version 6.4.0
           dotnet swagger tofile --output api.json ./GhostNetwork.Content.Api/bin/Release/net6.0/GhostNetwork.Content.Api.dll api
-          echo "::set-output name=version::$(grep -o '"version": "[^"]*' api.json | grep -o '[^"]*$')\n"
+          echo "::set-output name=version::$(grep -o '"version": "[^"]*' api.json | grep -o '[^"]*$')"
 
       - name: TTTESSSST
         run: echo "${{ steps.version_generator.outputs.version }}"
@@ -47,7 +47,7 @@ jobs:
           if [ $total -lt $MIN_COVERAGE ]; then exit 1; fi
           
   teeest:
-    runs-on: ubuntu-20.04
+    runs-on: [ubuntu-20.04, "${{ needs.unit-test.outputs.version }}"]
     needs: unit-test
 
     steps:
