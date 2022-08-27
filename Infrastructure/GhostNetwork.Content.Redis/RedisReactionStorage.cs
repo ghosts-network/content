@@ -35,7 +35,11 @@ public class RedisReactionStorage : IReactionStorage
         foreach (var key in keys)
         {
             var reaction = await GetReactionByAuthorAsync(key, author);
-            result.Add(new Reaction(key, reaction?.Type));
+
+            if (reaction != null)
+            {
+                result.Add(new Reaction(key, reaction.Type));
+            }
         }
 
         return result;
