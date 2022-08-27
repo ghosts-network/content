@@ -45,7 +45,7 @@ namespace GhostNetwork.Content.Api
                 options.SwaggerDoc("api", new OpenApiInfo
                 {
                     Title = "GhostNetwork.Content",
-                    Version = "2.7.0"
+                    Version = "2.7.1"
                 });
 
                 options.OperationFilter<OperationIdFilter>();
@@ -79,7 +79,7 @@ namespace GhostNetwork.Content.Api
                 return new MongoDbContext(client.GetDatabase(mongoUrl.DatabaseName ?? DefaultDbName));
             });
 
-            services.AddSingleton(() => ConnectionMultiplexer.Connect(configuration["REDIS_CONNECTION"]));
+            services.AddSingleton(_ => ConnectionMultiplexer.Connect(configuration["REDIS_CONNECTION"]));
             services.AddScoped(provider =>
             {
                 var redisConnection = provider.GetRequiredService<ConnectionMultiplexer>();
@@ -125,7 +125,7 @@ namespace GhostNetwork.Content.Api
                     .UseSwagger()
                     .UseSwaggerUI(config =>
                     {
-                        config.SwaggerEndpoint("/swagger/v1/swagger.json", "Relations.API V1");
+                        config.SwaggerEndpoint("/swagger/api/swagger.json", "api");
                     });
 
                 app.UseCors(builder => builder.AllowAnyHeader()
