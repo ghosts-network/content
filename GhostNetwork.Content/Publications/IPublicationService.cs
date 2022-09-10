@@ -63,7 +63,7 @@ namespace GhostNetwork.Content.Publications
 
             var id = await publicationStorage.InsertOneAsync(publication);
 
-            await eventBus.PublishAsync(new CreatedEvent(id, publication.Content, author));
+            await eventBus.PublishAsync(new CreatedEvent(id, publication.Content, publication.CreatedOn, publication.UpdatedOn, author));
 
             return (result, id);
         }
@@ -85,6 +85,8 @@ namespace GhostNetwork.Content.Publications
             await eventBus.PublishAsync(new UpdatedEvent(
                 publication.Id,
                 publication.Content,
+                publication.CreatedOn,
+                publication.UpdatedOn,
                 publication.Author));
 
             return DomainResult.Success();
