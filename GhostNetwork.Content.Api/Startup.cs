@@ -45,7 +45,7 @@ namespace GhostNetwork.Content.Api
                 options.SwaggerDoc("api", new OpenApiInfo
                 {
                     Title = "GhostNetwork.Content",
-                    Version = "2.7.3"
+                    Version = "2.7.4"
                 });
 
                 options.OperationFilter<OperationIdFilter>();
@@ -148,6 +148,14 @@ namespace GhostNetwork.Content.Api
                 var scope = app.ApplicationServices.CreateScope();
                 var mongoDb = scope.ServiceProvider.GetRequiredService<MongoDbContext>();
                 mongoDb.ConfigureAsync().GetAwaiter().GetResult();
+            });
+
+            hostApplicationLifetime.ApplicationStarted.Register(() =>
+            {
+                var scope = app.ApplicationServices.CreateScope();
+                var mongoDb = scope.ServiceProvider.GetService<MongoDbContext>();
+                mongoDb?.MigrateGuidAsync()
+                    .GetAwaiter().GetResult();
             });
         }
 
