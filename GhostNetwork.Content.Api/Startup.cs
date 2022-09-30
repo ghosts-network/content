@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
 using Domain.Validation;
+using GhostNetwork.Content.Api.Helpers;
 using GhostNetwork.Content.Api.Helpers.OpenApi;
 using GhostNetwork.Content.Comments;
 using GhostNetwork.Content.MongoDb;
@@ -14,6 +15,7 @@ using GhostNetwork.EventBus.AzureServiceBus;
 using GhostNetwork.EventBus.RabbitMq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -38,6 +40,7 @@ namespace GhostNetwork.Content.Api
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddHttpContextAccessor();
             services.AddCors();
 
             services.AddSwaggerGen(options =>
@@ -45,7 +48,7 @@ namespace GhostNetwork.Content.Api
                 options.SwaggerDoc("api", new OpenApiInfo
                 {
                     Title = "GhostNetwork.Content",
-                    Version = "2.7.4"
+                    Version = "2.7.5"
                 });
 
                 options.OperationFilter<OperationIdFilter>();
@@ -64,7 +67,8 @@ namespace GhostNetwork.Content.Api
                 case "servicebus":
                     services.AddSingleton<IEventBus>(provider => new AzureServiceEventBus(
                         configuration["SERVICEBUS_CONNECTION"],
-                        new EventBus.AzureServiceBus.HandlerProvider(provider)));
+                        new EventBus.AzureServiceBus.HandlerProvider(provider),
+                        new EventHubMessageProvider(provider.GetRequiredService<IHttpContextAccessor>())));
                     break;
                 default:
                     services.AddSingleton<IEventBus, NullEventBus>();
