@@ -19,7 +19,9 @@ public class RedisReactionStorage : IReactionStorage
     {
         var result = await db.SortedSetRangeByScoreWithScoresAsync(key, order: Order.Descending);
 
-        return result?.ToDictionary(x => (string) x.Element, x => (int) x.Score)
+        return result?
+                   .Where(r => r.Score > 0)
+                   .ToDictionary(x => (string) x.Element, x => (int) x.Score)
                ?? new Dictionary<string, int>();
     }
 
@@ -50,7 +52,11 @@ public class RedisReactionStorage : IReactionStorage
         var dict = new Dictionary<string, Dictionary<string, int>>(keys.Count());
         foreach (var key in keys)
         {
-            dict[key] = (Dictionary<string, int>) await GetStats(key);
+            var stats = (Dictionary<string, int>) await GetStats(key);
+            if (stats.Count != 0)
+            {
+                dict[key] = stats;
+            }
         }
 
         return dict;
