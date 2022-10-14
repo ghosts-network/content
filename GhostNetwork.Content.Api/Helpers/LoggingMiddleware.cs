@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -17,21 +19,31 @@ public class LoggingMiddleware
 
     public async Task Invoke(HttpContext httpContext, ILogger<LoggingMiddleware> logger)
     {
-        var sw = Stopwatch.StartNew();
-        using var scopeStart = logger.BeginScope(new Dictionary<string, object>
+        using (logger.BeginScope(new Dictionary<string, object>
+            {
+                ["opperationId"] = httpContext.Request.Headers["X-Request-ID"].FirstOrDefault() ?? Guid.NewGuid().ToString()
+            }))
         {
-            ["type"] = "incoming:http"
-        });
-        logger.LogInformation($"{httpContext.Request.Method} {httpContext.Request.Path.Value}{httpContext.Request.QueryString.Value} request started");
+            var sw = Stopwatch.StartNew();
+            using (logger.BeginScope(new Dictionary<string, object>
+            {
+                ["type"] = "incoming:http"
+            }))
+            {
+                logger.LogInformation($"{httpContext.Request.Method} {httpContext.Request.Path.Value}{httpContext.Request.QueryString.Value} request started");
+            }
 
-        await next(httpContext);
+            await next(httpContext);
 
-        sw.Stop();
-        using var scopeEnd = logger.BeginScope(new Dictionary<string, object>
-        {
-            ["type"] = "incoming:http",
-            ["elapsedMilliseconds"] = sw.ElapsedMilliseconds
-        });
-        logger.LogInformation($"{httpContext.Request.Method} {httpContext.Request.Path.Value}{httpContext.Request.QueryString.Value} request finished");
+            sw.Stop();
+            using (logger.BeginScope(new Dictionary<string, object>
+            {
+                ["type"] = "incoming:http",
+                ["elapsedMilliseconds"] = sw.ElapsedMilliseconds
+            }))
+            {
+                logger.LogInformation($"{httpContext.Request.Method} {httpContext.Request.Path.Value}{httpContext.Request.QueryString.Value} request finished");
+            }
+        }
     }
 }
