@@ -19,8 +19,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
+using MongoDB.Driver.Core.Events;
 using RabbitMQ.Client;
 using StackExchange.Redis;
 using Swashbuckle.AspNetCore.Filters;
@@ -48,7 +50,7 @@ namespace GhostNetwork.Content.Api
                 options.SwaggerDoc("api", new OpenApiInfo
                 {
                     Title = "GhostNetwork.Content",
-                    Version = "2.7.6"
+                    Version = "2.7.7"
                 });
 
                 options.OperationFilter<OperationIdFilter>();
@@ -75,12 +77,54 @@ namespace GhostNetwork.Content.Api
                     break;
             }
 
-            services.AddScoped(_ =>
+            services.AddSingleton(provider =>
             {
                 var connectionString = configuration["MONGO_CONNECTION"];
                 var mongoUrl = MongoUrl.Create(connectionString);
-                var client = new MongoClient(mongoUrl);
-                return new MongoDbContext(client.GetDatabase(mongoUrl.DatabaseName ?? DefaultDbName));
+                var settings = MongoClientSettings.FromUrl(mongoUrl);
+                settings.ClusterConfigurator = cb =>
+                {
+                    cb.Subscribe<CommandStartedEvent>(e =>
+                    {
+                        var logger = provider.GetRequiredService<ILogger<MongoDbContext>>();
+                        using var scope = logger.BeginScope(new Dictionary<string, object>
+                        {
+                            ["type"] = "outgoing:mongodb"
+                        });
+
+                        logger.LogInformation("Mongodb query started");
+                    });
+
+                    cb.Subscribe<CommandSucceededEvent>(e =>
+                    {
+                        var logger = provider.GetRequiredService<ILogger<MongoDbContext>>();
+                        using var scope = logger.BeginScope(new Dictionary<string, object>
+                        {
+                            ["type"] = "outgoing:mongodb",
+                            ["elapsedMilliseconds"] = e.Duration.Milliseconds
+                        });
+
+                        logger.LogInformation("Mongodb query finished");
+                    });
+
+                    cb.Subscribe<CommandFailedEvent>(e =>
+                    {
+                        var logger = provider.GetRequiredService<ILogger<MongoDbContext>>();
+                        using var scope = logger.BeginScope(new Dictionary<string, object>
+                        {
+                            ["type"] = "outgoing:mongodb",
+                            ["elapsedMilliseconds"] = e.Duration.Milliseconds
+                        });
+
+                        logger.LogInformation("Mongodb query failed");
+                    });
+                };
+                return new MongoClient(settings);
+            });
+            services.AddScoped(provider =>
+            {
+                var mongoUrl = MongoUrl.Create(configuration["MONGO_CONNECTION"]);
+                return new MongoDbContext(provider.GetRequiredService<MongoClient>().GetDatabase(mongoUrl.DatabaseName ?? DefaultDbName));
             });
 
             services.AddSingleton(_ => ConnectionMultiplexer.Connect(configuration["REDIS_CONNECTION"]));
@@ -123,6 +167,7 @@ namespace GhostNetwork.Content.Api
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime hostApplicationLifetime)
         {
+            app.UseMiddleware<LoggingMiddleware>();
             if (env.IsDevelopment())
             {
                 app
