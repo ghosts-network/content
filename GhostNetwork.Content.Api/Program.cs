@@ -2,6 +2,7 @@ using System;
 using GhostNetwork.Content.Api.Helpers;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Filters;
 
@@ -13,7 +14,6 @@ namespace GhostNetwork.Content.Api
         {
             Log.Logger = new LoggerConfiguration()
                 .Enrich.With<UtcTimestampEnricher>()
-                .Enrich.FromLogContext()
                 .Filter.ByIncludingOnly(Matching.FromSource("GhostNetwork"))
                 .WriteTo.Console(outputTemplate: "{UtcTimestamp:yyyy-MM-ddTHH:mm:ss.ffffZ} [{Level:u3}] {Message:l} {Properties:j}{NewLine}{Exception}")
                 .CreateLogger();
@@ -23,6 +23,10 @@ namespace GhostNetwork.Content.Api
             try
             {
                 var host = Host.CreateDefaultBuilder(args)
+                    .ConfigureLogging(o =>
+                    {
+                        o.Configure(c => c.ActivityTrackingOptions = ActivityTrackingOptions.None);
+                    })
                     .UseSerilog()
                     .ConfigureWebHostDefaults(webBuilder =>
                     {

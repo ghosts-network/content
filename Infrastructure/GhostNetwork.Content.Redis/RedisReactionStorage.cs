@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GhostNetwork.Content.Reactions;
+using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 
 namespace GhostNetwork.Content.Redis;
@@ -9,15 +10,18 @@ namespace GhostNetwork.Content.Redis;
 public class RedisReactionStorage : IReactionStorage
 {
     private readonly IDatabase db;
+    private readonly ILogger<RedisReactionStorage> logger;
 
-    public RedisReactionStorage(IDatabase db)
+    public RedisReactionStorage(IDatabase db, ILogger<RedisReactionStorage> logger)
     {
         this.db = db;
+        this.logger = logger;
     }
 
     public async Task<IDictionary<string, int>> GetStats(string key)
     {
-        var result = await db.SortedSetRangeByScoreWithScoresAsync(key, order: Order.Descending);
+        var result = await logger.LogExecutionInfo(() =>
+            db.SortedSetRangeByScoreWithScoresAsync(key, order: Order.Descending));
 
         return result?
                    .Where(r => r.Score > 0)
@@ -27,7 +31,9 @@ public class RedisReactionStorage : IReactionStorage
 
     public async Task<Reaction?> GetReactionByAuthorAsync(string key, string author)
     {
-        var result = await db.HashGetAsync($"u:{key}", author);
+        var result = await logger.LogExecutionInfo(() =>
+            db.HashGetAsync($"u:{key}", author));
+
         return result.HasValue ? new Reaction(key, (string) result) : null;
     }
 
@@ -64,36 +70,37 @@ public class RedisReactionStorage : IReactionStorage
 
     public async Task UpsertAsync(string key, string author, string type)
     {
-        var oldType = await db.HashGetAsync("u:" + key, author);
+        var oldType = await logger.LogExecutionInfo(() =>
+            db.HashGetAsync("u:" + key, author));
         if (oldType.HasValue && (string) oldType == type)
         {
             return;
         }
 
-        if (await db.HashSetAsync("u:" + key, author, type))
+        if (await logger.LogExecutionInfo(() => db.HashSetAsync("u:" + key, author, type)))
         {
-            await db.SortedSetIncrementAsync(key, type, 1);
+            await logger.LogExecutionInfo(() => db.SortedSetIncrementAsync(key, type, 1));
         }
         else
         {
-            await db.SortedSetDecrementAsync(key, (string) oldType, 1);
-            await db.SortedSetIncrementAsync(key, type, 1);
+            await logger.LogExecutionInfo(() => db.SortedSetDecrementAsync(key, (string) oldType, 1));
+            await logger.LogExecutionInfo(() => db.SortedSetIncrementAsync(key, type, 1));
         }
     }
 
     public async Task DeleteByAuthorAsync(string key, string author)
     {
-        var value = await db.HashGetAsync("u:" + key, author);
+        var value = await logger.LogExecutionInfo(() => db.HashGetAsync("u:" + key, author));
         if (value.HasValue)
         {
-            await db.HashDeleteAsync("u:" + key, author);
-            await db.SortedSetDecrementAsync(key, value, 1);
+            await logger.LogExecutionInfo(() => db.HashDeleteAsync("u:" + key, author));
+            await logger.LogExecutionInfo(() => db.SortedSetDecrementAsync(key, value, 1));
         }
     }
 
     public async Task DeleteAsync(string key)
     {
-        await db.KeyDeleteAsync(key);
-        await db.KeyDeleteAsync($"u:{key}");
+        await logger.LogExecutionInfo(() => db.KeyDeleteAsync(key));
+        await logger.LogExecutionInfo(() => db.KeyDeleteAsync($"u:{key}"));
     }
 }
