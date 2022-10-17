@@ -33,16 +33,26 @@ public class LoggingMiddleware
                 logger.LogInformation($"{httpContext.Request.Method} {httpContext.Request.Path.Value}{httpContext.Request.QueryString.Value} request started");
             }
 
-            await next(httpContext);
-
-            sw.Stop();
-            using (logger.BeginScope(new Dictionary<string, object>
+            try
             {
-                ["type"] = "incoming:http",
-                ["elapsedMilliseconds"] = sw.ElapsedMilliseconds
-            }))
+                await next(httpContext);
+            }
+            catch (Exception ex)
             {
-                logger.LogInformation($"{httpContext.Request.Method} {httpContext.Request.Path.Value}{httpContext.Request.QueryString.Value} request finished");
+                logger.LogError(ex.Message);
+                throw;
+            }
+            finally
+            {
+                sw.Stop();
+                using (logger.BeginScope(new Dictionary<string, object>
+                       {
+                           ["type"] = "incoming:http",
+                           ["elapsedMilliseconds"] = sw.ElapsedMilliseconds
+                       }))
+                {
+                    logger.LogInformation($"{httpContext.Request.Method} {httpContext.Request.Path.Value}{httpContext.Request.QueryString.Value} request finished");
+                }
             }
         }
     }
