@@ -21,7 +21,7 @@ public class LoggingMiddleware
     {
         using (logger.BeginScope(new Dictionary<string, object>
             {
-                ["operationId"] = httpContext.Request.Headers["X-Request-ID"].FirstOrDefault() ?? Guid.NewGuid().ToString()
+                ["correlationId"] = httpContext.Request.Headers["X-Request-ID"].FirstOrDefault() ?? Guid.NewGuid().ToString()
             }))
         {
             var sw = Stopwatch.StartNew();
