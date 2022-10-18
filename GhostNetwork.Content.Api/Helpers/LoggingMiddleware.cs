@@ -39,7 +39,14 @@ public class LoggingMiddleware
             }
             catch (Exception ex)
             {
-                logger.LogError(ex.Message);
+                using (logger.BeginScope(new Dictionary<string, object>
+                       {
+                            ["stackTrace"] = ex.StackTrace
+                       }))
+                {
+                    logger.LogError(ex.Message);
+                }
+
                 throw;
             }
             finally
