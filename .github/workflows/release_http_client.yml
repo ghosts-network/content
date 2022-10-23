@@ -32,10 +32,10 @@ jobs:
         run: curl http://localhost:5300/swagger/api/swagger.json -O
       - name: df
         run: |
-          echo "NEW_VERSION=$(grep -o '"version": "[^"]*' swagger.json | grep -o '[^"]*$')" >> $GITHUB_ENV
-          echo "LATEST_VERSION=$(curl https://api.nuget.org/v3-flatcontainer/GhostNetwork.Content/index.json | jq ".versions | last" | sed 's/\"//g')" >> $GITHUB_ENV
-          echo "${{ env.NEW_VERSION }}"
-          echo "${{ env.LATEST_VERSION }}"
+          export NEW_VERSION=$(grep -o '"version": "[^"]*' swagger.json | grep -o '[^"]*$')
+          export LATEST_VERSION=$(curl https://api.nuget.org/v3-flatcontainer/GhostNetwork.Content/index.json | jq ".versions | last" | sed 's/\"//g')
+          echo "$NEW_VERSION"
+          echo "$LATEST_VERSION"
           echo "${{ env.NEW_VERSION }}\n${{ env.LATEST_VERSION }}" | sort -V | tail -1
 
 #       - name: generate-package
