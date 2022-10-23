@@ -32,7 +32,7 @@ jobs:
         run: curl http://localhost:5300/swagger/api/swagger.json -O
       - name: df
         run: |
-          echo "API_VERSION=$(grep -o '"version": "[^"]*' swagger.json | grep -o '[^"]*$')" >> $GITHUB_ENV
+          echo $(grep -o '"version": "[^"]*' swagger.json | grep -o '[^"]*$')
 
 
 #       - name: generate-package
