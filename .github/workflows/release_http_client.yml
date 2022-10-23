@@ -30,8 +30,11 @@ jobs:
         run: docker-compose ps -a
       - name: Download swagger json
         run: curl http://localhost:5300/swagger/api/swagger.json -O
-      - name: test
-        run: cat swagger.json
+      - name: df
+        run: |
+          echo "API_VERSION=$(grep -o '"version": "[^"]*' api.json | grep -o '[^"]*$')" >> $GITHUB_ENV
+
+
 #       - name: generate-package
 #         run: |
 #           npx @openapitools/openapi-generator-cli generate -i http://localhost:5300/swagger/api/swagger.json \
