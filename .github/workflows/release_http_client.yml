@@ -1,14 +1,20 @@
 name: Release nuget http client
 
+# on:
+#   workflow_dispatch:
+#     inputs:
+#       version:
+#         description: 'Version of nuget package'
+#         required: true
+
 on:
-  workflow_dispatch:
-    inputs:
-      version:
-        description: 'Version of nuget package'
-        required: true
+  push:
+    branches: [ ci/nuget-package-automatization ]
+
 env:
   PACKAGE_NAME: GhostNetwork.Content
   PACKAGE_REGISTRY: https://api.nuget.org/v3/index.json
+  version: 2.7.1
 
 jobs:
   generate-client:
@@ -20,21 +26,25 @@ jobs:
         run: npm install @openapitools/openapi-generator-cli
       - name: Run service instance
         run: docker-compose up -d
-      - name: generate-package
-        run: |
-          npx @openapitools/openapi-generator-cli generate -i http://localhost:5300/swagger/api/swagger.json \
-            -g csharp-netcore \
-            -o ./http-client \
-            --library httpclient \
-            --remove-operation-id-prefix \
-            --additional-properties=packageName=$PACKAGE_NAME \
-            --additional-properties=netCoreProjectFile=true
-      - uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: 6.0.100
-      - name: Create package
-        run: dotnet pack -p:PackageVersion=${{ github.event.inputs.version }} -o .
-        working-directory: ./http-client
-      - name: Publish package
-        run: dotnet nuget push $PACKAGE_NAME.${{ github.event.inputs.version }}.nupkg --source $PACKAGE_REGISTRY --api-key ${{ secrets.NUGET_KEY }}
-        working-directory: ./http-client
+      - name: Download swagger json
+        run: curl http://localhost:5300/swagger/api/swagger.json -O
+      - name: test
+        run: cat swagger.json
+#       - name: generate-package
+#         run: |
+#           npx @openapitools/openapi-generator-cli generate -i http://localhost:5300/swagger/api/swagger.json \
+#             -g csharp-netcore \
+#             -o ./http-client \
+#             --library httpclient \
+#             --remove-operation-id-prefix \
+#             --additional-properties=packageName=$PACKAGE_NAME \
+#             --additional-properties=netCoreProjectFile=true
+#       - uses: actions/setup-dotnet@v1
+#         with:
+#           dotnet-version: 6.0.100
+#       - name: Create package
+#         run: dotnet pack -p:PackageVersion=${{ github.event.inputs.version }} -o .
+#         working-directory: ./http-client
+#       - name: Publish package
+#         run: dotnet nuget push $PACKAGE_NAME.${{ github.event.inputs.version }}.nupkg --source $PACKAGE_REGISTRY --api-key ${{ secrets.NUGET_KEY }}
+#         working-directory: ./http-client
