@@ -34,6 +34,7 @@ jobs:
         run: |
           echo $(grep -o '"version": "[^"]*' swagger.json | grep -o '[^"]*$')
           echo $(curl https://api.nuget.org/v3-flatcontainer/GhostNetwork.Content/index.json | jq ".versions | last" | sed 's/\"//g')
+          echo $(printf '2.7.13\n2.7.1' | sort -V | tail -1)
 
 
 #       - name: generate-package
