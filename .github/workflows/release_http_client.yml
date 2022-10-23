@@ -32,10 +32,9 @@ jobs:
         run: curl http://localhost:5300/swagger/api/swagger.json -O
       - name: df
         run: |
-          echo $(grep -o '"version": "[^"]*' swagger.json | grep -o '[^"]*$')
-          echo $(curl https://api.nuget.org/v3-flatcontainer/GhostNetwork.Content/index.json | jq ".versions | last" | sed 's/\"//g')
-          echo $(printf '2.7.13\n2.7.1' | sort -V | tail -1)
-
+          echo "NEW_VERSION=$(grep -o '"version": "[^"]*' swagger.json | grep -o '[^"]*$')" >> $GITHUB_ENV
+          echo "LATEST_VERSION=$(curl https://api.nuget.org/v3-flatcontainer/GhostNetwork.Content/index.json | jq ".versions | last" | sed 's/\"//g')" >> $GITHUB_ENV
+          echo $(printf "${{ env.NEW_VERSION }}\n${{ env.LATEST_VERSION }}" | sort -V | tail -1)
 
 #       - name: generate-package
 #         run: |
