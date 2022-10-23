@@ -27,7 +27,8 @@ public class LoggingMiddleware
             var sw = Stopwatch.StartNew();
             using (logger.BeginScope(new Dictionary<string, object>
             {
-                ["type"] = "incoming:http"
+                ["type"] = "incoming:http",
+                ["callerId"] = httpContext.Request.Headers["X-Caller-ID"].FirstOrDefault() ?? string.Empty
             }))
             {
                 logger.LogInformation($"{httpContext.Request.Method} {httpContext.Request.Path.Value}{httpContext.Request.QueryString.Value} request started");
@@ -55,6 +56,7 @@ public class LoggingMiddleware
                 using (logger.BeginScope(new Dictionary<string, object>
                        {
                            ["type"] = "incoming:http",
+                           ["callerId"] = httpContext.Request.Headers["X-Caller-ID"].FirstOrDefault() ?? string.Empty,
                            ["elapsedMilliseconds"] = sw.ElapsedMilliseconds
                        }))
                 {
