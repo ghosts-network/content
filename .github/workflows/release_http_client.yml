@@ -33,6 +33,7 @@ jobs:
       - name: df
         run: |
           echo $(grep -o '"version": "[^"]*' swagger.json | grep -o '[^"]*$')
+          echo $(https://api.nuget.org/v3-flatcontainer/GhostNetwork.Content/index.json | jq ".versions | last")
 
 
 #       - name: generate-package
