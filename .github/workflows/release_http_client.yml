@@ -34,7 +34,7 @@ jobs:
         run: |
           echo "NEW_VERSION=$(grep -o '"version": "[^"]*' swagger.json | grep -o '[^"]*$')" >> $GITHUB_ENV
           echo "LATEST_VERSION=$(curl https://api.nuget.org/v3-flatcontainer/GhostNetwork.Content/index.json | jq ".versions | last" | sed 's/\"//g')" >> $GITHUB_ENV
-          printf "${{ env.NEW_VERSION }}\n2.3\n1" | sort -V | tail -1 | echo
+          echo "${{ env.NEW_VERSION }}\n${{ env.LATEST_VERSION }}" | sort -V | tail -1 | echo
 
 #       - name: generate-package
 #         run: |
