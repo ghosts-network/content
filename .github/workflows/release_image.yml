@@ -2,7 +2,7 @@ name: Release image
 
 on:
   push:
-    branches: [ master ]
+    branches: [ ci/nuget-package-automatization ]
 
 jobs:
   unit-test:
