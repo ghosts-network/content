@@ -38,6 +38,11 @@ jobs:
           echo ${{ env.NEW_VERSION }}
           echo ${{ env.LATEST_VERSION }}
           echo ${{ env.HIGEST_VERSION }}
+      - name: df2
+        run: |
+          echo ${{ env.NEW_VERSION }}
+          echo ${{ env.LATEST_VERSION }}
+          echo ${{ env.HIGEST_VERSION }}
 
 #       - name: generate-package
 #         run: |
