@@ -29,19 +29,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: 6.0.100
-
-      - name: Generate version
-        run: |
-          dotnet restore --nologo
-          dotnet build --configuration Release --no-restore --nologo -o ./app
-          dotnet new tool-manifest --force
-          dotnet tool install Swashbuckle.AspNetCore.Cli --version 6.4.0
-          dotnet swagger tofile --output api.json ./app/GhostNetwork.Content.Api.dll api
-          echo "API_VERSION=$(grep -o '"version": "[^"]*' api.json | grep -o '[^"]*$')" >> $GITHUB_ENV
-
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
 
@@ -52,6 +39,10 @@ jobs:
       - name: Build image
         run: |
           echo "${{ github.token }}" | docker login https://ghcr.io -u ${{ github.actor }} --password-stdin
-          docker buildx build --push \
+          docker buildx build \
             --platform linux/amd64,linux/arm64 \
-            --tag ghcr.io/ghosts-network/content:${{ env.API_VERSION }} --tag ghcr.io/ghosts-network/content:latest .
+            --tag ghcr.io/ghosts-network/content:latest .
+          
+          docker image list
+          docker run --rm --entrypoint "" ghcr.io/ghosts-network/content:latest cat swagger.json > swagger.json
+          cat swagger.json
