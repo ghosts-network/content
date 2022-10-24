@@ -22,15 +22,17 @@ jobs:
     
     steps:
       - uses: actions/checkout@v2
-      - name: Install generator
+      - name: Generate swagger json
         run: npm install @openapitools/openapi-generator-cli
-      - name: Run service instance
-        run: docker-compose up -d
-      - name: Run service instance
-        run: docker-compose ps -a
-      - name: Download swagger json
-        run: curl http://localhost:5300/swagger/api/swagger.json -O
-      - name: df
+      - name: Generate swagger json
+        run: |
+          dotnet new tool-manifest --force
+          dotnet tool install Swashbuckle.AspNetCore.Cli --version 6.4.0
+          dotnet build GhostNetwork.Content.Api/GhostNetwork.Content.Api.csproj -c Release -o /app
+          ls /app -la
+          dotnet swagger tofile --output swagger.json /app/Ehl.EhlNext.NeoIntegrationService.WebAPI.dll api
+          ls -la
+      - name: Build version
         run: |
           export CURRENT_BUILD_VERSION=$(grep -o '"version": "[^"]*' swagger.json | grep -o '[^"]*$' | awk -F "." '{print $1"."$2}')
           export LATEST_PUBLISHED_VERSION=$(curl https://api.nuget.org/v3-flatcontainer/GhostNetwork.Content/index.json | jq ".versions | last" | sed 's/\"//g' | awk -F "." '{print $1"."$2}')
@@ -39,13 +41,10 @@ jobs:
           echo "LATEST_PUBLISHED_VERSION=$LATEST_PUBLISHED_VERSION" >> $GITHUB_ENV
           echo "HIGEST_VERSION=$HIGEST_VERSION" >> $GITHUB_ENV
 
-      - name: df2
-        if: ${{ env.LATEST_PUBLISHED_VERSION != env.HIGEST_VERSION }}
-        run: |
-          echo "Version changed"
-
 #       - name: generate-package
+#         if: ${{ env.LATEST_PUBLISHED_VERSION != env.HIGEST_VERSION }}
 #         run: |
+#           npm install @openapitools/openapi-generator-cli
 #           npx @openapitools/openapi-generator-cli generate -i http://localhost:5300/swagger/api/swagger.json \
 #             -g csharp-netcore \
 #             -o ./http-client \
@@ -54,11 +53,14 @@ jobs:
 #             --additional-properties=packageName=$PACKAGE_NAME \
 #             --additional-properties=netCoreProjectFile=true
 #       - uses: actions/setup-dotnet@v1
+#         if: ${{ env.LATEST_PUBLISHED_VERSION != env.HIGEST_VERSION }}
 #         with:
 #           dotnet-version: 6.0.100
 #       - name: Create package
+#         if: ${{ env.LATEST_PUBLISHED_VERSION != env.HIGEST_VERSION }}
 #         run: dotnet pack -p:PackageVersion=${{ github.event.inputs.version }} -o .
 #         working-directory: ./http-client
 #       - name: Publish package
+#         if: ${{ env.LATEST_PUBLISHED_VERSION != env.HIGEST_VERSION }}
 #         run: dotnet nuget push $PACKAGE_NAME.${{ github.event.inputs.version }}.nupkg --source $PACKAGE_REGISTRY --api-key ${{ secrets.NUGET_KEY }}
 #         working-directory: ./http-client
