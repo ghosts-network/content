@@ -2,7 +2,7 @@ name: Release image
 
 on:
   push:
-    branches: [ ci/nuget-package-automatization ]
+    branches: [ master ]
 
 jobs:
   unit-test:
@@ -39,7 +39,7 @@ jobs:
       - name: Build image
         run: |
           echo "${{ github.token }}" | docker login https://ghcr.io -u ${{ github.actor }} --password-stdin
-          docker buildx build -o type=docker \
+          docker buildx build --push \
             --platform linux/amd64,linux/arm64 \
             --tag ghcr.io/ghosts-network/content:latest .
           
