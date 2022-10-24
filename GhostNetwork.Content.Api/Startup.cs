@@ -50,7 +50,7 @@ namespace GhostNetwork.Content.Api
                 options.SwaggerDoc("api", new OpenApiInfo
                 {
                     Title = "GhostNetwork.Content",
-                    Version = "2.7.13"
+                    Version = "2.8.0"
                 });
 
                 options.OperationFilter<OperationIdFilter>();
