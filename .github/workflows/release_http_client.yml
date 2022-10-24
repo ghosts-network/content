@@ -28,9 +28,9 @@ jobs:
         run: |
           dotnet new tool-manifest --force
           dotnet tool install Swashbuckle.AspNetCore.Cli --version 6.4.0
-          dotnet build GhostNetwork.Content.Api/GhostNetwork.Content.Api.csproj -c Release -o /app
-          ls /app -la
-          dotnet swagger tofile --output swagger.json /app/Ehl.EhlNext.NeoIntegrationService.WebAPI.dll api
+          dotnet build GhostNetwork.Content.Api/GhostNetwork.Content.Api.csproj -c Release -o ./build
+          ls ./build -la
+          dotnet swagger tofile --output swagger.json ./build/GhostNetwork.Content.Api.dll api
           ls -la
       - name: Build version
         run: |
