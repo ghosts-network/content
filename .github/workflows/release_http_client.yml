@@ -34,15 +34,10 @@ jobs:
         run: |
           echo "NEW_VERSION=$(grep -o '"version": "[^"]*' swagger.json | grep -o '[^"]*$' | awk -F "." '{print $1"."$2}')" >> $GITHUB_ENV
           echo "LATEST_VERSION=$(curl https://api.nuget.org/v3-flatcontainer/GhostNetwork.Content/index.json | jq ".versions | last" | sed 's/\"//g' | awk -F "." '{print $1"."$2}')" >> $GITHUB_ENV
-          echo "HIGEST_VERSION=$(printf "$NEW_VERSION\n$LATEST_VERSION" | sort -V | tail -1)" >> $GITHUB_ENV
-          echo ${{ env.NEW_VERSION }}
-          echo ${{ env.LATEST_VERSION }}
-          echo ${{ env.HIGEST_VERSION }}
+
       - name: df2
         run: |
-          echo ${{ env.NEW_VERSION }}
-          echo ${{ env.LATEST_VERSION }}
-          echo ${{ env.HIGEST_VERSION }}
+          echo $(printf "${{ env.NEW_VERSION }}\n${{ env.LATEST_VERSION }}" | sort -V | tail -1)
 
 #       - name: generate-package
 #         run: |
