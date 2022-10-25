@@ -24,29 +24,29 @@ jobs:
       - name: Test
         run: dotnet test --no-restore --nologo
 
-  push-image:
-    needs: unit-test
-    runs-on: ubuntu-20.04
-
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
-
-      - name: Set up Docker Buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v1
-
-      - name: Build image
-        run: |
-          echo "${{ github.token }}" | docker login https://ghcr.io -u ${{ github.actor }} --password-stdin
-          docker buildx build --push \
-            --platform linux/amd64,linux/arm64 \
-            --tag ghcr.io/ghosts-network/content:$(echo "${{ github.ref_name }}" | sed 's/v//g') --tag ghcr.io/ghosts-network/content:test .
+#  push-image:
+#    needs: unit-test
+#    runs-on: ubuntu-20.04
+#
+#    steps:
+#      - uses: actions/checkout@v2
+#
+#      - name: Set up QEMU
+#        uses: docker/setup-qemu-action@v1
+#
+#      - name: Set up Docker Buildx
+#        id: buildx
+#        uses: docker/setup-buildx-action@v1
+#
+#      - name: Build image
+#        run: |
+#          echo "${{ github.token }}" | docker login https://ghcr.io -u ${{ github.actor }} --password-stdin
+#          docker buildx build --push \
+#            --platform linux/amd64,linux/arm64 \
+#            --tag ghcr.io/ghosts-network/content:$(echo "${{ github.ref_name }}" | sed 's/v//g') --tag ghcr.io/ghosts-network/content:test .
 
   generate-sdk:
-    needs: push-image
+#    needs: push-image
     runs-on: ubuntu-20.04
 
     steps:
@@ -75,7 +75,7 @@ jobs:
 #        if: ${{ env.LATEST_PUBLISHED_VERSION != env.HIGHEST_VERSION }}
         run: |
           npm install @openapitools/openapi-generator-cli
-          npx @openapitools/openapi-generator-cli generate -i swagger.json \
+          npx @openapitools/openapi-generator-cli generate -i ./app/swagger.json \
             -g csharp-netcore \
             -o ./http-client \
             --library httpclient \
