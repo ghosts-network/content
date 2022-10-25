@@ -58,6 +58,7 @@ jobs:
           echo "CURRENT_BUILD_VERSION=$CURRENT_BUILD_VERSION" >> $GITHUB_ENV
           echo "LATEST_PUBLISHED_VERSION=$LATEST_PUBLISHED_VERSION" >> $GITHUB_ENV
           echo "HIGHEST_VERSION=$HIGHEST_VERSION" >> $GITHUB_ENV
+      - uses: actions/checkout@v2
       - uses: actions/setup-dotnet@v1
 #        if: ${{ env.LATEST_PUBLISHED_VERSION != env.HIGHEST_VERSION }}
         with:
