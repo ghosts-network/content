@@ -5,6 +5,10 @@ on:
     tags:
       - 'v*.*.*'
 
+env:
+  PACKAGE_NAME: GhostNetwork.Content
+  PACKAGE_REGISTRY: https://api.nuget.org/v3/index.json
+
 jobs:
   
 #  unit-test:
