@@ -1,59 +1,61 @@
-name: Release image
+name: Release version
 
 on:
   push:
     tags:
       - 'v*.*.*'
 
-env:
-  PACKAGE_NAME: GhostNetwork.Content
-  PACKAGE_REGISTRY: https://api.nuget.org/v3/index.json
-
 jobs:
   
-#  unit-test:
-#    runs-on: ubuntu-20.04
-#
-#    steps:
-#      - uses: actions/checkout@v2
-#      - uses: actions/setup-dotnet@v1
-#        with:
-#          dotnet-version: 6.0.100
-#      - name: Install dependencies
-#        run: dotnet restore --nologo
-#      - name: Build
-#        run: |
-#          dotnet build --configuration Release --no-restore --nologo | tee ./log.txt
-#          grep '0 Warning(s)' ./log.txt
-#      - name: Test
-#        run: dotnet test --no-restore --nologo
-
-#  push-image:
-#    needs: unit-test
-#    runs-on: ubuntu-20.04
-#
-#    steps:
-#      - uses: actions/checkout@v2
-#
-#      - name: Set up QEMU
-#        uses: docker/setup-qemu-action@v1
-#
-#      - name: Set up Docker Buildx
-#        id: buildx
-#        uses: docker/setup-buildx-action@v1
-#
-#      - name: Build image
-#        run: |
-#          echo "${{ github.token }}" | docker login https://ghcr.io -u ${{ github.actor }} --password-stdin
-#          docker buildx build --push \
-#            --platform linux/amd64,linux/arm64 \
-#            --tag ghcr.io/ghosts-network/content:$(echo "${{ github.ref_name }}" | sed 's/v//g') --tag ghcr.io/ghosts-network/content:test .
-
-  generate-dotnet-sdk:
-#    needs: push-image
+  unit-test:
     runs-on: ubuntu-20.04
 
     steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 6.0.100
+      - name: Install dependencies
+        run: dotnet restore --nologo
+      - name: Build
+        run: |
+          dotnet build --configuration Release --no-restore --nologo | tee ./log.txt
+          grep '0 Warning(s)' ./log.txt
+      - name: Test
+        run: dotnet test --no-restore --nologo
+
+  push-image:
+    needs: unit-test
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Build image
+        run: |
+          echo "${{ github.token }}" | docker login https://ghcr.io -u ${{ github.actor }} --password-stdin
+          docker buildx build --push \
+            --platform linux/amd64,linux/arm64 \
+            --tag ghcr.io/ghosts-network/content:$(echo "${{ github.ref_name }}" | sed 's/v//g') --tag ghcr.io/ghosts-network/content:test .
+
+  generate-dotnet-sdk:
+    needs: push-image
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-dotnet@v1
+        if: ${{ env.LATEST_PUBLISHED_VERSION != env.HIGHEST_VERSION }}
+        with:
+          dotnet-version: 6.0.100
+
       - name: Build version
         run: |
           export CURRENT_BUILD_VERSION=$(echo "${{ github.ref_name }}" | sed 's/v//g' | awk -F "." '{print $1"."$2}')
@@ -62,21 +64,18 @@ jobs:
           echo "CURRENT_BUILD_VERSION=$CURRENT_BUILD_VERSION" >> $GITHUB_ENV
           echo "LATEST_PUBLISHED_VERSION=$LATEST_PUBLISHED_VERSION" >> $GITHUB_ENV
           echo "HIGHEST_VERSION=$HIGHEST_VERSION" >> $GITHUB_ENV
-      - uses: actions/checkout@v2
-      - uses: actions/setup-dotnet@v1
-#        if: ${{ env.LATEST_PUBLISHED_VERSION != env.HIGHEST_VERSION }}
-        with:
-          dotnet-version: 6.0.100
+
       - name: Generate swagger
-#        if: ${{ env.LATEST_PUBLISHED_VERSION != env.HIGHEST_VERSION }}
+        if: ${{ env.LATEST_PUBLISHED_VERSION != env.HIGHEST_VERSION }}
         run: |
           dotnet restore --nologo
           dotnet build --configuration Release --no-restore --nologo -o ./app
           dotnet new tool-manifest --force
           dotnet tool install Swashbuckle.AspNetCore.Cli --version 6.4.0
           dotnet swagger tofile --output swagger.json ./app/GhostNetwork.Content.Api.dll api
+
       - name: Generate source code
-#        if: ${{ env.LATEST_PUBLISHED_VERSION != env.HIGHEST_VERSION }}
+        if: ${{ env.LATEST_PUBLISHED_VERSION != env.HIGHEST_VERSION }}
         run: |
           npm install @openapitools/openapi-generator-cli
           npx @openapitools/openapi-generator-cli generate -i swagger.json \
@@ -84,19 +83,18 @@ jobs:
             -o ./http-client \
             --library httpclient \
             --remove-operation-id-prefix \
-            --additional-properties=packageName=$PACKAGE_NAME \
+            --additional-properties=packageName=GhostNetwork.Content \
             --additional-properties=netCoreProjectFile=true
-      - name: Ls
-        run: ls src
-        working-directory: ./http-client
+
       - name: Create package
-#        if: ${{ env.LATEST_PUBLISHED_VERSION != env.HIGHEST_VERSION }}
+        if: ${{ env.LATEST_PUBLISHED_VERSION != env.HIGHEST_VERSION }}
         run: dotnet pack -p:PackageVersion=$HIGHEST_VERSION -o .
         working-directory: ./http-client
-      - name: Ls
-        run: ls
-        working-directory: ./http-client
+
       - name: Publish package
-#        if: ${{ env.LATEST_PUBLISHED_VERSION != env.HIGHEST_VERSION }}
-        run: dotnet nuget push $PACKAGE_NAME.$HIGHEST_VERSION.0.nupkg --source $PACKAGE_REGISTRY --api-key ${{ secrets.NUGET_KEY }}
+        if: ${{ env.LATEST_PUBLISHED_VERSION != env.HIGHEST_VERSION }}
+        run: |
+          dotnet nuget push GhostNetwork.Content.$HIGHEST_VERSION.0.nupkg \
+            --source https://api.nuget.org/v3/index.json \
+            --api-key ${{ secrets.NUGET_KEY }}
         working-directory: ./http-client
