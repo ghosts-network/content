@@ -87,7 +87,7 @@ jobs:
         working-directory: ./http-client
       - name: Create package
 #        if: ${{ env.LATEST_PUBLISHED_VERSION != env.HIGHEST_VERSION }}
-        run: dotnet pack -p:PackageVersion=$HIGHEST_VERSION | sed 's/v//g') -o .
+        run: dotnet pack -p:PackageVersion=$HIGHEST_VERSION -o .
         working-directory: ./http-client
       - name: Ls
         run: ls
