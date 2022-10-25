@@ -83,11 +83,11 @@ jobs:
             --additional-properties=packageName=$PACKAGE_NAME \
             --additional-properties=netCoreProjectFile=true
       - name: Ls
-        run: ls
+        run: ls src
         working-directory: ./http-client
       - name: Create package
 #        if: ${{ env.LATEST_PUBLISHED_VERSION != env.HIGHEST_VERSION }}
-        run: dotnet pack -p:PackageVersion=$HIGHEST_VERSION -o .
+        run: dotnet pack --no-restore -p:PackageVersion=$HIGHEST_VERSION -o .
         working-directory: ./http-client
       - name: Ls
         run: ls
