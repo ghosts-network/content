@@ -58,31 +58,34 @@ jobs:
           echo "CURRENT_BUILD_VERSION=$CURRENT_BUILD_VERSION" >> $GITHUB_ENV
           echo "LATEST_PUBLISHED_VERSION=$LATEST_PUBLISHED_VERSION" >> $GITHUB_ENV
           echo "HIGHEST_VERSION=$HIGHEST_VERSION" >> $GITHUB_ENV
-      - name: test
-        run: |
-          echo ${{ env.CURRENT_BUILD_VERSION }}
-          echo ${{ env.LATEST_PUBLISHED_VERSION }}
-          echo ${{ env.HIGHEST_VERSION }}
-#      - name: generate-package
-#        if: ${{ env.LATEST_PUBLISHED_VERSION != env.HIGHEST_VERSION }}
-#        run: |
-#           npm install @openapitools/openapi-generator-cli
-#           npx @openapitools/openapi-generator-cli generate -i http://localhost:5300/swagger/api/swagger.json \
-#             -g csharp-netcore \
-#             -o ./http-client \
-#             --library httpclient \
-#             --remove-operation-id-prefix \
-#             --additional-properties=packageName=$PACKAGE_NAME \
-#             --additional-properties=netCoreProjectFile=true
       - uses: actions/setup-dotnet@v1
-        if: ${{ env.LATEST_PUBLISHED_VERSION != env.HIGHEST_VERSION }}
+#        if: ${{ env.LATEST_PUBLISHED_VERSION != env.HIGHEST_VERSION }}
         with:
           dotnet-version: 6.0.100
-#      - name: Create package
-#        if: ${{ env.LATEST_PUBLISHED_VERSION != env.HIGEST_VERSION }}
-#        run: dotnet pack -p:PackageVersion=${{ github.event.inputs.version }} -o .
-#        working-directory: ./http-client
-#      - name: Publish package
-#        if: ${{ env.LATEST_PUBLISHED_VERSION != env.HIGEST_VERSION }}
-#        run: dotnet nuget push $PACKAGE_NAME.${{ github.event.inputs.version }}.nupkg --source $PACKAGE_REGISTRY --api-key ${{ secrets.NUGET_KEY }}
-#        working-directory: ./http-client
+      - name: Generate swagger
+#        if: ${{ env.LATEST_PUBLISHED_VERSION != env.HIGHEST_VERSION }}
+        run: |
+          dotnet restore --nologo
+          dotnet build --configuration Release --no-restore --nologo
+          dotnet new tool-manifest --force
+          dotnet tool install Swashbuckle.AspNetCore.Cli --version 6.4.0
+          dotnet swagger tofile --output swagger.json GhostNetwork.Content.Api.dll api
+      - name: Generate package
+#        if: ${{ env.LATEST_PUBLISHED_VERSION != env.HIGHEST_VERSION }}
+        run: |
+          npm install @openapitools/openapi-generator-cli
+          npx @openapitools/openapi-generator-cli generate -i swagger.json \
+            -g csharp-netcore \
+            -o ./http-client \
+            --library httpclient \
+            --remove-operation-id-prefix \
+            --additional-properties=packageName=$PACKAGE_NAME \
+            --additional-properties=netCoreProjectFile=true
+      - name: Create package
+#        if: ${{ env.LATEST_PUBLISHED_VERSION != env.HIGHEST_VERSION }}
+        run: dotnet pack -p:PackageVersion=$(echo "${{ github.ref_name }}" | sed 's/v//g') -o .
+        working-directory: ./http-client
+      - name: Publish package
+#        if: ${{ env.LATEST_PUBLISHED_VERSION != env.HIGHEST_VERSION }}
+        run: dotnet nuget push $PACKAGE_NAME.$(echo "${{ github.ref_name }}" | sed 's/v//g').nupkg --source $PACKAGE_REGISTRY --api-key ${{ secrets.NUGET_KEY }}
+        working-directory: ./http-client
