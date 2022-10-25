@@ -85,12 +85,12 @@ jobs:
       - name: Create package
 #        if: ${{ env.LATEST_PUBLISHED_VERSION != env.HIGHEST_VERSION }}
         run: ls
-        working-directory: ./http-client
+        working-directory: ./http-client/src
       - name: Create package
 #        if: ${{ env.LATEST_PUBLISHED_VERSION != env.HIGHEST_VERSION }}
         run: dotnet pack -p:PackageVersion=$(echo "${{ github.ref_name }}" | sed 's/v//g') -o .
-        working-directory: ./http-client
+        working-directory: ./http-client/src
       - name: Publish package
 #        if: ${{ env.LATEST_PUBLISHED_VERSION != env.HIGHEST_VERSION }}
         run: dotnet nuget push $PACKAGE_NAME.$(echo "${{ github.ref_name }}" | sed 's/v//g').nupkg --source $PACKAGE_REGISTRY --api-key ${{ secrets.NUGET_KEY }}
-        working-directory: ./http-client
+        working-directory: ./http-client/src
