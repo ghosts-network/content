@@ -43,7 +43,7 @@ jobs:
             --platform linux/amd64,linux/arm64 \
             --tag ghcr.io/ghosts-network/content:latest .
 
-          docker run --rm --entrypoint "" ghcr.io/ghosts-network/content:latest cat swagger.json > swagger.json
+          docker run --rm --entrypoint "" ghcr.io/ghosts-network/content:test cat swagger.json > swagger.json
 
       - name: Build version
         run: |
