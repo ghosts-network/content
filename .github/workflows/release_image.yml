@@ -54,7 +54,7 @@ jobs:
         run: |
           export CURRENT_BUILD_VERSION=$(echo "${{ github.ref_name }}" | sed 's/v//g')
           export LATEST_PUBLISHED_VERSION=$(curl https://api.nuget.org/v3-flatcontainer/GhostNetwork.Content/index.json | jq ".versions | last" | sed 's/\"//g' | awk -F "." '{print $1"."$2}')
-          export $HIGHEST_VERSION=$(printf "$CURRENT_BUILD_VERSION\n$LATEST_PUBLISHED_VERSION" | sort -V | tail -1)
+          export HIGHEST_VERSION=$(printf "$CURRENT_BUILD_VERSION\n$LATEST_PUBLISHED_VERSION" | sort -V | tail -1)
           echo "CURRENT_BUILD_VERSION=$CURRENT_BUILD_VERSION" >> $GITHUB_ENV
           echo "LATEST_PUBLISHED_VERSION=$LATEST_PUBLISHED_VERSION" >> $GITHUB_ENV
           echo "HIGHEST_VERSION=$HIGHEST_VERSION" >> $GITHUB_ENV
