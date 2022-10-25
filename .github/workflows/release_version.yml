@@ -67,10 +67,10 @@ jobs:
 #        if: ${{ env.LATEST_PUBLISHED_VERSION != env.HIGHEST_VERSION }}
         run: |
           dotnet restore --nologo
-          dotnet build --configuration Release --no-restore --nologo
+          dotnet build --configuration Release --no-restore --nologo -o ./app
           dotnet new tool-manifest --force
           dotnet tool install Swashbuckle.AspNetCore.Cli --version 6.4.0
-          dotnet swagger tofile --output swagger.json GhostNetwork.Content.Api.dll api
+          dotnet swagger tofile --output ./app/swagger.json ./app/GhostNetwork.Content.Api.dll api
       - name: Generate package
 #        if: ${{ env.LATEST_PUBLISHED_VERSION != env.HIGHEST_VERSION }}
         run: |
