@@ -84,6 +84,10 @@ jobs:
             --additional-properties=netCoreProjectFile=true
       - name: Create package
 #        if: ${{ env.LATEST_PUBLISHED_VERSION != env.HIGHEST_VERSION }}
+        run: ls
+        working-directory: ./http-client
+      - name: Create package
+#        if: ${{ env.LATEST_PUBLISHED_VERSION != env.HIGHEST_VERSION }}
         run: dotnet pack -p:PackageVersion=$(echo "${{ github.ref_name }}" | sed 's/v//g') -o .
         working-directory: ./http-client
       - name: Publish package
