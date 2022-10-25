@@ -6,14 +6,11 @@ FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 
 COPY . .
-RUN dotnet restore GhostNetwork.Content.Api/GhostNetwork.Content.Api.csproj
 WORKDIR /src/GhostNetwork.Content.Api
-RUN dotnet build GhostNetwork.Content.Api.csproj -c Release -o /app
-
-FROM build AS publish
-RUN dotnet publish GhostNetwork.Content.Api.csproj -c Release -o /app
+RUN dotnet restore GhostNetwork.Content.Api.csproj
+RUN dotnet publish GhostNetwork.Content.Api.csproj --no-restore -c Release -o /app
 
 FROM base AS final
 WORKDIR /app
-COPY --from=publish /app .
+COPY --from=build /app .
 ENTRYPOINT ["dotnet", "GhostNetwork.Content.Api.dll"]
