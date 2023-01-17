@@ -1,4 +1,4 @@
-name: Release stable version
+name: Release beta version
 
 on:
   workflow_dispatch:
