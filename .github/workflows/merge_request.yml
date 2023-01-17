@@ -30,6 +30,7 @@ jobs:
         run: dotnet dotcover test --dcReportType=XML --dcFilters=-:module=GhostNetwork.Content.Domain.UnitTest
       - name: Validate coverage
         run: |
+          cat dotCover.Output.xml
           total=$(grep -o 'CoveragePercent="[^"]*"' -m 1 dotCover.Output.xml | cut -c 18-19)
           echo "Code Coverage: $total%"
           if [ $total -lt $MIN_COVERAGE ]; then exit 1; fi
