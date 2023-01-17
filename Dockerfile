@@ -1,14 +1,13 @@
-FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:6.0-alpine AS base
 WORKDIR /app
 EXPOSE 80
 
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:6.0-alpine AS build
 WORKDIR /src
 
 COPY . .
-WORKDIR /src/GhostNetwork.Content.Api
-RUN dotnet restore GhostNetwork.Content.Api.csproj
-RUN dotnet publish GhostNetwork.Content.Api.csproj --no-restore -c Release -o /app
+RUN dotnet restore
+RUN dotnet publish --no-restore -c Release -o /app
 
 FROM base AS final
 WORKDIR /app
