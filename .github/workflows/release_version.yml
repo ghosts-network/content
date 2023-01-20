@@ -43,7 +43,7 @@ jobs:
           echo "${{ github.token }}" | docker login https://ghcr.io -u ${{ github.actor }} --password-stdin
           docker buildx build --push \
             --platform linux/amd64,linux/arm64 \
-            --tag ghcr.io/ghosts-network/content:$(echo "${{ github.ref_name }}" | sed 's/v//g')
+            --tag ghcr.io/ghosts-network/content:$(echo "${{ github.ref_name }}" | sed 's/v//g') \
             --tag ghcr.io/ghosts-network/content:latest .
 
   generate-dotnet-sdk:
