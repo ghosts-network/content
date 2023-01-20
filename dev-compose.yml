@@ -1,12 +1,15 @@
-version: '3'
+version: "3"
 
 services:
-  db:
-    image: mvertes/alpine-mongo
+
+  mongo:
+    container_name: ghost-network-mongo
+    image: mongo:5.0.8
     ports:
       - "27017:27017"
 
   redis:
-    image: redis
+    container_name: ghost-network-redis
+    image: redis:6.2.10-alpine
     ports:
       - "6379:6379"
