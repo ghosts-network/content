@@ -1,15 +1,28 @@
-version: '3'
+version: "3"
 
 services:
-  db:
-    image: mvertes/alpine-mongo
+
+  mongo:
+    container_name: ghost-network-mongo
+    image: mongo:5.0.8
+    ports:
+      - "27017:27017"
+
+  redis:
+    container_name: ghost-network-redis
+    image: redis:6.2.10-alpine
+    ports:
+      - "6379:6379"
 
   api:
     build: .
     ports:
       - "5300:80"
     depends_on:
-      - db
+      - mongo
+      - redis
     environment:
-      - MONGO_CONNECTION=mongodb://db:27017/gpublications
+      - MONGO_CONNECTION=mongodb://mongo:27017/gpublications
       - ASPNETCORE_ENVIRONMENT=Development
+      - REACTION_STORAGE_TYPE=redis
+      - REDIS_CONNECTION=redis
