@@ -63,8 +63,9 @@ namespace GhostNetwork.Content.Api
             {
                 case "rabbit":
                     services.AddSingleton<IEventBus>(provider => new RabbitMqEventBus(
-                        new ConnectionFactory { Uri = new Uri(configuration["RABBIT_CONNECTION"]) },
-                        new EventBus.RabbitMq.HandlerProvider(provider)));
+                        new ConnectionFactory { Uri = new Uri(configuration["RABBIT_CONNECTION"]!) },
+                        new EventBus.RabbitMq.HandlerProvider(provider),
+                        propertiesProvider: new RabbitMqPropertiesProvider(provider.GetRequiredService<IHttpContextAccessor>())));
                     break;
                 case "servicebus":
                     services.AddSingleton<IEventBus>(provider => new AzureServiceEventBus(
@@ -84,7 +85,7 @@ namespace GhostNetwork.Content.Api
                 var settings = MongoClientSettings.FromUrl(mongoUrl);
                 settings.ClusterConfigurator = cb =>
                 {
-                    cb.Subscribe<CommandStartedEvent>(e =>
+                    cb.Subscribe<CommandStartedEvent>(_ =>
                     {
                         var logger = provider.GetRequiredService<ILogger<MongoDbContext>>();
                         using var scope = logger.BeginScope(new Dictionary<string, object>
