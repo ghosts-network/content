@@ -1,10 +1,12 @@
+using System;
+using System.Linq;
 using GhostNetwork.EventBus.RabbitMq;
 using Microsoft.AspNetCore.Http;
 using RabbitMQ.Client;
 
 namespace GhostNetwork.Content.Api.Helpers;
 
-public class RabbitMqPropertiesProvider : EmptyPropertiesProvider
+public class RabbitMqPropertiesProvider : IPropertiesProvider
 {
     private readonly IHttpContextAccessor httpContextAccessor;
 
@@ -15,8 +17,9 @@ public class RabbitMqPropertiesProvider : EmptyPropertiesProvider
 
     public IBasicProperties GetProperties(IModel channel)
     {
-        var properties = base.GetProperties(channel);
-        properties.CorrelationId = httpContextAccessor.HttpContext?.TraceIdentifier;
+        var properties = channel.CreateBasicProperties();
+        properties.CorrelationId = httpContextAccessor.HttpContext!.Request.Headers["X-Request-ID"].FirstOrDefault() ??
+                                   Guid.NewGuid().ToString();
 
         return properties;
     }
