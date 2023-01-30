@@ -2,7 +2,8 @@ name: Release stable version
 
 on:
   push:
-    branches: [ ci/use-action ]
+    tags:
+      - 'v*.*.*'
 
 jobs:
 
