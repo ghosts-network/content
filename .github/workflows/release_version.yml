@@ -64,7 +64,7 @@ jobs:
       - name: Build version
         run: |
           export CURRENT_BUILD_VERSION=$(echo "${{ github.ref_name }}" | sed 's/v//g' | awk -F "." '{print $1"."$2}')
-          export LATEST_PUBLISHED_VERSION=$(echo "${{ steps.foo.outputs.latest }}" | awk -F "." '{print $1"."$2}')
+          export LATEST_PUBLISHED_VERSION=$(echo "${{ steps.nuget-version.outputs.latest }}" | awk -F "." '{print $1"."$2}')
           export HIGHEST_VERSION=$(printf "$CURRENT_BUILD_VERSION\n$LATEST_PUBLISHED_VERSION" | sort -V | tail -1)
           echo "CURRENT_BUILD_VERSION=$CURRENT_BUILD_VERSION" >> $GITHUB_ENV
           echo "LATEST_PUBLISHED_VERSION=$LATEST_PUBLISHED_VERSION" >> $GITHUB_ENV
