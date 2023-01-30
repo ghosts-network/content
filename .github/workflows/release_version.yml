@@ -69,6 +69,12 @@ jobs:
           echo "CURRENT_BUILD_VERSION=$CURRENT_BUILD_VERSION" >> $GITHUB_ENV
           echo "LATEST_PUBLISHED_VERSION=$LATEST_PUBLISHED_VERSION" >> $GITHUB_ENV
           echo "HIGHEST_VERSION=$HIGHEST_VERSION" >> $GITHUB_ENV
+      
+      - name: Test
+        run: |
+          echo ${{ env.HIGHEST_VERSION }}
+          echo ${{ env.LATEST_PUBLISHED_VERSION }}
+          echo ${{ env.CURRENT_BUILD_VERSION }}
 
 #      - name: Generate swagger
 #        if: ${{ env.LATEST_PUBLISHED_VERSION != env.HIGHEST_VERSION }}
