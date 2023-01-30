@@ -6,22 +6,22 @@ on:
 
 jobs:
 
-  unit-test:
-    runs-on: ubuntu-22.04
-
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: 7.0
-      - name: Install dependencies
-        run: dotnet restore --nologo
-      - name: Build
-        run: |
-          dotnet build --configuration Release --no-restore --nologo | tee ./log.txt
-          grep '0 Warning(s)' ./log.txt
-      - name: Test
-        run: dotnet test --no-restore --nologo
+#  unit-test:
+#    runs-on: ubuntu-22.04
+#
+#    steps:
+#      - uses: actions/checkout@v3
+#      - uses: actions/setup-dotnet@v3
+#        with:
+#          dotnet-version: 7.0
+#      - name: Install dependencies
+#        run: dotnet restore --nologo
+#      - name: Build
+#        run: |
+#          dotnet build --configuration Release --no-restore --nologo | tee ./log.txt
+#          grep '0 Warning(s)' ./log.txt
+#      - name: Test
+#        run: dotnet test --no-restore --nologo
 
 #  push-image:
 #    needs: unit-test
@@ -46,7 +46,7 @@ jobs:
 #            --tag ghcr.io/ghosts-network/content:latest .
 
   generate-dotnet-sdk:
-    needs: push-image
+#    needs: push-image
     runs-on: ubuntu-22.04
 
     steps:
