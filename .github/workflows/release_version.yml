@@ -1,7 +1,7 @@
 name: Release stable version
 
 on:
-  pull_request:
+  push:
     branches: [ ci/use-action ]
 
 jobs:
