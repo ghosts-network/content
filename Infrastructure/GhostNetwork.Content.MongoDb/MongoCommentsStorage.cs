@@ -76,7 +76,7 @@ namespace GhostNetwork.Content.MongoDb
 
         public async Task<(IReadOnlyCollection<Comment>, long)> FindManyAsync(string key, int skip, int take, string cursor, Ordering order)
         {
-            var filter = Builders<CommentEntity>.Filter.Eq(x => x.Key, key);
+            var filter = Builders<CommentEntity>.Filter.Eq(x => x.Key, key) & Builders<CommentEntity>.Filter.Eq(x => x.ReplyCommentId, null);
 
             var sorting = order switch
             {
@@ -104,9 +104,18 @@ namespace GhostNetwork.Content.MongoDb
                 .Limit(take)
                 .ToListAsync();
 
-            return (entities
-                .Select(ToDomain)
-                .ToList(), totalCount);
+            var repliesDict = await FindFeaturedAsync(entities.Select(x => x.Id.ToString()), 3);
+
+            var result = entities.Select(entity =>
+            {
+                repliesDict.TryGetValue(entity.Id.ToString(), out var replies);
+
+                return ToDomain(entity, replies);
+            })
+            .Where(c => string.IsNullOrEmpty(c.ReplyCommentId))
+            .ToList();
+
+            return (result, totalCount);
         }
 
         public async Task DeleteOneAsync(string commentId)
@@ -173,11 +182,10 @@ namespace GhostNetwork.Content.MongoDb
                 .ToDictionary(
                     r => r.Id,
                     r => new FeaturedInfo(
-                        r.Comments.Select(ToDomain),
+                        r.Comments.Select(x => ToDomain(x)),
                         r.TotalCount));
 
-            return keys
-                .ToDictionary(
+            return keys.ToDictionary(
                     key => key,
                     key => dict.ContainsKey(key)
                         ? dict[key]
@@ -186,7 +194,53 @@ namespace GhostNetwork.Content.MongoDb
                             0));
         }
 
-        private static Comment ToDomain(CommentEntity entity)
+        public async Task<Dictionary<string, CommentsShort>> FindFeaturedAsync(IEnumerable<string> ids, int take)
+        {
+            var group = new BsonDocument
+            {
+                {
+                    "_id", "$replyId"
+                },
+                {
+                    "comments", new BsonDocument
+                    {
+                        { "$push", "$$ROOT" }
+                    }
+                },
+                {
+                    "count", new BsonDocument("$sum", 1)
+                }
+            };
+
+            var slice = new BsonDocument
+            {
+                {
+                    "comments", new BsonDocument
+                    {
+                        {
+                            "$slice", new BsonArray(new BsonValue[]
+                            {
+                                "$comments",
+                                take
+                            })
+                        }
+                    }
+                },
+                { "count", "$count" }
+            };
+
+            var listComments = await context.Comments
+                .Aggregate()
+                .Match(Builders<CommentEntity>.Filter.In(x => x.ReplyCommentId, ids))
+                .Sort(Builders<CommentEntity>.Sort.Ascending(x => x.CreateOn))
+                .Group<FeaturedInfoEntity>(group)
+                .Project<FeaturedInfoEntity>(slice.ToBsonDocument())
+                .ToListAsync();
+
+            return listComments.ToDictionary(key => key.Id, value => new CommentsShort(value.Comments.Select(c => ToDomain(c)), value.TotalCount));
+        }
+
+        private static Comment ToDomain(CommentEntity entity, CommentsShort replies = null)
         {
             return new Comment(
                 entity.Id.ToString(),
@@ -194,7 +248,8 @@ namespace GhostNetwork.Content.MongoDb
                 DateTimeOffset.FromUnixTimeMilliseconds(entity.CreateOn),
                 entity.Key,
                 entity.ReplyCommentId,
-                (UserInfo)entity.Author);
+                (UserInfo)entity.Author,
+                replies);
         }
     }
 }

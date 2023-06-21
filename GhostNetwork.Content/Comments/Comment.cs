@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace GhostNetwork.Content.Comments
 {
     public class Comment
     {
-        public Comment(string id, string content, DateTimeOffset createdOn, string key, string replyCommentId, UserInfo author)
+        public Comment(string id, string content, DateTimeOffset createdOn, string key, string replyCommentId, UserInfo author, CommentsShort replies = null)
         {
             Id = id;
             Content = content;
@@ -12,6 +13,7 @@ namespace GhostNetwork.Content.Comments
             Key = key;
             ReplyCommentId = replyCommentId;
             Author = author;
+            Replies = replies;
         }
 
         public string Id { get; }
@@ -25,6 +27,8 @@ namespace GhostNetwork.Content.Comments
         public DateTimeOffset CreatedOn { get; }
 
         public string ReplyCommentId { get; }
+
+        public CommentsShort Replies { get; }
 
         public static Comment New(string text, string key, string replyId, UserInfo author)
         {
